@@ -1,0 +1,9 @@
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+tmp/
+output/
+PRD.md
+DEVELOPMENT_PLAN.md

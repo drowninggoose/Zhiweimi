@@ -1,0 +1,14 @@
+node_modules/
+dist/
+coverage/
+*.log
+*.zhiweimi-backup.json
+.DS_Store
+test-results/
+playwright-report/
+*.tsbuildinfo
+tmp/
+output/
+.env
+.env.*
+!.env.example

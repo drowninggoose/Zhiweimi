@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { App } from '../app/App';
 import { db } from '../db/database';
 import { importLibrary } from '../db/library';
-import { defaultPreferences, initialize } from '../db/seed';
+import { initialize } from '../db/seed';
 import { repositories } from '../db/repositories';
 import { exportBackup, parseBackup } from '../services/backupService';
 import {

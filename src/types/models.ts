@@ -98,7 +98,10 @@ export type PlanDay = {
   dinnerRecipeId?: string;
 };
 export type MealPlan = Base & {
+  /** 兼容旧数据：today=1 天 / week=7 天 / month=其他天数 */
   period: 'today' | 'week' | 'month';
+  /** 计划实际天数（1~30），新计划都写这个字段 */
+  dayCount?: number;
   startDate: string;
   endDate: string;
   conditions: PlanConditions;

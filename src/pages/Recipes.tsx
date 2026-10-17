@@ -73,6 +73,8 @@ export function RecipesPage() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const [query, setQuery] = useState(params.get('q') ?? '');
+  /** 从饮食计划跳过来挑菜：每张卡片多一个「选它」按钮 */
+  const pickMode = params.get('pick') === '1';
   const [source, setSource] = useState('');
   // 三个并列维度：按餐次 / 按时间 / 按品类
   const [meal, setMeal] = useState('');
@@ -155,6 +157,11 @@ export function RecipesPage() {
           新建菜谱
         </Link>
       </div>
+      {pickMode ? (
+        <p role="status" className="notice">
+          正在为饮食计划挑菜：选中后会自动回到计划页替换。<Link to="/planner">放弃选择，返回计划</Link>
+        </p>
+      ) : null}
       <div className="search-box" style={{ marginBottom: 16 }}>
         <input
           aria-label="菜谱搜索"
@@ -257,7 +264,29 @@ export function RecipesPage() {
       {results.length ? (
         <div className="grid">
           {results.map((r) => (
-            <RecipeCard key={r.id} recipe={r} />
+            <div className="pick-cell" key={r.id}>
+              <RecipeCard recipe={r} />
+              {pickMode ? (
+                <button
+                  type="button"
+                  className="pick-choose"
+                  onClick={() => {
+                    try {
+                      const pending = sessionStorage.getItem('zhiweimi:plan-pick');
+                      sessionStorage.setItem(
+                        'zhiweimi:plan-pick',
+                        JSON.stringify({ ...JSON.parse(pending ?? '{}'), recipeId: r.id }),
+                      );
+                    } catch {
+                      // 存储失败就只是回到计划页
+                    }
+                    navigate('/planner');
+                  }}
+                >
+                  选它
+                </button>
+              ) : null}
+            </div>
           ))}
         </div>
       ) : (

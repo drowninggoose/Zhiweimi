@@ -1,7 +1,8 @@
 import { test, expect, chromium } from '@playwright/test';
 import { spawn, type ChildProcess } from 'node:child_process';
 import { once } from 'node:events';
-import { demoRecipes, defaultPreferences } from '../src/db/seed';
+import { defaultPreferences } from '../src/db/seed';
+import { fixtureRecipes } from '../src/test/fixtures';
 import { stamp, today, type DataSnapshot } from '../src/types/models';
 import { exportBackup } from '../src/services/backupService';
 import { png } from './fixtures';
@@ -54,7 +55,7 @@ test('浏览器关闭重开与本地服务重启：五类记录和Blob照片保�
     size: imageBlob.size,
   };
   const recipe = {
-    ...demoRecipes()[0],
+    ...fixtureRecipes()[0],
     ...stamp(),
     name: '重启持久化菜谱',
     sourceType: 'user' as const,
@@ -62,7 +63,7 @@ test('浏览器关闭重开与本地服务重启：五类记录和Blob照片保�
     coverUrl: undefined,
   };
   const snapshot: DataSnapshot = {
-    recipes: [...demoRecipes(), recipe],
+    recipes: [...fixtureRecipes(), recipe],
     utensils: [
       { ...stamp(), name: '持久化杯', type: 'cup', capacity: 200, capacityUnit: 'ml', image },
     ],

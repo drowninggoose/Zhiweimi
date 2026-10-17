@@ -5,11 +5,14 @@ import { createRepositories } from '../db/repositories';
 import { initialize } from '../db/seed';
 import { exportBackup, parseBackup } from '../services/backupService';
 import { stamp } from '../types/models';
+import { fixtureRecipes } from './fixtures';
 const database = new Database('backup-tests');
 const repo = createRepositories(database);
 beforeEach(async () => {
   await database.open();
   await initialize(database);
+  // 测试环境没有真实服务器，菜谱库导入会失败，手动塞一道菜谱库菜谱
+  await database.recipes.bulkAdd(fixtureRecipes().slice(0, 1));
 });
 afterEach(() => database.delete());
 test('阶段9：包含上传Blob图片的备份→全部清空→恢复保持内容，导出不修改数据', async () => {
@@ -72,7 +75,7 @@ test('阶段9：坏JSON、版本、缺字段、错误类型、重复ID与非法�
   }
   for (const text of invalids) {
     expect(() => parseBackup(text)).toThrow();
-    expect(await database.recipes.count()).toBe(16);
+    expect(await database.recipes.count()).toBe(1);
   }
 });
 test('阶段9：恢复事务中途失败会回滚，原菜谱仍完整', async () => {
@@ -99,6 +102,6 @@ test('阶段9：恢复事务中途失败会回滚，原菜谱仍完整', async (
     ],
   };
   await expect(repo.restore(bad)).rejects.toThrow();
-  expect(await database.recipes.count()).toBe(16);
+  expect(await database.recipes.count()).toBe(1);
   expect(await database.utensils.count()).toBe(0);
 });

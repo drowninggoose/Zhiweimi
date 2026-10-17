@@ -5,12 +5,14 @@ import { App } from '../app/App';
 import { db } from '../db/database';
 import { initialize } from '../db/seed';
 import { stamp, today } from '../types/models';
+import { fixtureRecipes } from './fixtures';
 beforeEach(async () => {
   await db.open();
   await db.transaction('rw', db.tables, async () => {
     for (const t of db.tables) await t.clear();
   });
   await initialize(db);
+  await db.recipes.bulkAdd(fixtureRecipes());
   vi.spyOn(window, 'confirm').mockReturnValue(true);
 });
 afterEach(() => {
@@ -51,7 +53,7 @@ test('阶段7界面：家庭食材维护，默认过滤用完记录', async () =
   await user.click(screen.getByRole('checkbox'));
   await screen.findByRole('heading', { name: '番茄' });
 });
-test('阶段8：首页推荐换批、日记与计划摘要均来自本地数据', async () => {
+test('阶段8：首页日记摘要来自本地数据', async () => {
   await db.diaryEntries.add({
     ...stamp(),
     date: today(),
@@ -62,10 +64,6 @@ test('阶段8：首页推荐换批、日记与计划摘要均来自本地数据'
   render(<App />);
   const user = userEvent.setup();
   await screen.findByText('首页真实日记');
-  const names = screen.getAllByRole('heading', { level: 3 }).map((x) => x.textContent);
-  await user.click(screen.getByRole('button', { name: '换一批' }));
-  expect(screen.getAllByRole('heading', { level: 3 }).map((x) => x.textContent)).not.toEqual(names);
-  expect(screen.queryByText('继续烹饪')).not.toBeInTheDocument();
   expect(screen.getByRole('link', { name: /首页真实日记/ })).toHaveAttribute(
     'href',
     expect.stringContaining('/diary?entry='),

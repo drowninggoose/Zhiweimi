@@ -6,12 +6,14 @@ import { db } from '../db/database';
 import { repositories } from '../db/repositories';
 import { initialize } from '../db/seed';
 import { stamp, today } from '../types/models';
+import { fixtureRecipes } from './fixtures';
 beforeEach(async () => {
   await db.open();
   await db.transaction('rw', db.tables, async () => {
     for (const table of db.tables) await table.clear();
   });
   await initialize(db);
+  await db.recipes.bulkAdd(fixtureRecipes());
 });
 afterEach(() => {
   cleanup();
@@ -56,9 +58,9 @@ test('阶段6/10：同日同餐冲突取消保留原记录、确认替换后唯�
   expect(await db.diaryEntries.count()).toBe(1);
   expect((await db.diaryEntries.toArray())[0].dishName).toBe('新晚餐');
 });
-test('阶段3/10：未保存离开取消仍在编辑，演示副本不会覆盖原菜谱', async () => {
+test('阶段3/10：未保存离开取消仍在编辑，菜谱库副本不会覆盖原菜谱', async () => {
   vi.spyOn(window, 'confirm').mockReturnValue(false);
-  window.history.replaceState({}, '', '/recipes/demo-1/edit');
+  window.history.replaceState({}, '', '/recipes/fixture-1/edit');
   render(<App />);
   const user = userEvent.setup();
   await user.clear(await screen.findByLabelText('菜名'));
@@ -67,6 +69,6 @@ test('阶段3/10：未保存离开取消仍在编辑，演示副本不会覆盖�
   expect(screen.getByLabelText('菜名')).toHaveValue('副本名');
   await user.click(screen.getByRole('button', { name: '正式保存' }));
   await screen.findByRole('heading', { name: '副本名' });
-  expect((await db.recipes.get('demo-1'))?.name).toBe('番茄炒蛋');
+  expect((await db.recipes.get('fixture-1'))?.name).toBe('番茄炒蛋');
   expect((await db.recipes.where('name').equals('副本名').first())?.sourceType).toBe('user');
 });

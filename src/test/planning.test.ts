@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { demoRecipes } from '../db/seed';
+import { fixtureRecipes } from './fixtures';
 import {
   generatePlan,
   recommendations,
@@ -11,7 +11,7 @@ import {
 import { stamp, meals, type PlanConditions } from '../types/models';
 const conditions: PlanConditions = { flavors: [], avoidIngredients: [], preferPantry: false };
 test('阶段7：三周期天数、避免相邻餐与相邻日同菜、单餐替换', () => {
-  const recipes = demoRecipes();
+  const recipes = fixtureRecipes();
   for (const [period, count] of [
     ['today', 1],
     ['week', 7],
@@ -31,7 +31,7 @@ test('阶段7：三周期天数、避免相邻餐与相邻日同菜、单餐替�
   }
 });
 test('阶段7：忌口、时间、难度与家庭食材权重', () => {
-  const recipes = demoRecipes();
+  const recipes = fixtureRecipes();
   const eligible = eligibleRecipes(recipes, {
     ...conditions,
     avoidIngredients: ['鸡蛋'],
@@ -56,17 +56,17 @@ test('阶段7：忌口、时间、难度与家庭食材权重', () => {
     [],
     () => 0,
   );
-  expect(result[0].id).toBe('demo-10');
+  expect(result[0].id).toBe('fixture-10');
   expect(() => validatePantry({ ...pantry[0], quantity: -1 })).toThrow('负数');
 });
 test('阶段7：菜谱不足允许月计划但明确警告，无候选拒绝', () => {
-  const plan = generatePlan([demoRecipes()[10]], [], conditions, 'month', '2026-10-01');
+  const plan = generatePlan([fixtureRecipes()[10]], [], conditions, 'month', '2026-10-01');
   expect(plan.days).toHaveLength(31);
   expect(plan.warning).toContain('不足');
   expect(() => generatePlan([], [], conditions, 'today', '2026-10-01')).toThrow('没有符合');
 });
 test('阶段7：推荐换批在候选充分时改变组合', () => {
-  const recipes = demoRecipes();
+  const recipes = fixtureRecipes();
   const first = recommendations(recipes, conditions, [], undefined, [], () => 0.5);
   const second = recommendations(
     recipes,

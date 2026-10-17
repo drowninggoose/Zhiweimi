@@ -1,0 +1,235 @@
+import { useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { useData } from '../app/data';
+import { repositories } from '../db/repositories';
+import { Image, ImageUpload } from '../components/common';
+import { useUnsaved } from '../hooks/useUnsaved';
+import { diaryRows, validateDiary } from '../services/diaryService';
+import { stamp, today, meals, mealLabels, type DiaryEntry, type MealType } from '../types/models';
+export function DiaryPage() {
+  const { data, run } = useData();
+  const [params] = useSearchParams();
+  const linked = data?.diaryEntries.find((e) => e.id === params.get('entry'));
+  const [from, setFrom] = useState(() => {
+    const d = new Date();
+    d.setDate(d.getDate() - 6);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  });
+  const [to, setTo] = useState(today());
+  const [entry, setEntry] = useState<DiaryEntry | null>(linked ?? null);
+  const [view, setView] = useState(!!linked);
+  const [dirty, setDirty] = useState(false);
+  const [error, setError] = useState('');
+  useUnsaved(dirty);
+  if (!data) return null;
+  function open(date: string, mealType: MealType, existing?: DiaryEntry) {
+    setEntry(existing ?? { ...stamp(), date, mealType, dishName: '' });
+    setView(!!existing);
+    setDirty(false);
+    setError('');
+  }
+  function update(next: Partial<DiaryEntry>) {
+    if (entry) {
+      setEntry({ ...entry, ...next });
+      setDirty(true);
+    }
+  }
+  async function save() {
+    if (!entry) return;
+    try {
+      validateDiary(entry);
+      const existing = data!.diaryEntries.find(
+        (e) => e.date === entry.date && e.mealType === entry.mealType && e.id !== entry.id,
+      );
+      if (existing && !confirm('同一天同一餐已有记录，替换原记录？')) return;
+      if (await run(() => repositories.diaryEntries.save(entry, !!existing))) {
+        setEntry(null);
+        setDirty(false);
+        setError('');
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    }
+  }
+  return (
+    <>
+      <div className="row between">
+        <h2>每一餐，都值得记住</h2>
+        <button onClick={() => open(today(), 'dinner')}>添加记录</button>
+      </div>
+      <section className="card row">
+        <label>
+          开始日期
+          <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
+        </label>
+        <label>
+          结束日期
+          <input type="date" value={to} onChange={(e) => setTo(e.target.value)} />
+        </label>
+        {from > to && (
+          <span role="alert" className="error">
+            开始日期不能晚于结束日期
+          </span>
+        )}
+      </section>
+      {entry && (
+        <section className="card fields">
+          <div className="row between">
+            <h2>{view ? '日记详情' : '编辑美食日记'}</h2>
+            <button
+              className="secondary"
+              onClick={() => {
+                if (!dirty || confirm('放弃未保存的日记修改？')) {
+                  setEntry(null);
+                  setDirty(false);
+                }
+              }}
+            >
+              关闭
+            </button>
+          </div>
+          {error && (
+            <p role="alert" className="error">
+              {error}
+            </p>
+          )}
+          {view ? (
+            <>
+              <Image image={entry.image} alt={entry.dishName} className="plate" />
+              <h3>{entry.dishName}</h3>
+              <p>
+                {entry.date} · {mealLabels[entry.mealType]} · {entry.tasteRating}
+              </p>
+              <p>{entry.notes}</p>
+              <p>{entry.adjustmentNotes}</p>
+              <div className="row">
+                <button onClick={() => setView(false)}>编辑日记</button>
+                {entry.recipeId && data.recipes.some((r) => r.id === entry.recipeId) && (
+                  <Link className="button" to={`/cook/${entry.recipeId}`}>
+                    再次烹饪
+                  </Link>
+                )}
+                <button
+                  className="danger"
+                  onClick={async () => {
+                    if (
+                      confirm('确认删除这条日记？') &&
+                      (await run(() => repositories.diaryEntries.delete(entry.id), '日记已删除'))
+                    )
+                      setEntry(null);
+                  }}
+                >
+                  删除日记
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="row">
+                <label>
+                  日期
+                  <input
+                    type="date"
+                    value={entry.date}
+                    onChange={(e) => update({ date: e.target.value })}
+                  />
+                </label>
+                <label>
+                  餐次
+                  <select
+                    value={entry.mealType}
+                    onChange={(e) => update({ mealType: e.target.value as MealType })}
+                  >
+                    {meals.map((m) => (
+                      <option key={m} value={m}>
+                        {mealLabels[m]}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+              <label>
+                菜名
+                <input
+                  value={entry.dishName}
+                  onChange={(e) => update({ dishName: e.target.value })}
+                />
+              </label>
+              <ImageUpload
+                label="菜品照片"
+                value={entry.image}
+                onChange={(image) => update({ image })}
+              />
+              <label>
+                关联菜谱
+                <select
+                  value={entry.recipeId ?? ''}
+                  onChange={(e) => update({ recipeId: e.target.value || undefined })}
+                >
+                  <option value="">无关联菜谱</option>
+                  {data.recipes.map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {r.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                味道评价
+                <input
+                  value={entry.tasteRating ?? ''}
+                  onChange={(e) => update({ tasteRating: e.target.value })}
+                />
+              </label>
+              <label>
+                心得
+                <textarea
+                  value={entry.notes ?? ''}
+                  onChange={(e) => update({ notes: e.target.value })}
+                />
+              </label>
+              <label>
+                实际用量调整与备注
+                <textarea
+                  value={entry.adjustmentNotes ?? ''}
+                  onChange={(e) => update({ adjustmentNotes: e.target.value })}
+                />
+              </label>
+              <button onClick={() => void save()}>保存日记</button>
+            </>
+          )}
+        </section>
+      )}
+      {from <= to && (
+        <section className="card">
+          <div className="diary-row diary-heading">
+            <span>日期</span>
+            {meals.map((m) => (
+              <strong key={m}>{mealLabels[m]}</strong>
+            ))}
+          </div>
+          {diaryRows(data.diaryEntries, from, to).map((row) => (
+            <div className="diary-row" key={row.date}>
+              <strong>{row.date}</strong>
+              {row.slots.map(({ meal, entry: record }) => (
+                <button
+                  key={meal}
+                  className="diary-slot"
+                  aria-label={`${row.date}${mealLabels[meal]}${record ? '查看' + record.dishName : '添加记录'}`}
+                  onClick={() => open(row.date, meal, record)}
+                >
+                  <Image
+                    image={record?.image}
+                    alt={record?.dishName ?? '空盘子'}
+                    className="plate"
+                  />
+                  <span>{record?.dishName ?? '添加记录'}</span>
+                </button>
+              ))}
+            </div>
+          ))}
+        </section>
+      )}
+    </>
+  );
+}

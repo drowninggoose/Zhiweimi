@@ -12,7 +12,7 @@ export function eligibleRecipes(recipes: Recipe[], conditions: PlanConditions) {
   return recipes.filter(
     (r) =>
       r.status === 'published' &&
-      r.sourceType === 'demo' &&
+      r.sourceType !== 'demo' &&
       !conditions.avoidIngredients.some((avoid) =>
         r.ingredients.some((i) => i.name.includes(avoid)),
       ) &&
@@ -62,7 +62,7 @@ export function generatePlan(
   previous?: MealPlan,
 ): MealPlan {
   const candidates = eligibleRecipes(recipes, conditions);
-  if (!candidates.length) throw new Error('没有符合条件的演示菜谱，请调整忌口、难度或用时');
+  if (!candidates.length) throw new Error('没有符合条件的菜谱，请调整忌口、难度或用时');
   const start = new Date(`${startDate}T12:00:00`);
   if (Number.isNaN(start.getTime())) throw new Error('请选择有效开始日期');
   const count =

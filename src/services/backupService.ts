@@ -137,7 +137,7 @@ export function parseBackup(text: string): DataSnapshot {
     strings(r.mealTypes, '餐次');
     for (const meal of r.mealTypes as string[])
       oneOf(meal, ['breakfast', 'lunch', 'dinner'], '餐次');
-    oneOf(r.sourceType, ['demo', 'user'], '菜谱来源');
+    oneOf(r.sourceType, ['demo', 'user', 'library'], '菜谱来源');
     oneOf(r.status, ['draft', 'published'], '菜谱状态');
     if (typeof r.favorite !== 'boolean') throw new Error('备份收藏状态无效');
     if (r.difficulty !== undefined) oneOf(r.difficulty, ['easy', 'normal', 'advanced'], '难度');
@@ -145,9 +145,12 @@ export function parseBackup(text: string): DataSnapshot {
     image(r.coverImage);
     if (
       r.coverUrl !== undefined &&
-      !(typeof r.coverUrl === 'string' && /^\/demo-images\/dish-[1-4]\.svg$/.test(r.coverUrl))
+      !(
+        typeof r.coverUrl === 'string' &&
+        (/^\/demo-images\/dish-[1-4]\.svg$/.test(r.coverUrl) || /^https?:\/\//.test(r.coverUrl))
+      )
     )
-      throw new Error('备份演示图片路径无效');
+      throw new Error('备份图片路径无效');
     for (const key of ['ingredients', 'steps'])
       if (!Array.isArray(r[key])) throw new Error(`备份缺少${key}`);
     for (const value of r.ingredients as unknown[]) {
@@ -155,7 +158,10 @@ export function parseBackup(text: string): DataSnapshot {
       optionalStrings(i, ['note']);
       string(i.id, '食材ID');
       string(i.name, '食材名称', r.status === 'draft');
-      if (i.amount !== undefined) number(i.amount, '食材数量');
+      if (i.amount !== undefined) {
+        if (typeof i.amount === 'number') number(i.amount, '食材数量');
+        else if (i.amount !== '') string(i.amount, '食材数量');
+      }
       if (i.unit !== undefined) string(i.unit, '食材单位', true);
     }
     for (const value of r.steps as unknown[]) {
@@ -163,7 +169,6 @@ export function parseBackup(text: string): DataSnapshot {
       string(s.id, '步骤ID');
       string(s.instruction, '步骤说明', r.status === 'draft');
       number(s.order, '步骤顺序', 1);
-      if (s.timerSeconds !== undefined) number(s.timerSeconds, '计时');
       image(s.image);
     }
     if (

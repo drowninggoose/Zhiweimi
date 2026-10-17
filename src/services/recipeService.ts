@@ -32,7 +32,7 @@ export function validateRecipe(recipe: Recipe) {
   if (!recipe.name.trim()) throw new Error('请填写菜名');
   if (
     recipe.ingredients.some(
-      (i) => i.amount !== undefined && (!Number.isFinite(i.amount) || i.amount < 0),
+      (i) => typeof i.amount === 'number' && (!Number.isFinite(i.amount) || i.amount < 0),
     )
   )
     throw new Error('食材数量不能为负数');
@@ -41,13 +41,6 @@ export function validateRecipe(recipe: Recipe) {
     (!Number.isFinite(recipe.estimatedMinutes) || recipe.estimatedMinutes <= 0)
   )
     throw new Error('预计用时必须大于0');
-  if (
-    recipe.steps.some(
-      (s) =>
-        s.timerSeconds !== undefined && (!Number.isFinite(s.timerSeconds) || s.timerSeconds < 0),
-    )
-  )
-    throw new Error('计时秒数不能为负数');
   if (recipe.status === 'published') {
     if (!recipe.ingredients.length || recipe.ingredients.some((i) => !i.name.trim()))
       throw new Error('请填写至少一项完整食材');

@@ -180,11 +180,15 @@ export function SettingsPage() {
         <button
           className="secondary"
           onClick={() => {
-            if (confirm('恢复初始16道演示菜谱？用户菜谱及其他记录会保留；演示菜谱收藏会重置。'))
-              void run(() => repositories.resetDemo(), '演示菜谱已恢复');
+            if (
+              confirm(
+                '重新导入完整菜谱库（517 道）？会覆盖菜谱库里的现有菜谱并清除最近查看记录；你的自建菜谱、日记、厨具、计划和食材都会保留。',
+              )
+            )
+              void run(() => repositories.restoreLibrary(), '菜谱库已重新导入');
           }}
         >
-          恢复初始演示数据
+          恢复菜谱库
         </button>
       </section>
       <section className="card">
@@ -206,7 +210,9 @@ export function SettingsPage() {
           <button
             className="danger"
             onClick={() => {
-              if (confirm('确认清空全部本地数据（包括演示菜谱、上传图片和偏好）？请先备份。'))
+              if (
+                confirm('确认清空全部本地数据（包括菜谱库、上传图片和偏好）？请先备份。')
+              )
                 void run(() => repositories.clear('all'), '全部数据已清空');
             }}
           >

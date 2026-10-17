@@ -1,23 +1,15 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useData } from '../app/data';
-import { Image, RecipeCard } from '../components/common';
-import { recommendations } from '../services/planningService';
+import { Image } from '../components/common';
+import { RecommendationCenter } from '../components/recommendation';
+import { ContinueCooking } from './Cooking';
 import { today, meals, mealLabels } from '../types/models';
+
 export function HomePage() {
   const { data } = useData();
-  const [batch, setBatch] = useState<string[]>([]);
   const [selected, setSelected] = useState('');
   if (!data) return null;
-  const conditions = {
-    flavors: data.preferences.flavorPreferences,
-    avoidIngredients: data.preferences.avoidIngredients,
-    difficulty: data.preferences.defaultDifficulty,
-    preferPantry: true,
-  };
-  const recommended = batch.length
-    ? data.recipes.filter((r) => batch.includes(r.id))
-    : recommendations(data.recipes, conditions, data.pantryItems, undefined, [], () => 0.5);
   const recent = data.demoState.recentRecipeIds
     .map((id) => data.recipes.find((r) => r.id === id))
     .filter((r) => r && r.status === 'published');
@@ -35,50 +27,23 @@ export function HomePage() {
         <div>
           <span className="tag">你好，今天也好好吃饭</span>
           <h2>今天想吃点什么？</h2>
-          <p>从一道喜欢的菜开始，把厨房变成你的快乐小天地。</p>
-          <Link className="button" to="/cook">
-            开始做一餐
-          </Link>
+          <p>按现在的时间给你挑几道菜，不满意就换一批。</p>
+          <a className="button" href="#today-recommendation">
+            看看今天推荐
+          </a>
         </div>
         <img className="hero-mascot" src="/app-icon.svg" alt="知味咪厨师猫" />
       </section>
-      <div className="row between">
-        <h2>
-          今日推荐 <span className="tag">演示推荐</span>
-        </h2>
-        <div className="row">
-          <button
-            className="secondary"
-            onClick={() =>
-              setBatch(
-                recommendations(
-                  data.recipes,
-                  conditions,
-                  data.pantryItems,
-                  undefined,
-                  recommended.map((r) => r.id),
-                ).map((r) => r.id),
-              )
-            }
-          >
-            换一批
-          </button>
-          <Link to="/recommendations">查看全部</Link>
+      <section className="card rec-home" id="today-recommendation">
+        <div className="row between">
+          <div>
+            <span className="tag">每次打开都是新的一批 · 也可随时换一批</span>
+            <h2>今日推荐</h2>
+          </div>
         </div>
-      </div>
-      {recommended.length ? (
-        <div className="grid">
-          {recommended.map((r) => (
-            <RecipeCard key={r.id} recipe={r} />
-          ))}
-        </div>
-      ) : (
-        <section className="card">
-          <p>
-            暂无符合偏好的推荐。<Link to="/settings">调整偏好</Link>
-          </p>
-        </section>
-      )}
+        <RecommendationCenter />
+      </section>
+      <ContinueCooking />
       <div className="grid home-sections">
         <section className="card">
           <h2>开始烹饪</h2>

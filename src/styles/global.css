@@ -910,3 +910,42 @@ dialog::backdrop {
   border-radius: 10px;
   padding: 10px 12px;
 }
+
+/* 菜谱筛选：一行一个维度的平铺标签 */
+.tile-rows {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.tile-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.tile-row .index-label {
+  flex: 0 0 auto;
+  padding-top: 8px;
+}
+.tile-scroll {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+.tile-scroll button {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: white;
+  color: var(--ink);
+  font-size: 14px;
+}
+.tile-scroll button.active {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: white;
+}
+.rec-toolbar {
+  margin-bottom: 10px;
+}

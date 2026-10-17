@@ -35,6 +35,7 @@ test('阶段10：IndexedDB写入失败显示可见错误，已有数据保留', 
   const user = userEvent.setup();
   await user.click(await screen.findByRole('button', { name: '添加厨具' }));
   await user.type(screen.getByLabelText('厨具名称'), '失败杯');
+  await user.type(screen.getByLabelText('容量（ml）'), '200');
   await user.click(screen.getByRole('button', { name: '保存厨具' }));
   expect(await screen.findByRole('alert')).toHaveTextContent('配额不足');
   expect(await db.utensils.count()).toBe(1);

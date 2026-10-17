@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useData } from '../app/data';
 import { repositories } from '../db/repositories';
@@ -6,7 +6,6 @@ import { Empty, Image, ImageUpload, RecipeCard } from '../components/common';
 import { useUnsaved } from '../hooks/useUnsaved';
 import { validateRecipe } from '../services/recipeService';
 import { id, stamp, meals, mealLabels, type MealType, type Recipe } from '../types/models';
-const DIFF_RANK: Record<string, number> = { easy: 1, normal: 2, advanced: 3 };
 // 品类（下钻第 1 层）
 const DISH_TYPES: { value: string; label: string; match: string[] }[] = [
   { value: '热菜', label: '热菜', match: ['热菜'] },
@@ -30,97 +29,42 @@ const CUISINE_FAMILIES = [
   '徽菜',
   '本帮菜',
 ];
-const SORT_OPTIONS = [
-  { value: 'default', label: '综合排序' },
-  { value: 'time', label: '用时最短' },
-  { value: 'easy', label: '最快上手' },
+/** 按时间：具体烹饪时间段，替代原来的「用时最短」排序。 */
+const TIME_RANGES: { value: string; label: string; max: number; min?: number }[] = [
+  { value: '0-10', label: '1-10 分钟', max: 10 },
+  { value: '10-30', label: '10-30 分钟', min: 10, max: 30 },
+  { value: '30-60', label: '30-60 分钟', min: 30, max: 60 },
+  { value: '60-120', label: '1-2 小时', min: 60, max: 120 },
+  { value: '120+', label: '2 小时以上', min: 120, max: Infinity },
 ];
-const TIME_OPTIONS = [
-  { value: '', label: '全部用时' },
-  { value: '15', label: '15分钟内' },
-  { value: '30', label: '30分钟内' },
-  { value: '45', label: '45分钟内' },
-  { value: '60', label: '1小时内' },
-];
-const DIFF_OPTIONS = [
-  { value: '', label: '全部难度' },
-  { value: 'easy', label: '简单' },
-  { value: 'normal', label: '普通' },
-  { value: 'advanced', label: '进阶' },
-];
-function IndexRow({
+/** 一行一个维度的平铺标签。 */
+function TileRow({
+  label,
   options,
   value,
   onChange,
 }: {
+  label: string;
   options: { value: string; label: string }[];
   value: string;
   onChange: (v: string) => void;
 }) {
   return (
-    <div className="index-row">
-      {options.map((o) => (
-        <button
-          key={o.value || 'all'}
-          type="button"
-          className={value === o.value ? 'active' : ''}
-          onClick={() => onChange(o.value)}
-        >
-          {o.label}
-        </button>
-      ))}
-    </div>
-  );
-}
-function Dropdown({
-  placeholder,
-  options,
-  value,
-  onChange,
-}: {
-  placeholder: string;
-  options: { value: string; label: string }[];
-  value: string;
-  onChange: (v: string) => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (!open) return;
-    function onDoc(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    }
-    document.addEventListener('mousedown', onDoc);
-    return () => document.removeEventListener('mousedown', onDoc);
-  }, [open]);
-  const current = options.find((o) => o.value === value);
-  return (
-    <div className="dropdown" ref={ref}>
-      <button
-        type="button"
-        className={`dropdown-toggle${value ? ' active' : ''}`}
-        aria-expanded={open}
-        onClick={() => setOpen(!open)}
-      >
-        {current ? current.label : placeholder} ▾
-      </button>
-      {open && (
-        <div className="dropdown-menu">
-          {options.map((o) => (
-            <button
-              key={o.value || 'all'}
-              type="button"
-              className={value === o.value ? 'active' : ''}
-              onClick={() => {
-                onChange(o.value);
-                setOpen(false);
-              }}
-            >
-              {o.label}
-            </button>
-          ))}
-        </div>
-      )}
+    <div className="tile-row">
+      <span className="index-label">{label}</span>
+      <div className="tile-scroll">
+        {options.map((o) => (
+          <button
+            key={o.value || 'all'}
+            type="button"
+            className={value === o.value ? 'active' : ''}
+            aria-pressed={value === o.value}
+            onClick={() => onChange(o.value)}
+          >
+            {o.label}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
@@ -129,20 +73,16 @@ export function RecipesPage() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const [query, setQuery] = useState(params.get('q') ?? '');
-  const [sort, setSort] = useState('default');
   const [source, setSource] = useState('');
-  // 标准一 · 餐次（独立目录，点了直接出结果）
+  // 三个并列维度：按餐次 / 按时间 / 按品类
   const [meal, setMeal] = useState('');
-  // 标准二 · 品类下钻链
-  const [depth, setDepth] = useState(1);
+  const [timeRange, setTimeRange] = useState('');
   const [dishType, setDishType] = useState('');
   const [cuisine, setCuisine] = useState('');
   const [flavor, setFlavor] = useState('');
-  const [maxMinutes, setMaxMinutes] = useState('');
-  const [difficulty, setDifficulty] = useState('');
   if (!data) return null;
 
-  // 下钻链：每层的候选只从"当前剩下的菜"里取，保证点下去必有结果
+  /** 品类维度：先按大类，再按菜系、口味收窄。 */
   const byDish = dishType
     ? data.recipes.filter((r) =>
         (DISH_TYPES.find((d) => d.value === dishType)?.match ?? []).some((m) =>
@@ -151,7 +91,7 @@ export function RecipesPage() {
       )
     : data.recipes;
   const cuisineOptions = [
-    { value: '', label: '全部菜系' },
+    { value: '', label: '全部' },
     ...[...new Set(byDish.flatMap((r) => r.cuisines))]
       .filter((c) => CUISINE_FAMILIES.includes(c))
       .sort()
@@ -159,36 +99,33 @@ export function RecipesPage() {
   ];
   const byCuisine = cuisine ? byDish.filter((r) => r.cuisines.includes(cuisine)) : byDish;
   const flavorOptions = [
-    { value: '', label: '全部口味' },
+    { value: '', label: '全部' },
     ...[...new Set(byCuisine.flatMap((r) => r.flavorTags))]
       .sort()
       .map((f) => ({ value: f, label: f })),
   ];
   const byFlavor = flavor ? byCuisine.filter((r) => r.flavorTags.includes(flavor)) : byCuisine;
-  const byTime = maxMinutes
-    ? byFlavor.filter((r) => (r.estimatedMinutes ?? Infinity) <= Number(maxMinutes))
-    : byFlavor;
-  const byDiff = difficulty ? byTime.filter((r) => r.difficulty === difficulty) : byTime;
 
-  // 两个标准互斥：餐次模式 或 品类模式
-  let results = meal
-    ? data.recipes.filter((r) => r.mealTypes.includes(meal as MealType))
-    : byDiff;
+  /** 三个维度同时生效（AND）。 */
+  let results = byFlavor;
+  if (meal) results = results.filter((r) => r.mealTypes.includes(meal as MealType));
+  if (timeRange) {
+    const range = TIME_RANGES.find((t) => t.value === timeRange);
+    if (range) {
+      results = results.filter((r) => {
+        const minutes = r.estimatedMinutes;
+        if (minutes === undefined) return false;
+        if (minutes < (range.min ?? 0)) return false;
+        return minutes <= range.max;
+      });
+    }
+  }
   if (source === 'mine') results = results.filter((r) => r.sourceType === 'user');
   else if (source === 'favorites') results = results.filter((r) => r.favorite);
   const kw = query.trim();
   if (kw)
     results = results.filter((r) =>
       `${r.name} ${r.ingredients.map((i) => i.name).join(' ')}`.includes(kw),
-    );
-  if (sort === 'time')
-    results = [...results].sort(
-      (a, b) => (a.estimatedMinutes ?? 9999) - (b.estimatedMinutes ?? 9999),
-    );
-  else if (sort === 'easy')
-    results = [...results].sort(
-      (a, b) =>
-        (DIFF_RANK[a.difficulty ?? 'normal'] ?? 2) - (DIFF_RANK[b.difficulty ?? 'normal'] ?? 2),
     );
 
   // 搜索联想
@@ -200,62 +137,14 @@ export function RecipesPage() {
     : [];
   const showSuggest = kw !== '' && (dishHits.length > 0 || ingredientHits.length > 0);
 
-  // 两个标准互斥：选了其中一个，就清空另一个
-  function pickMeal(v: string) {
-    setMeal(v);
-    if (v) {
-      setDishType('');
-      setCuisine('');
-      setFlavor('');
-      setMaxMinutes('');
-      setDifficulty('');
-      setDepth(1);
-    }
-  }
-  function pickDishType(v: string) {
-    setMeal('');
-    setDishType(v);
-    setCuisine('');
-    setFlavor('');
-    setMaxMinutes('');
-    setDifficulty('');
-    setDepth(Math.max(depth, 2));
-  }
-  function pickCuisine(v: string) {
-    setMeal('');
-    setCuisine(v);
-    setFlavor('');
-    setMaxMinutes('');
-    setDifficulty('');
-    setDepth(Math.max(depth, 3));
-  }
-  function pickFlavor(v: string) {
-    setMeal('');
-    setFlavor(v);
-    setMaxMinutes('');
-    setDifficulty('');
-    setDepth(Math.max(depth, 4));
-  }
-  function pickTime(v: string) {
-    setMeal('');
-    setMaxMinutes(v);
-    setDifficulty('');
-    setDepth(Math.max(depth, 5));
-  }
-  function pickDifficulty(v: string) {
-    setMeal('');
-    setDifficulty(v);
-  }
+  /** 清除筛选：三个维度、来源、搜索框全部回到「全部」。 */
   function resetAll() {
     setMeal('');
+    setTimeRange('');
     setDishType('');
     setCuisine('');
     setFlavor('');
-    setMaxMinutes('');
-    setDifficulty('');
-    setDepth(1);
     setSource('');
-    setSort('default');
     setQuery('');
   }
   return (
@@ -297,70 +186,55 @@ export function RecipesPage() {
         )}
       </div>
 
-      {/* 标准一 · 餐次：独立分类，选了直接出结果 */}
-      <div className="row" style={{ marginBottom: 10 }}>
-        <span className="index-label">按餐次</span>
-        <Dropdown
-          placeholder="全部餐次"
+      {/* 三个并列维度：一行一个维度，选项平铺，第一个永远是「全部」 */}
+      <div className="tile-rows">
+        <TileRow
+          label="按餐次"
           options={[
-            { value: '', label: '全部餐次' },
+            { value: '', label: '全部' },
             ...meals.map((m) => ({ value: m, label: mealLabels[m] })),
           ]}
           value={meal}
-          onChange={pickMeal}
+          onChange={setMeal}
         />
-      </div>
-
-      {/* 标准二 · 品类：下拉逐级出现，点一层出下一层 */}
-      <div className="row" style={{ marginBottom: 14 }}>
-        <span className="index-label">按品类</span>
-        <Dropdown
-          placeholder="全部品类"
+        <TileRow
+          label="按时间"
+          options={[{ value: '', label: '全部' }, ...TIME_RANGES.map((t) => ({ value: t.value, label: t.label }))]}
+          value={timeRange}
+          onChange={setTimeRange}
+        />
+        <TileRow
+          label="按品类"
           options={[
-            { value: '', label: '全部品类' },
+            { value: '', label: '全部' },
             ...DISH_TYPES.map((d) => ({ value: d.value, label: d.label })),
           ]}
           value={dishType}
-          onChange={pickDishType}
+          onChange={(v) => {
+            setDishType(v);
+            setCuisine('');
+            setFlavor('');
+          }}
         />
-        {depth >= 2 && (
-          <Dropdown
-            placeholder="全部菜系"
+        {dishType ? (
+          <TileRow
+            label="菜系"
             options={cuisineOptions}
             value={cuisine}
-            onChange={pickCuisine}
+            onChange={(v) => {
+              setCuisine(v);
+              setFlavor('');
+            }}
           />
-        )}
-        {depth >= 3 && (
-          <Dropdown
-            placeholder="全部口味"
-            options={flavorOptions}
-            value={flavor}
-            onChange={pickFlavor}
-          />
-        )}
-        {depth >= 4 && (
-          <Dropdown
-            placeholder="全部用时"
-            options={TIME_OPTIONS}
-            value={maxMinutes}
-            onChange={pickTime}
-          />
-        )}
-        {depth >= 5 && (
-          <Dropdown
-            placeholder="全部难度"
-            options={DIFF_OPTIONS}
-            value={difficulty}
-            onChange={pickDifficulty}
-          />
-        )}
+        ) : null}
+        {cuisine ? (
+          <TileRow label="口味" options={flavorOptions} value={flavor} onChange={setFlavor} />
+        ) : null}
       </div>
 
       <div className="row between" style={{ marginBottom: 14 }}>
         <span className="muted">{results.length} 道菜</span>
         <div className="row">
-          <IndexRow options={SORT_OPTIONS} value={sort} onChange={setSort} />
           <button
             type="button"
             className={source === 'mine' ? '' : 'secondary'}

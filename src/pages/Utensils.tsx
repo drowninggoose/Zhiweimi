@@ -90,7 +90,6 @@ export function UtensilsPage() {
           添加厨具
         </button>
       </div>
-      <p className="muted">上传照片后可由 AI 估算容量；估算不是精确测量，保存前请确认。</p>
       {editing && (
         <section className="card fields">
           <h2>{data?.utensils.some((u) => u.id === editing.id) ? '编辑厨具' : '添加厨具'}</h2>

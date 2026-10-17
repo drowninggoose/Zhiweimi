@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { App } from '../app/App';
 import { db } from '../db/database';
 import { importLibrary } from '../db/library';
-import { initialize } from '../db/seed';
+import { defaultPreferences, initialize } from '../db/seed';
 import { repositories } from '../db/repositories';
 import { exportBackup, parseBackup } from '../services/backupService';
 import {
@@ -378,16 +378,17 @@ describe('界面：首页的推荐中心（推荐已合并进首页）', () => {
     vi.restoreAllMocks();
   });
 
-  test('首页推荐中心显示当前时段，点「换一批」会换一组菜并记账', async () => {
+  test('首页推荐中心随机给 6 道，点「换一批」会换一组菜并记账', async () => {
     window.history.replaceState({}, '', '/');
     render(<App />);
     const user = userEvent.setup();
     await screen.findByRole('heading', { name: '今日推荐' });
-    // 合并后首页就带着完整的推荐中心：时间段头 + 距离换时段提示
-    expect(await screen.findByRole('heading', { name: /现在推荐/ })).toBeInTheDocument();
-    expect(screen.getByText(/距离换时段还有/)).toBeInTheDocument();
-    // PRD 18.10：推荐结果必须明确标注为演示推荐
-    expect(screen.getByText('演示推荐')).toBeInTheDocument();
+    // 改成随机推荐后不再有时段信息
+    expect(screen.queryByText(/距离换时段还有/)).not.toBeInTheDocument();
+    expect(screen.queryByText('演示推荐')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '按类型看' })).not.toBeInTheDocument();
+    // 一批 6 道
+    expect(await screen.findByText(/第 1 \/ 6 道/)).toBeInTheDocument();
     const refresh = screen.getAllByRole('button', { name: /换一批/ });
     await user.click(refresh[0]);
     await waitFor(async () => {
@@ -397,23 +398,26 @@ describe('界面：首页的推荐中心（推荐已合并进首页）', () => {
     });
   });
 
-  test('首页可以手动切餐次，并能切到「按类型看」', async () => {
-    window.history.replaceState({}, '', '/');
-    render(<App />);
-    const user = userEvent.setup();
-    await screen.findByRole('heading', { name: /现在推荐/ });
-    await user.click(screen.getByRole('button', { name: '晚餐' }));
-    await waitFor(() => expect(screen.getByText('手动选择餐次')).toBeInTheDocument());
-    await user.click(screen.getByRole('button', { name: '按类型看' }));
-    await waitFor(() =>
-      expect(screen.getByRole('heading', { name: '今晚主菜' })).toBeInTheDocument(),
+  test('推荐按口味偏好加权：命中口味的菜会带上理由', async () => {
+    const { buildRandomPicks } = await import('../services/recommendationService');
+    const recipes = await db.recipes.toArray();
+    // 候选只有 6 道、又要抽 6 道，所以全部都会被选中，理由必然可见
+    const batch = buildRandomPicks(
+      recipes,
+      { flavors: ['热菜'], avoidIngredients: [], preferPantry: false },
+      [],
+      { seed: 'taste-test', count: 6 },
     );
+    expect(batch.dishes.length).toBe(6);
+    expect(batch.dishes.some((d) => d.reasons.some((r) => r.includes('合你的口味')))).toBe(true);
   });
 
   test('推荐卡片的按钮可用（可收藏、可进入烹饪）', async () => {
     window.history.replaceState({}, '', '/');
     render(<App />);
-    await screen.findByRole('heading', { name: /现在推荐/ });
+    await screen.findByRole('heading', { name: '今日推荐' });
+    // 等推荐卡片真正渲染出来（首页别处也有「开始烹饪」入口，不能只靠它判断）
+    await screen.findByText(/第 1 \/ \d+ 道/);
     expect(screen.getAllByRole('link', { name: '开始烹饪' }).length).toBeGreaterThan(0);
     expect(screen.getAllByRole('button', { name: /收藏/ }).length).toBeGreaterThan(0);
   });

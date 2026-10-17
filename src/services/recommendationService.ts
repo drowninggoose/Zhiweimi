@@ -449,6 +449,130 @@ export function buildRecommendation(
   };
 }
 
+/** 一批「随机推荐」的结果：不再区分时段，也不分主菜/汤/甜品。 */
+export type RandomBatch = {
+  /** 本批种子，换一批就换一个。 */
+  seed: string;
+  /** 参与抽取的候选菜总数。 */
+  candidateCount: number;
+  dishes: RecommendedDish[];
+  fallback?: string;
+  note?: string;
+};
+
+export type RandomPickOptions = {
+  /** 随机种子；同一 seed 得到同一批。 */
+  seed?: string;
+  /** 抽几道，默认 6。 */
+  count?: number;
+  /** 最近推过的菜，降低权重以获得新鲜感（不是忌口）。 */
+  seenIds?: string[];
+};
+
+/** 按权重不放回抽样（权重越大越容易被抽到）。 */
+function weightedSample<T extends { weight: number }>(
+  pool: T[],
+  count: number,
+  random: () => number,
+): T[] {
+  const items = [...pool];
+  const picked: T[] = [];
+  while (picked.length < count && items.length) {
+    const total = items.reduce((sum, item) => sum + Math.max(item.weight, 0.01), 0);
+    let ticket = random() * total;
+    let index = 0;
+    for (let i = 0; i < items.length; i++) {
+      ticket -= Math.max(items[i].weight, 0.01);
+      if (ticket <= 0) {
+        index = i;
+        break;
+      }
+      index = i;
+    }
+    picked.push(items[index]);
+    items.splice(index, 1);
+  }
+  return picked;
+}
+
+/**
+ * 随机推荐一批菜：**不按时段**，只按用户口味偏好加权随机。
+ *
+ * 权重构成：合口味（每个命中 +2）、家里食材齐（+0.5）、20 分钟内能上桌（+0.3）；
+ * 刚推过的菜权重打到 0.25，让「换一批」有新鲜感。
+ * 菜名、菜谱内容全部来自真实菜谱库，不经过任何生成模型。
+ */
+export function buildRandomPicks(
+  recipes: Recipe[],
+  conditions: PlanConditions,
+  pantry: PantryItem[],
+  options: RandomPickOptions = {},
+): RandomBatch {
+  const count = options.count ?? 6;
+  const seed = options.seed ?? `pick-${Date.now()}`;
+  const random = seededRandom(`${seed}#${count}`);
+  const seen = new Set(options.seenIds ?? []);
+  const conditionsSafe: PlanConditions = {
+    ...conditions,
+    flavors: conditions.flavors ?? [],
+    avoidIngredients: conditions.avoidIngredients ?? [],
+    preferPantry: conditions.preferPantry ?? true,
+  };
+
+  const candidates = filterByConditions(recipes, conditionsSafe);
+  if (!candidates.length) {
+    return {
+      seed,
+      candidateCount: 0,
+      dishes: [],
+      fallback: '没有符合条件的菜谱，先去「数据与设置」里放宽忌口或难度试试。',
+    };
+  }
+
+  const pool = candidates.map((recipe) => {
+    const reasons: string[] = [];
+    let weight = 1;
+    const hits = conditionsSafe.flavors.filter((flavor) =>
+      [recipe.name, ...recipe.flavorTags, ...recipe.cuisines].some((text) =>
+        text.includes(flavor),
+      ),
+    );
+    if (hits.length) {
+      weight += 2 * hits.length;
+      reasons.push(`合你的口味：${hits.join('、')}`);
+    }
+    if (pantryScore(recipe, pantry) > 0) {
+      weight += 0.5;
+      reasons.push('家里食材差不多齐了');
+    }
+    if (recipe.estimatedMinutes && recipe.estimatedMinutes <= 20) {
+      weight += 0.3;
+      reasons.push(`${recipe.estimatedMinutes} 分钟能上桌`);
+    }
+    if (seen.has(recipe.id)) weight *= 0.25;
+    return { recipe, weight, reasons };
+  });
+
+  const dishes: RecommendedDish[] = weightedSample(pool, Math.min(count, pool.length), random).map(
+    (item) => ({
+      recipe: item.recipe,
+      slot: 'main',
+      slotLabel: item.recipe.cuisines[0] ?? '家常',
+      reasons: item.reasons.length ? item.reasons : ['随机给你挑的'],
+    }),
+  );
+
+  return {
+    seed,
+    candidateCount: candidates.length,
+    dishes,
+    note:
+      candidates.length < count
+        ? `符合条件的菜只有 ${candidates.length} 道，已全部推给你。`
+        : undefined,
+  };
+}
+
 export const DIFFICULTY_LABELS: Record<string, string> = {
   easy: '简单',
   normal: '普通',

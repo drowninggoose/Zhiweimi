@@ -27,10 +27,6 @@ export function HomePage() {
         <div>
           <span className="tag">你好，今天也好好吃饭</span>
           <h2>今天想吃点什么？</h2>
-          <p>按现在的时间给你挑几道菜，不满意就换一批。</p>
-          <a className="button" href="#today-recommendation">
-            看看今天推荐
-          </a>
         </div>
         <img className="hero-mascot" src="/app-icon.svg" alt="知味咪厨师猫" />
       </section>

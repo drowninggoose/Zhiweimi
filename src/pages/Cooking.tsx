@@ -41,7 +41,19 @@ export function ContinueCooking() {
       window.clearTimeout(timer);
     };
   }, [data?.recipes, data?.diaryEntries]);
-  if (!data || !items.length) return null;
+  if (!data) return null;
+  // 「已完成」指正在写日记的草稿，不列入待继续的清单
+  const unfinished = items.filter((item) => !item.completed);
+  if (!unfinished.length) return null;
+  async function removeProgress(recipeId: string, recipeName: string) {
+    if (!window.confirm(`确定删除「${recipeName}」的烹饪进度吗？删除后不能再接着做。`)) return;
+    try {
+      await repositories.cookingProgress.remove(recipeId);
+      setItems((prev) => prev.filter((item) => item.recipeId !== recipeId));
+    } catch {
+      // 删除失败保持原样，用户可再试
+    }
+  }
   return (
     <section className="card continue-cooking">
       <div className="row between">
@@ -49,7 +61,7 @@ export function ContinueCooking() {
         <span className="tag">进度已自动保存</span>
       </div>
       <p className="muted">做到一半也可以先去忙别的，回来接着做。</p>
-      {items.map((item) => {
+      {unfinished.map((item) => {
         const recipe = data.recipes.find((r) => r.id === item.recipeId);
         if (!recipe) return null;
         const total = recipe.steps.length;
@@ -58,16 +70,24 @@ export function ContinueCooking() {
             <span>
               <strong>{item.recipeName}</strong>
               <small>
-                {item.completed
-                  ? '已完成，正在填写日记'
-                  : `第 ${Math.min(item.stepIndex + 1, total)} / ${total} 步`}
+                {`第 ${Math.min(item.stepIndex + 1, total)} / ${total} 步`}
                 {' · '}
                 {formatSavedAgo(item.savedAt)}
               </small>
             </span>
-            <Link className="button" to={`/cook/${item.recipeId}/steps`}>
-              继续烹饪
-            </Link>
+            <span className="row">
+              <Link className="button" to={`/cook/${item.recipeId}/steps`}>
+                继续烹饪
+              </Link>
+              <button
+                type="button"
+                className="secondary"
+                aria-label={`删除${item.recipeName}的进度`}
+                onClick={() => void removeProgress(item.recipeId, item.recipeName)}
+              >
+                删除进度
+              </button>
+            </span>
           </div>
         );
       })}

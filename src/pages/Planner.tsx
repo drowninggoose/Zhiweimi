@@ -1,13 +1,63 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { useData } from '../app/data';
 import { repositories } from '../db/repositories';
-import { generatePlan, replaceMeal } from '../services/planningService';
+import {
+  generatePlan,
+  pickMealRecipe,
+} from '../services/planningService';
+import { Image } from '../components/common';
+
+const DRAFT_KEY = 'zhiweimi:plan-draft';
+const PICK_KEY = 'zhiweimi:plan-pick';
+
+type PlanPick = { date: string; meal: (typeof meals)[number]; recipeId: string };
+
+function readDraft(): MealPlan | null {
+  try {
+    const raw = sessionStorage.getItem(DRAFT_KEY);
+    return raw ? (JSON.parse(raw) as MealPlan) : null;
+  } catch {
+    return null;
+  }
+}
+function writeDraft(plan: MealPlan) {
+  try {
+    sessionStorage.setItem(DRAFT_KEY, JSON.stringify(plan));
+  } catch {
+    /* 忽略配额错误 */
+  }
+}
+function clearDraft() {
+  try {
+    sessionStorage.removeItem(DRAFT_KEY);
+  } catch {
+    /* 忽略 */
+  }
+}
+function readPick(): PlanPick | null {
+  try {
+    const raw = sessionStorage.getItem(PICK_KEY);
+    return raw ? (JSON.parse(raw) as PlanPick) : null;
+  } catch {
+    return null;
+  }
+}
+function clearPick() {
+  try {
+    sessionStorage.removeItem(PICK_KEY);
+  } catch {
+    /* 忽略 */
+  }
+}
 import { Empty } from '../components/common';
 import { today, meals, mealLabels, type MealPlan, type PlanConditions } from '../types/models';
 export function PlannerPage() {
   const { data, run } = useData();
-  const [period, setPeriod] = useState<MealPlan['period']>('today');
+  const navigate = useNavigate();
+  /** 天数输入框：用字符串存，允许中间态为空，生成时再解析 */
+  const [dayInput, setDayInput] = useState('1');
   const [start, setStart] = useState(today());
   const [conditions, setConditions] = useState<PlanConditions>(() => ({
     flavors: data?.preferences.flavorPreferences ?? [],
@@ -15,12 +65,30 @@ export function PlannerPage() {
     difficulty: data?.preferences.defaultDifficulty,
     preferPantry: true,
   }));
-  const [plan, setPlan] = useState<MealPlan | null>(null);
-  const [selected, setSelected] = useState(today());
+  /**
+   * 计划草稿：从 sessionStorage 恢复，保证「去全部菜品里挑菜」再回来时不丢。
+   * 如果带回了选中的菜，这里直接把替换结果算出来（只算一次，不在渲染期 setState）。
+   */
+  const [plan, setPlan] = useState<MealPlan | null>(() => {
+    const draft = readDraft();
+    const pick = readPick();
+    if (draft && pick) {
+      clearDraft();
+      clearPick();
+      try {
+        return pickMealRecipe(draft, pick.date, pick.meal, pick.recipeId);
+      } catch {
+        return draft;
+      }
+    }
+    return draft;
+  });
+  const [selected, setSelected] = useState(() => readDraft()?.startDate ?? today());
   const [error, setError] = useState('');
   if (!data) return null;
   function generate() {
     try {
+      const dayCount = Math.max(1, Math.min(30, Math.round(Number(dayInput)) || 1));
       const next = generatePlan(
         data!.recipes,
         data!.pantryItems,
@@ -29,20 +97,13 @@ export function PlannerPage() {
           flavors: conditions.flavors.map((s) => s.trim()).filter(Boolean),
           avoidIngredients: conditions.avoidIngredients.map((s) => s.trim()).filter(Boolean),
         },
-        period,
+        dayCount === 7 ? 'week' : dayCount === 1 ? 'today' : 'month',
         start,
         plan ?? undefined,
+        dayCount,
       );
       setPlan(next);
       setSelected(next.startDate);
-      setError('');
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
-    }
-  }
-  function replace(date: string, meal: (typeof meals)[number]) {
-    try {
-      if (plan) setPlan(replaceMeal(plan, date, meal, data!.recipes, data!.pantryItems));
       setError('');
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
@@ -60,15 +121,14 @@ export function PlannerPage() {
         <span className="tag">演示计划</span>
         <div className="row">
           <label>
-            计划周期
-            <select
-              value={period}
-              onChange={(e) => setPeriod(e.target.value as MealPlan['period'])}
-            >
-              <option value="today">今天</option>
-              <option value="week">一周</option>
-              <option value="month">一个月</option>
-            </select>
+            计划天数（1-30）
+            <input
+              type="number"
+              min={1}
+              max={30}
+              value={dayInput}
+              onChange={(e) => setDayInput(e.target.value)}
+            />
           </label>
           <label>
             开始日期
@@ -197,6 +257,13 @@ export function PlannerPage() {
                         <strong>{mealLabels[meal]}</strong>
                         {recipe ? (
                           <>
+                            <Link className="meal-card-media" to={`/recipes/${recipe.id}`}>
+                              <Image
+                                image={recipe.coverImage}
+                                url={recipe.coverUrl}
+                                alt={recipe.name}
+                              />
+                            </Link>
                             <h4>
                               <Link to={`/recipes/${recipe.id}`}>{recipe.name}</Link>
                             </h4>
@@ -205,7 +272,18 @@ export function PlannerPage() {
                         ) : (
                           <p>关联菜谱已移除</p>
                         )}
-                        <button className="secondary" onClick={() => replace(day.date, meal)}>
+                        <button
+                          className="secondary"
+                          onClick={() => {
+                            // 先把当前计划存成草稿，去「全部菜品」挑完再回来时不会丢
+                            writeDraft(plan);
+                            sessionStorage.setItem(
+                              PICK_KEY,
+                              JSON.stringify({ date: day.date, meal }),
+                            );
+                            navigate('/recipes?pick=1');
+                          }}
+                        >
                           替换{mealLabels[meal]}
                         </button>
                       </article>
@@ -226,7 +304,7 @@ export function PlannerPage() {
             <div className="row between saved-plan" key={p.id}>
               <span>
                 {p.startDate} — {p.endDate} ·{' '}
-                {{ today: '今日', week: '一周', month: '一个月' }[p.period]}
+                {p.dayCount ? `${p.dayCount} 天` : { today: '今日', week: '一周', month: '一个月' }[p.period]}
               </span>
               <div className="row">
                 <button
@@ -234,7 +312,7 @@ export function PlannerPage() {
                   onClick={() => {
                     setPlan(p);
                     setSelected(p.startDate);
-                    setPeriod(p.period);
+                    setDayInput(String(p.dayCount ?? (p.period === 'week' ? 7 : 1)));
                     setStart(p.startDate);
                     setConditions(p.conditions);
                   }}

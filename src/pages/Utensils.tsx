@@ -6,6 +6,7 @@ import { Empty, Image, ImageUpload } from '../components/common';
 import { useUnsaved } from '../hooks/useUnsaved';
 import { stamp, type Utensil } from '../types/models';
 import { utensilTypes, validateUtensil } from '../services/utensilService';
+import { analyzeUtensil } from '../services/aiService';
 const blank = (): Utensil => ({
   ...stamp(),
   name: '',
@@ -21,6 +22,7 @@ export function UtensilsPage() {
   );
   const [dirty, setDirty] = useState(false);
   const [error, setError] = useState('');
+  const [analyzing, setAnalyzing] = useState(false);
   useUnsaved(dirty);
   async function save() {
     if (!editing) return;
@@ -47,6 +49,30 @@ export function UtensilsPage() {
       setDirty(true);
     }
   }
+  async function analyze() {
+    if (!editing?.image) return setError('请先上传厨具照片');
+    setAnalyzing(true);
+    setError('');
+    try {
+      const result = await analyzeUtensil(editing.image);
+      update({
+        name: editing.name.trim() || result.name,
+        type: result.type,
+        capacity: Math.round(result.capacityMl),
+        aiEstimate: {
+          rangeMinMl: Math.round(result.rangeMinMl),
+          rangeMaxMl: Math.round(result.rangeMaxMl),
+          confidence: result.confidence,
+          reasoning: result.reasoning,
+          needsConfirmation: result.needsConfirmation,
+        },
+      });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setAnalyzing(false);
+    }
+  }
   return (
     <>
       <div className="row between">
@@ -60,7 +86,7 @@ export function UtensilsPage() {
           添加厨具
         </button>
       </div>
-      <p className="muted">当前版本需要手动确认容量，照片不用于自动估算。</p>
+      <p className="muted">上传照片后可由 AI 估算容量；估算不是精确测量，保存前请确认。</p>
       {editing && (
         <section className="card fields">
           <h2>{data?.utensils.some((u) => u.id === editing.id) ? '编辑厨具' : '添加厨具'}</h2>
@@ -99,6 +125,20 @@ export function UtensilsPage() {
             value={editing.image}
             onChange={(image) => update({ image })}
           />
+          <button
+            className="secondary"
+            disabled={!editing.image || analyzing}
+            onClick={() => void analyze()}
+          >
+            {analyzing ? 'AI 正在估算…' : 'AI 识别并估算容量'}
+          </button>
+          {editing.aiEstimate && (
+            <p className="muted">
+              估算范围 {editing.aiEstimate.rangeMinMl}–{editing.aiEstimate.rangeMaxMl} ml · 置信度{' '}
+              {Math.round(editing.aiEstimate.confidence * 100)}% · {editing.aiEstimate.reasoning}
+              {editing.aiEstimate.needsConfirmation ? '（请务必手动确认）' : ''}
+            </p>
+          )}
           <div className="row">
             <button onClick={() => void save()}>保存厨具</button>
             <button

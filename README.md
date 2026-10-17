@@ -16,6 +16,28 @@ npm run preview -- --host localhost --port 4173 --strictPort
 
 开发运行 `npm run dev`。开发地址与验收地址的浏览器数据分开，因此长期使用请固定 `http://localhost:4173`，不要混用 127.0.0.1、不同端口或不同浏览器。正常刷新、关闭浏览器和重启服务不会清空数据。
 
+## AI 大模型接入
+
+AI 请求通过 Vite 的 Node 服务端网关转发，浏览器不会读取 API Key。复制 `.env.example` 为
+`.env.local`，填写支持图像输入和结构化输出的模型：
+
+```env
+AI_API_KEY=your-api-key
+AI_MODEL=gemini-2.5-flash-lite
+AI_BASE_URL=https://aihubmix.com/v1
+```
+
+重新运行 `npm run dev` 或生产预览服务后：
+
+- 在“我的厨具”上传照片并点击“AI 识别并估算容量”；
+- 在烹饪准备页选择主要厨具，点击“按厨具容量与口味生成步骤”；
+- 生成的步骤会写入本地烹饪进度，离开页面后仍可继续；
+- 忌口只降低相关菜谱的推荐权重，不会传给模型改写菜谱。
+
+当前网关调用 AiHubMix 的 OpenAI 兼容 `/v1/chat/completions` 接口，并使用 JSON Schema
+约束模型输出。生产部署时需要把同一网关放在受保护的
+Node/Serverless 环境中，不能把密钥改成 `VITE_` 前缀或写入前端代码。
+
 ## 演示流程
 
 1. 首页直接按当前时间给出今日推荐（9 点前早餐、9–14 点午餐、14 点后晚餐），可「换一批」、手动切换餐次，或切到「按类型看」查看主菜 / 汤 / 甜品等搭配。也可在菜谱总览搜索番茄/鸡蛋并组合筛选。

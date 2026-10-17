@@ -52,10 +52,27 @@ export type Recipe = Base & {
 };
 export type Utensil = Base & {
   name: string;
-  type: 'seasoning-spoon' | 'tablespoon' | 'bowl' | 'cup' | 'rice-cup' | 'other';
+  type:
+    | 'seasoning-spoon'
+    | 'tablespoon'
+    | 'bowl'
+    | 'cup'
+    | 'rice-cup'
+    | 'pot'
+    | 'pan'
+    | 'wok'
+    | 'baking-dish'
+    | 'other';
   image?: StoredImage;
   capacity: number;
   capacityUnit: 'ml';
+  aiEstimate?: {
+    rangeMinMl: number;
+    rangeMaxMl: number;
+    confidence: number;
+    reasoning: string;
+    needsConfirmation: boolean;
+  };
 };
 export type DiaryEntry = Base & {
   date: string;
@@ -144,6 +161,9 @@ export type CookingProgress = Base & {
   completed: boolean;
   /** 准备页的厨具换算选择：食材 id -> 厨具 id。 */
   utensilChoices: Record<string, string>;
+  cookingUtensilId?: string;
+  adaptedSteps?: RecipeStep[];
+  adaptationSummary?: string;
   /** 味道/状态补救选择，如「太咸」。 */
   problem?: string;
   /** 日记草稿。 */

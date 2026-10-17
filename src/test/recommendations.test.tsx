@@ -143,8 +143,7 @@ describe('按时段挑选菜品', () => {
     expect(batch.dishes.some((d) => d.recipe.name === '鸡蛋饼')).toBe(false);
   });
 
-  test('忌口与冰箱食材会影响推荐；没有候选时给出提示', () => {
-    // 演示菜谱统一带「清水」，额外加一道带「辣椒」的菜来验证忌口过滤
+  test('忌口只降低推荐频率，不会硬过滤', () => {
     const recipes = [
       recipe('蒜蓉虾', ['热菜'], ['lunch'], { ingredients: [{ id: 'x', name: '虾' }] }),
       recipe('清炒时蔬', ['热菜'], ['lunch']),
@@ -165,30 +164,22 @@ describe('按时段挑选菜品', () => {
       seed: 's1',
     });
     expect(withPantry.dishes.some((d) => d.reasons.includes('冰箱里已有食材'))).toBe(true);
-    const avoided = buildRecommendation(
-      recipes,
-      { ...noConditions, avoidIngredients: ['虾'] },
-      [],
-      { now: at(12), seed: 's1' },
-    );
-    expect(avoided.dishes.some((d) => d.recipe.name === '蒜蓉虾')).toBe(false);
-    // 忌口命中「清水」时，带清水的清炒时蔬会被过滤掉，光靠清水无法清空候选
-    const withoutWater = buildRecommendation(
-      recipes,
-      { ...noConditions, avoidIngredients: ['清水'] },
-      [],
-      { now: at(12), seed: 's1' },
-    );
-    expect(withoutWater.dishes.some((d) => d.recipe.name === '清炒时蔬')).toBe(false);
-    // 把剩下的菜也忌掉，候选为空 → 给出空状态提示
-    const empty = buildRecommendation(
-      recipes,
-      { ...noConditions, avoidIngredients: ['清水', '虾', '辣椒'] },
-      [],
-      { now: at(12), seed: 's1' },
-    );
-    expect(empty.dishes).toHaveLength(0);
-    expect(empty.fallback).toContain('放宽条件');
+    const pool = [
+      recipe('含虾菜', ['热菜'], ['lunch'], { ingredients: [{ id: 'avoid', name: '虾' }] }),
+      ...Array.from({ length: 19 }, (_, i) => recipe(`普通菜${i}`, ['热菜'], ['lunch'])),
+    ];
+    let avoidedHits = 0;
+    let neutralHits = 0;
+    for (let i = 0; i < 200; i++) {
+      const batch = buildRecommendation(pool, { ...noConditions, avoidIngredients: ['虾'] }, [], {
+        now: at(12),
+        seed: `avoid-${i}`,
+      });
+      if (batch.dishes.some((d) => d.recipe.name === '含虾菜')) avoidedHits += 1;
+      if (batch.dishes.some((d) => d.recipe.name === '普通菜0')) neutralHits += 1;
+    }
+    expect(avoidedHits).toBeGreaterThan(0);
+    expect(avoidedHits).toBeLessThan(neutralHits);
   });
 
   test('同一个种子给同一批菜，换种子换组合', () => {

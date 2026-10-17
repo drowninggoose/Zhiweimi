@@ -5,11 +5,8 @@ import { repositories } from '../db/repositories';
 import { Empty, Image, ImageUpload, RecipeCard } from '../components/common';
 import { filterRecipes } from '../services/recipeService';
 import { convertIngredient, remedies } from '../services/cookingService';
-import {
-  formatSavedAgo,
-  useCookingProgress,
-  type CookingDraft,
-} from '../hooks/useCookingProgress';
+import { adaptRecipe } from '../services/aiService';
+import { formatSavedAgo, useCookingProgress, type CookingDraft } from '../hooks/useCookingProgress';
 import {
   meals,
   mealLabels,
@@ -136,6 +133,14 @@ export function CookingPrepare() {
   const [mine, setMine] = useState<Record<string, string> | null>(null);
   const remembered = progress.initial?.utensilChoices ?? {};
   const selected: Record<string, string> = { ...remembered, ...(mine ?? {}) };
+  const [cookingUtensilOverride, setCookingUtensilId] = useState<string>();
+  const [adaptedStepsOverride, setAdaptedSteps] = useState<Recipe['steps']>();
+  const [adaptationSummaryOverride, setAdaptationSummary] = useState<string>();
+  const cookingUtensilId = cookingUtensilOverride ?? progress.initial?.cookingUtensilId ?? '';
+  const adaptedSteps = adaptedStepsOverride ?? progress.initial?.adaptedSteps;
+  const adaptationSummary = adaptationSummaryOverride ?? progress.initial?.adaptationSummary ?? '';
+  const [adapting, setAdapting] = useState(false);
+  const [aiError, setAiError] = useState('');
 
   if (!recipe || !data)
     return (
@@ -145,6 +150,28 @@ export function CookingPrepare() {
     );
   /** 进入分步烹饪：先把换算选择存成进度。 */
   const target = recipe;
+  async function personalize() {
+    const utensil = data!.utensils.find((u) => u.id === cookingUtensilId);
+    if (!utensil) return setAiError('请先选择本次烹饪使用的主要厨具');
+    setAdapting(true);
+    setAiError('');
+    try {
+      const result = await adaptRecipe(target, utensil, data!.preferences.flavorPreferences);
+      setAdaptedSteps(
+        result.steps.map((step, index) => ({
+          ...step,
+          id: `ai-${target.id}-${index + 1}`,
+          order: index + 1,
+          durationSeconds: step.durationSeconds ?? undefined,
+        })),
+      );
+      setAdaptationSummary([result.summary, ...result.warnings].filter(Boolean).join('；'));
+    } catch (e) {
+      setAiError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setAdapting(false);
+    }
+  }
   async function startSteps() {
     const now = new Date().toISOString();
     await run(
@@ -160,6 +187,9 @@ export function CookingPrepare() {
           stepIndex: 0,
           completed: false,
           utensilChoices: selected,
+          cookingUtensilId: cookingUtensilId || undefined,
+          adaptedSteps,
+          adaptationSummary: adaptationSummary || undefined,
           rating: '满意',
           notes: '',
           date: today(),
@@ -198,6 +228,35 @@ export function CookingPrepare() {
             还没有厨具，将展示原始单位。<Link to="/utensils?new=1">添加厨具</Link>
           </p>
         )}
+        <hr />
+        <label>
+          本次主要烹饪厨具
+          <select value={cookingUtensilId} onChange={(e) => setCookingUtensilId(e.target.value)}>
+            <option value="">请选择</option>
+            {data.utensils.map((u) => (
+              <option key={u.id} value={u.id}>
+                {u.name} · {u.capacity} ml
+              </option>
+            ))}
+          </select>
+        </label>
+        <button
+          className="secondary"
+          disabled={!cookingUtensilId || adapting}
+          onClick={() => void personalize()}
+        >
+          {adapting ? 'AI 正在调整步骤…' : '按厨具容量与口味生成步骤'}
+        </button>
+        {aiError && (
+          <p role="alert" className="error">
+            {aiError}
+          </p>
+        )}
+        {adaptedSteps && (
+          <p className="muted">
+            已生成 {adaptedSteps.length} 个个性化步骤。{adaptationSummary}
+          </p>
+        )}
         <button onClick={() => void startSteps()}>准备完成，开始分步烹饪</button>
         <p className="muted">开始后进度会自动保存，随时可以离开再回来。</p>
       </section>
@@ -224,10 +283,13 @@ export function CookingSteps() {
     );
   // key 只跟菜谱绑定：读取完成前不会渲染内层，所以初值一定拿得到；
   // 结束后也不换 key，避免重挂载把已删除的进度又写回来。
+  const effectiveRecipe = progress.initial?.adaptedSteps?.length
+    ? { ...recipe, steps: progress.initial.adaptedSteps }
+    : recipe;
   return (
     <CookingStepsView
-      key={recipe.id}
-      recipe={recipe}
+      key={effectiveRecipe.id}
+      recipe={effectiveRecipe}
       saved={progress.initial}
       savedAt={progress.savedAt}
       onSave={progress.save}
@@ -253,9 +315,7 @@ function CookingStepsView({
   const { data, run } = useData();
   const navigate = useNavigate();
   const maxIndex = Math.max(recipe.steps.length - 1, 0);
-  const [index, setIndex] = useState(() =>
-    Math.min(Math.max(saved?.stepIndex ?? 0, 0), maxIndex),
-  );
+  const [index, setIndex] = useState(() => Math.min(Math.max(saved?.stepIndex ?? 0, 0), maxIndex));
   const [complete, setComplete] = useState(() => Boolean(saved?.completed));
   const [problem, setProblem] = useState<keyof typeof remedies | undefined>(
     saved?.problem as keyof typeof remedies | undefined,
@@ -268,6 +328,9 @@ function CookingStepsView({
   /** 已经结束（保存日记 / 仅完成），不再自动保存。 */
   const [finished, setFinished] = useState(false);
   const utensilChoices = useMemo(() => saved?.utensilChoices ?? {}, [saved]);
+  const cookingUtensilId = saved?.cookingUtensilId;
+  const adaptedSteps = saved?.adaptedSteps;
+  const adaptationSummary = saved?.adaptationSummary;
   const step = recipe.steps[index];
 
   // 每次改动都自动保存（Hook 内部防抖 600ms）；结束后停止写入
@@ -278,6 +341,9 @@ function CookingStepsView({
       stepIndex: index,
       completed: complete,
       utensilChoices,
+      cookingUtensilId,
+      adaptedSteps,
+      adaptationSummary,
       problem,
       rating,
       notes,
@@ -291,6 +357,9 @@ function CookingStepsView({
     complete,
     index,
     utensilChoices,
+    cookingUtensilId,
+    adaptedSteps,
+    adaptationSummary,
     problem,
     rating,
     notes,
@@ -385,11 +454,7 @@ function CookingStepsView({
           <Image image={step.image} alt={`步骤${index + 1}`} className="upload-preview" />
         )}
         <div className="row between">
-          <button
-            className="secondary"
-            disabled={index === 0}
-            onClick={() => setIndex(index - 1)}
-          >
+          <button className="secondary" disabled={index === 0} onClick={() => setIndex(index - 1)}>
             上一步
           </button>
           {index < recipe.steps.length - 1 ? (

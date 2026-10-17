@@ -17,3 +17,6 @@ output/
 data/
 __pycache__/
 dump_*.html
+
+# Logo 设计稿（本地设计探索，不入库）
+logo-concepts/

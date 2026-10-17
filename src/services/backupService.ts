@@ -182,7 +182,18 @@ export function parseBackup(text: string): DataSnapshot {
     string(r.name, '厨具名称');
     oneOf(
       r.type,
-      ['seasoning-spoon', 'tablespoon', 'bowl', 'cup', 'rice-cup', 'other'],
+      [
+        'seasoning-spoon',
+        'tablespoon',
+        'bowl',
+        'cup',
+        'rice-cup',
+        'pot',
+        'pan',
+        'wok',
+        'baking-dish',
+        'other',
+      ],
       '厨具类型',
     );
     number(r.capacity, '容量', Number.MIN_VALUE);

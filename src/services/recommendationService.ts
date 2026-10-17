@@ -125,12 +125,11 @@ function matchesAvoid(recipe: Recipe, avoid: string[]) {
   return avoid.some((a) => a.trim() && recipe.ingredients.some((i) => i.name.includes(a.trim())));
 }
 
-/** 偏好 / 忌口过滤。只过滤 user + library 的正式菜谱，草稿不参与推荐。 */
+/** 基础过滤。忌口不做硬过滤，只在后续打分时降低出现频率。 */
 export function filterByConditions(recipes: Recipe[], conditions: PlanConditions): Recipe[] {
   return recipes.filter(
     (r) =>
       r.status === 'published' &&
-      !matchesAvoid(r, conditions.avoidIngredients) &&
       (!conditions.maxMinutes || (r.estimatedMinutes ?? Infinity) <= conditions.maxMinutes) &&
       (!conditions.difficulty || r.difficulty === conditions.difficulty),
   );
@@ -364,6 +363,7 @@ export function buildRecommendation(
   const score = (recipe: Recipe) =>
     (conditionsSafe.preferPantry ? pantryScore(recipe, pantry) * 6 : 0) +
     flavorScore(recipe, conditionsSafe.flavors) * 2 -
+    (matchesAvoid(recipe, conditionsSafe.avoidIngredients) ? 4 : 0) -
     Math.min(recipe.estimatedMinutes ?? 30, 60) * 0.1;
 
   const used = new Set<string>();
@@ -395,7 +395,8 @@ export function buildRecommendation(
           (!fresh || (!used.has(r.id) && !(seenActive && seen.has(r.id)))),
       );
       if (!from.length) continue;
-      const weights = from.map((r) => Math.max(0.05, 1 + score(r)));
+      // 保持所有菜都有非零概率；忌口只降权，不会被硬过滤。
+      const weights = from.map((r) => Math.max(0.1, 8 + score(r)));
       const total = weights.reduce((sum, w) => sum + w, 0);
       let target = random() * total;
       for (let i = 0; i < from.length; i++) {

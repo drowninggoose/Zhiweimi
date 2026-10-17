@@ -5,6 +5,10 @@ export const utensilTypes = {
   bowl: '饭碗',
   cup: '水杯',
   'rice-cup': '米杯',
+  pot: '汤锅',
+  pan: '平底锅',
+  wok: '炒锅',
+  'baking-dish': '烤盘 / 烤皿',
   other: '其他',
 };
 export function validateUtensil(value: Utensil) {

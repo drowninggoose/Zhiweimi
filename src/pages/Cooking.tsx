@@ -5,7 +5,6 @@ import { repositories } from '../db/repositories';
 import { Empty, Image, ImageUpload, RecipeCard } from '../components/common';
 import { filterRecipes } from '../services/recipeService';
 import { convertIngredient, remedies } from '../services/cookingService';
-import { adaptRecipe } from '../services/aiService';
 import { formatSavedAgo, useCookingProgress, type CookingDraft } from '../hooks/useCookingProgress';
 import {
   meals,
@@ -128,19 +127,6 @@ export function CookingPrepare() {
   const { data, run } = useData();
   const navigate = useNavigate();
   const recipe = data?.recipes.find((r) => r.id === recipeId && r.status === 'published');
-  const progress = useCookingProgress(recipeId);
-  /** 本次页面上手改过的选择，优先于历史进度。 */
-  const [mine, setMine] = useState<Record<string, string> | null>(null);
-  const remembered = progress.initial?.utensilChoices ?? {};
-  const selected: Record<string, string> = { ...remembered, ...(mine ?? {}) };
-  const [cookingUtensilOverride, setCookingUtensilId] = useState<string>();
-  const [adaptedStepsOverride, setAdaptedSteps] = useState<Recipe['steps']>();
-  const [adaptationSummaryOverride, setAdaptationSummary] = useState<string>();
-  const cookingUtensilId = cookingUtensilOverride ?? progress.initial?.cookingUtensilId ?? '';
-  const adaptedSteps = adaptedStepsOverride ?? progress.initial?.adaptedSteps;
-  const adaptationSummary = adaptationSummaryOverride ?? progress.initial?.adaptationSummary ?? '';
-  const [adapting, setAdapting] = useState(false);
-  const [aiError, setAiError] = useState('');
 
   if (!recipe || !data)
     return (
@@ -148,30 +134,9 @@ export function CookingPrepare() {
         菜谱不可用。<Link to="/cook">重新选择</Link>
       </Empty>
     );
-  /** 进入分步烹饪：先把换算选择存成进度。 */
+
   const target = recipe;
-  async function personalize() {
-    const utensil = data!.utensils.find((u) => u.id === cookingUtensilId);
-    if (!utensil) return setAiError('请先选择本次烹饪使用的主要厨具');
-    setAdapting(true);
-    setAiError('');
-    try {
-      const result = await adaptRecipe(target, utensil, data!.preferences.flavorPreferences);
-      setAdaptedSteps(
-        result.steps.map((step, index) => ({
-          ...step,
-          id: `ai-${target.id}-${index + 1}`,
-          order: index + 1,
-          durationSeconds: step.durationSeconds ?? undefined,
-        })),
-      );
-      setAdaptationSummary([result.summary, ...result.warnings].filter(Boolean).join('；'));
-    } catch (e) {
-      setAiError(e instanceof Error ? e.message : String(e));
-    } finally {
-      setAdapting(false);
-    }
-  }
+  /** 进入分步烹饪：先把当前状态存成进度。 */
   async function startSteps() {
     const now = new Date().toISOString();
     await run(
@@ -186,10 +151,8 @@ export function CookingPrepare() {
           stage: 'steps',
           stepIndex: 0,
           completed: false,
-          utensilChoices: selected,
-          cookingUtensilId: cookingUtensilId || undefined,
-          adaptedSteps,
-          adaptationSummary: adaptationSummary || undefined,
+          // 不再由用户单选厨具，换算直接使用已上传的全部厨具
+          utensilChoices: {},
           rating: '满意',
           notes: '',
           date: today(),
@@ -204,57 +167,18 @@ export function CookingPrepare() {
       <section className="card">
         <h2>准备制作 {recipe.name}</h2>
         <span className="tag">模拟换算</span>
-        <p className="muted">默认使用全部厨具匹配；仅支持毫升换算，其余保留原始用量。</p>
+        <p className="muted">用量会按你已上传的厨具自动换算；仅支持毫升换算，其余保留原始用量。</p>
         {recipe.ingredients.map((i) => (
           <div className="ingredient-row" key={i.id}>
             <strong>{i.name}</strong>
-            <span>{convertIngredient(i, data.utensils, selected[i.id]).text || '适量'}</span>
-            <select
-              aria-label={`${i.name}换算厨具`}
-              value={selected[i.id] ?? ''}
-              onChange={(e) => setMine({ ...selected, [i.id]: e.target.value })}
-            >
-              <option value="">自动匹配全部厨具</option>
-              {data.utensils.map((u) => (
-                <option key={u.id} value={u.id}>
-                  {u.name} · {u.capacity} ml
-                </option>
-              ))}
-            </select>
+            <span>{convertIngredient(i, data.utensils).text || '适量'}</span>
           </div>
         ))}
         {!data.utensils.length && (
-          <p>
-            还没有厨具，将展示原始单位。<Link to="/utensils?new=1">添加厨具</Link>
-          </p>
-        )}
-        <hr />
-        <label>
-          本次主要烹饪厨具
-          <select value={cookingUtensilId} onChange={(e) => setCookingUtensilId(e.target.value)}>
-            <option value="">请选择</option>
-            {data.utensils.map((u) => (
-              <option key={u.id} value={u.id}>
-                {u.name} · {u.capacity} ml
-              </option>
-            ))}
-          </select>
-        </label>
-        <button
-          className="secondary"
-          disabled={!cookingUtensilId || adapting}
-          onClick={() => void personalize()}
-        >
-          {adapting ? 'AI 正在调整步骤…' : '按厨具容量与口味生成步骤'}
-        </button>
-        {aiError && (
-          <p role="alert" className="error">
-            {aiError}
-          </p>
-        )}
-        {adaptedSteps && (
-          <p className="muted">
-            已生成 {adaptedSteps.length} 个个性化步骤。{adaptationSummary}
+          <p role="status" className="notice">
+            ⚠️ 你还没有添加任何厨具，当前显示的是菜谱原始用量。
+            <Link to="/utensils?new=1">去添加厨具</Link>
+            之后就能按自家餐具看到具体用量。
           </p>
         )}
         <button onClick={() => void startSteps()}>准备完成，开始分步烹饪</button>

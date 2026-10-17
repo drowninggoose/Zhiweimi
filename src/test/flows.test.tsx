@@ -45,6 +45,8 @@ test('阶段4界面：两件厨具创建、编辑与删除', async () => {
   for (const name of ['杯子', '饭碗']) {
     await user.click(screen.getByRole('button', { name: '添加厨具' }));
     await user.type(screen.getByLabelText('厨具名称'), name);
+    // 新建厨具不再有默认容量，必须显式填写
+    await user.type(screen.getByLabelText('容量（ml）'), '200');
     await user.click(screen.getByRole('button', { name: '保存厨具' }));
     await screen.findByRole('heading', { name });
   }

@@ -19,6 +19,7 @@ import { PantryPage } from '../pages/Pantry';
 import { PlannerPage } from '../pages/Planner';
 import { HomePage } from '../pages/Home';
 import { SettingsPage } from '../pages/Settings';
+import { VoiceAssistant } from '../components/VoiceAssistant';
 function Shell() {
   const { data, error, notice } = useData();
   const location = useLocation();
@@ -122,6 +123,7 @@ function Shell() {
           )}
         </main>
       </section>
+      <VoiceAssistant />
     </div>
   );
 }

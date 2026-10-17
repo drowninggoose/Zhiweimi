@@ -3,24 +3,44 @@ import type { Recipe } from '../types/models';
 /** 语音识别结果 */
 export type AsrResult = { text: string; duration?: number };
 
-/** 对话结果（与 server/voiceGateway.ts 的 normalizeChatResult 对齐） */
+/** 一条可执行的建议：做什么 / 多少 / 什么时候 / 怎么判断 */
+export type VoiceAction = { do: string; amount: string; when: string; check: string };
+
+/** 对话结果（与 server/voiceGateway.ts 的 NormalizedReply 对齐） */
 export type ChatResult = {
   intents: string[];
-  subtitle: string;
-  detail: string[];
+  answer: string;
+  actions: VoiceAction[];
   memory: { dimension: string; polarity: number; source: 'explicit'; evidence: string }[];
   recommendQuery: { flavors: string[]; exclude: string[] } | null;
+  /** 是否需要走本地推荐（模型意图或用户原话命中） */
+  wantRecommend: boolean;
 };
 
-/** 当前烹饪上下文：让助手知道用户在做什么菜、第几步 */
+/**
+ * 当前烹饪上下文。
+ *
+ * 这里带的是**完整菜谱**（全部食材含用量、全部步骤、当前步骤、小窍门），
+ * 而不是只有菜名 —— 实测证明上下文是否完整直接决定回答是否具体。
+ */
 export type VoiceContext = {
   recipeName?: string;
+  cuisines?: string[];
+  servings?: number;
+  estimatedMinutes?: number;
+  /** 全部食材（含用量与分组） */
+  ingredients?: { name: string; amount?: string | number; group?: string }[];
+  /** 全部步骤文本 */
+  steps?: string[];
   stepIndex?: number;
   stepTotal?: number;
   stepInstruction?: string;
   check?: string;
   tip?: string;
+  recipeTips?: string;
+  description?: string;
   remedies?: Record<string, string>;
+  /** 已生效的口味记忆（人类可读） */
   tastePreferences?: string[];
   avoidIngredients?: string[];
 };
@@ -149,20 +169,35 @@ export async function askAssistant(text: string, context: VoiceContext): Promise
   return post<ChatResult>('/api/voice/chat', { text, context });
 }
 
-/** 从菜谱 + 步骤序号构造上下文。 */
+/** 从菜谱 + 步骤序号构造上下文（带完整配方，回答才能具体）。 */
 export function buildContext(
   recipe: Recipe | undefined,
   stepIndex: number,
-  extra: { remedies?: Record<string, string>; tastePreferences?: string[]; avoidIngredients?: string[] } = {},
+  extra: {
+    remedies?: Record<string, string>;
+    tastePreferences?: string[];
+    avoidIngredients?: string[];
+  } = {},
 ): VoiceContext {
   const step = recipe?.steps[stepIndex];
   return {
     recipeName: recipe?.name,
-    stepIndex,
+    cuisines: recipe?.cuisines,
+    servings: recipe?.servings,
+    estimatedMinutes: recipe?.estimatedMinutes,
+    ingredients: recipe?.ingredients.map((item) => ({
+      name: item.name,
+      amount: item.amount,
+      group: item.group,
+    })),
+    steps: recipe?.steps.map((item) => item.instruction),
+    stepIndex: recipe ? stepIndex : undefined,
     stepTotal: recipe?.steps.length,
     stepInstruction: step?.instruction,
     check: step?.check,
     tip: step?.tip,
+    recipeTips: recipe?.tips,
+    description: recipe?.description,
     remedies: extra.remedies,
     tastePreferences: extra.tastePreferences,
     avoidIngredients: extra.avoidIngredients,

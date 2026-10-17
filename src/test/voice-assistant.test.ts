@@ -8,6 +8,8 @@ import {
 } from '../services/memoryPolicy';
 import {
   BANNED_COMMANDS,
+  cleanAnswer,
+  deriveRecommendQuery,
   normalizeChatResult,
   softenCommandLanguage,
 } from '../../server/voiceGateway';
@@ -118,11 +120,12 @@ describe('语音回答的语气与结构校验', () => {
     expect(normalizeChatResult({ intents: [] }).intents).toEqual(['ask']);
   });
 
-  test('非法记忆维度被丢弃，极性被限制在 -2~2', () => {
+  test('非法记忆维度被丢弃，极性被限制在 -2~2，0 不写入', () => {
     const result = normalizeChatResult({
       memory: [
         { dimension: 'spiciness', polarity: 9, evidence: '我喜欢辣' },
         { dimension: '瞎编维度', polarity: 1, evidence: 'x' },
+        { dimension: 'saltiness', polarity: 0, evidence: '不咸不淡' },
       ],
     });
     expect(result.memory).toHaveLength(1);
@@ -130,19 +133,54 @@ describe('语音回答的语气与结构校验', () => {
     expect(result.memory[0].source).toBe('explicit');
   });
 
-  test('subtitle 与 detail 都会过一遍语气软化', () => {
+  test('answer 与每条动作都会过一遍语气软化', () => {
     const result = normalizeChatResult({
-      subtitle: '你必须继续加热',
-      detail: ['你应该多翻动'],
+      answer: '你必须继续加热',
+      actions: [
+        { do: '你应该多翻动', amount: '每 30 秒', when: '你现在', check: '必须闻到香气' },
+      ],
       intents: ['suggest'],
     });
-    expect(result.subtitle).not.toContain('必须');
-    expect(result.detail[0]).not.toContain('应该');
+    expect(result.answer).not.toContain('必须');
+    expect(result.actions[0].do).not.toContain('应该');
+    expect(result.actions[0].check).not.toContain('必须');
+    // 用量与时机原样保留，不做改写
+    expect(result.actions[0].amount).toBe('每 30 秒');
   });
 
-  test('缺失 recommendQuery 时为 null，缺少 subtitle 时有兜底文案', () => {
+  test('缺少 answer 时有兜底文案，缺失 actions 时为空数组', () => {
     const result = normalizeChatResult({ intents: ['ask'] });
+    expect(result.answer.length).toBeGreaterThan(0);
+    expect(result.actions).toEqual([]);
     expect(result.recommendQuery).toBeNull();
-    expect(result.subtitle.length).toBeGreaterThan(0);
+    expect(result.wantRecommend).toBe(false);
+  });
+
+  test('模型漏判推荐时，用户原话含「推荐」也会触发本地推荐', () => {
+    const result = normalizeChatResult({ intents: ['suggest'], answer: '可以试试这些' }, '推荐几道辣菜');
+    expect(result.wantRecommend).toBe(true);
+    expect(result.intents).toContain('recommend');
+    // 模型没给 query 时，从原话推导出「辣」
+    expect(result.recommendQuery?.flavors).toContain('辣');
+  });
+
+  test('从口味记忆推导检索条件', () => {
+    expect(deriveRecommendQuery('有什么好吃的', [{ dimension: 'spiciness', polarity: 2 }]).flavors).toContain('辣');
+    expect(deriveRecommendQuery('有什么好吃的', [{ dimension: 'greasiness', polarity: -1 }]).flavors).toContain('清淡');
+    expect(deriveRecommendQuery('我想吃汤', []).flavors).toContain('汤');
+  });
+
+  test('回答正文里的 JSON 字段名残留会被清理掉', () => {
+    const cleaned = cleanAnswer(
+      '我给你挑了几道。\n关于推荐别的菜：\nflavors: 辣, 家常菜\nexclude: null',
+    );
+    expect(cleaned).toBe('我给你挑了几道。');
+    expect(cleaned).not.toContain('flavors');
+    expect(cleaned).not.toContain('exclude');
+  });
+
+  test('正常的自然语言回答不会被误删', () => {
+    const text = '先补少许盐约 1 克，尝一口汤汁觉得咸淡合适就行。';
+    expect(cleanAnswer(text)).toBe(text);
   });
 });

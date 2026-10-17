@@ -10,6 +10,7 @@ import {
   stopSpeaking,
   transcribe,
   type ChatResult,
+  type VoiceAction,
   type VoiceContext,
 } from '../services/voiceService';
 
@@ -27,12 +28,14 @@ export type VoiceAssistantOptions = {
 export type VoiceAssistantResult = {
   /** 用户原话 */
   question: string;
-  /** 主回答（字幕） */
+  /** 主回答 */
   answer: string;
-  /** 补充要点 */
-  detail: string[];
+  /** 可执行的动作清单 */
+  actions: VoiceAction[];
   /** 推荐的菜谱（可点击） */
   recommended: Recipe[];
+  /** 本轮是否在要推荐（用于空结果兜底提示） */
+  wantRecommend: boolean;
   /** 本次新写入并生效的记忆（用于界面提示） */
   justRemembered: string[];
 };
@@ -128,14 +131,14 @@ export function useVoiceAssistant({
           }
         }
 
-        // 推荐意图：走本地引擎，模型只负责说理由
+        // 推荐意图：走本地引擎，模型只负责说理由。模型漏判时由 wantRecommend 兜底。
         let recommended: Recipe[] = [];
-        if (chat.intents.includes('recommend') && chat.recommendQuery && recommend) {
+        if (chat.wantRecommend && recommend) {
           try {
-            const query = chat.recommendQuery;
+            const query = chat.recommendQuery ?? { flavors: [], exclude: [] };
             recommended = recommend(query);
-            if (!recommended.length) {
-              recommended = recommend({ ...query, flavors: [] });
+            if (!recommended.length && query.flavors.length) {
+              recommended = recommend({ flavors: [], exclude: query.exclude });
             }
           } catch {
             recommended = [];
@@ -146,8 +149,10 @@ export function useVoiceAssistant({
           ...stamp(),
           inputMode,
           userText: question,
-          replyText: chat.subtitle,
-          detail: chat.detail,
+          replyText: chat.answer,
+          detail: chat.actions.map((action) =>
+            [action.do, action.amount, action.when, action.check].filter(Boolean).join('｜'),
+          ),
           intents: chat.intents,
           recipeName: context.recipeName,
           stepIndex: context.stepIndex,
@@ -164,13 +169,20 @@ export function useVoiceAssistant({
         if (!mounted.current) return;
         setResult({
           question,
-          answer: chat.subtitle,
-          detail: chat.detail,
+          answer: chat.answer,
+          actions: chat.actions,
           recommended,
+          wantRecommend: chat.wantRecommend,
           justRemembered,
         });
         setStatus('speaking');
-        speak([chat.subtitle, ...chat.detail].join('。'), () => {
+        const spoken = [
+          chat.answer,
+          ...chat.actions.map((action) =>
+            [action.do, action.amount, action.when].filter(Boolean).join('，'),
+          ),
+        ].join('。');
+        speak(spoken, () => {
           if (mounted.current) setStatus('idle');
         });
       } catch (e) {

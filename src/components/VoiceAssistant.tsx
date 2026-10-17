@@ -249,10 +249,17 @@ export function VoiceAssistant() {
                 <div className="voice-reply" aria-live="polite">
                   <p className="voice-q">🗣 {result.question}</p>
                   <p className="voice-answer">{result.answer}</p>
-                  {result.detail.length ? (
-                    <ul className="voice-detail">
-                      {result.detail.map((line) => (
-                        <li key={line}>{line}</li>
+                  {result.actions.length ? (
+                    <ul className="voice-actions">
+                      {result.actions.map((action, index) => (
+                        <li key={`${action.do}-${index}`}>
+                          <strong>{action.do}</strong>
+                          <span className="voice-action-meta">
+                            {action.amount ? <span>用量：{action.amount}</span> : null}
+                            {action.when ? <span>时机：{action.when}</span> : null}
+                            {action.check ? <span>判断：{action.check}</span> : null}
+                          </span>
+                        </li>
                       ))}
                     </ul>
                   ) : null}
@@ -275,6 +282,10 @@ export function VoiceAssistant() {
                         </Link>
                       ))}
                     </div>
+                  ) : result.wantRecommend ? (
+                    <p className="voice-recipe-empty muted">
+                      菜谱库里暂时没找到匹配的菜，换个说法再问一次试试（比如「来几道清淡的汤」）。
+                    </p>
                   ) : null}
                   <p className="voice-hint muted">
                     建议仅供参考，具体火候与生熟请以你看到的实际情况为准。

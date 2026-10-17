@@ -878,3 +878,35 @@ dialog::backdrop {
 .voice-history-item small {
   font-size: 12px;
 }
+
+/* 语音助手的可执行动作清单 */
+.voice-actions {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+.voice-actions > li {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 9px 12px;
+  display: grid;
+  gap: 4px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.voice-action-meta {
+  display: grid;
+  gap: 2px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.voice-recipe-empty {
+  margin: 0;
+  font-size: 13px;
+  background: #f7f4ee;
+  border-radius: 10px;
+  padding: 10px 12px;
+}

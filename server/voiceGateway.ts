@@ -1,26 +1,23 @@
 import type { Connect } from 'vite';
 
 /**
- * 语音助手网关。
+ * 语音助手网关（与队友的 aiGateway 完全隔离：路由 /api/voice/*，环境变量 VOICE_*）。
  *
- * 与队友的 `aiGateway`（餐具识别 / 菜谱适配）**完全隔离**：
- * - 路由前缀不同：`/api/voice/*` vs `/api/ai/*`
- * - 环境变量不同：`VOICE_*` vs `AI_*`
- * - 供应商可不同：默认阿里百炼（ASR 走 DashScope 原生接口，对话走 OpenAI 兼容接口）
- *
- * 这样两边的 Key、额度、故障域互不影响。
+ * 三个关键实测结论：
+ * 1. 阿里百炼的 Qwen3 系列**默认开启思考模式**，一个简单做菜问题会消耗 2000+ 推理 token，
+ *    单次耗时 30 秒左右。必须显式传 `enable_thinking: false`，实测可降到 2 秒级。
+ * 2. `response_format: json_schema + strict` 在百炼上可用，能强制字段合法；
+ *    而 `json_object` 模式要求提示词里出现 "json" 字样，否则直接 400。
+ * 3. 回答质量的决定因素是**上下文是否完整**（食材+用量+完整步骤+当前步骤），
+ *    而不是模型档次。因此这里把整道菜的配方都交给模型。
  */
 
 type Json = Record<string, unknown>;
 
 export type VoiceGatewayConfig = {
-  /** OpenAI 兼容 base（用于对话），默认阿里百炼 compatible-mode。 */
   baseUrl?: string;
-  /** 对话模型。 */
   model?: string;
-  /** DashScope 原生 base（用于语音识别）。 */
   dashscopeBase?: string;
-  /** 语音识别模型。 */
   asrModel?: string;
   apiKey?: string;
 };
@@ -29,11 +26,11 @@ const DEFAULT_BASE_URL = 'https://dashscope.aliyuncs.com/compatible-mode/v1';
 const DEFAULT_DASHSCOPE_BASE = 'https://dashscope.aliyuncs.com';
 const DEFAULT_MODEL = 'qwen3.7-flash';
 const DEFAULT_ASR_MODEL = 'qwen-audio-3.1-asr-flash';
+/** 单次请求超时，避免极端情况卡死界面 */
+const REQUEST_TIMEOUT_MS = 25_000;
 
-/** 允许的意图，超出范围的会被过滤。 */
 const INTENTS = ['remedy', 'suggest', 'recommend', 'remember', 'ask'] as const;
 
-/** 允许的记忆维度，与前端 PreferenceMemory 对齐。 */
 const DIMENSIONS = [
   'spiciness',
   'sweetness',
@@ -45,7 +42,7 @@ const DIMENSIONS = [
   'disliked_ingredient',
 ] as const;
 
-/** 命令式表达 → 建议式表达。用于落实「只给建议、不给命令」。 */
+/** 命令式表达 → 建议式表达。 */
 const COMMAND_PATTERNS: { pattern: RegExp; replacement: string }[] = [
   { pattern: /你必须/g, replacement: '你可以考虑' },
   { pattern: /您必须/g, replacement: '您可以考虑' },
@@ -60,16 +57,13 @@ const COMMAND_PATTERNS: { pattern: RegExp; replacement: string }[] = [
   { pattern: /不准/g, replacement: '不太建议' },
 ];
 
-/** 绝对化用语，用于测试与自检。 */
 export const BANNED_COMMANDS = ['必须', '一定要', '你应该', '立刻', '马上', '绝对要'];
 
-/** 把命令式语气改成建议式。纯函数，便于单元测试。 */
 export function softenCommandLanguage(text: string): string {
   let result = text;
   for (const { pattern, replacement } of COMMAND_PATTERNS) {
     result = result.replace(pattern, replacement);
   }
-  // 去掉替换后产生的重复词与多余空格
   return result
     .replace(/可以可以/g, '可以')
     .replace(/建议建议/g, '建议')
@@ -78,47 +72,126 @@ export function softenCommandLanguage(text: string): string {
     .trim();
 }
 
-/** 对话系统提示词：意图路由 + 只给建议 + 记忆判定。 */
+/**
+ * 清理回答正文里不该出现的「接口残留」。
+ *
+ * 模型偶尔会把 JSON 字段名直接写进 answer，例如：
+ *   「关于推荐别的菜：flavors: 辣, 家常菜 / exclude: null」
+ * 这些对用户毫无意义，必须删掉，只保留自然语言。
+ */
+export function cleanAnswer(text: string): string {
+  const droppedFieldLine =
+    /^\s*(flavors?|exclude|recommendQuery|intents?|actions?|memory|answer)\s*[:：]/i;
+  const droppedHeader = /^关于(推荐|别的菜|菜品推荐)/;
+  return text
+    .split(/\r?\n/)
+    .filter((line) => !droppedFieldLine.test(line) && !droppedHeader.test(line.trim()))
+    .join('\n')
+    .replace(/[ \t]{2,}/g, ' ')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+/** 严格 JSON Schema：强制模型返回合法结构。 */
+const REPLY_SCHEMA = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['intents', 'answer', 'actions', 'memory', 'recommendQuery'],
+  properties: {
+    intents: {
+      type: 'array',
+      items: { type: 'string', enum: [...INTENTS] },
+    },
+    answer: { type: 'string' },
+    actions: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['do', 'amount', 'when', 'check'],
+        properties: {
+          do: { type: 'string' },
+          amount: { type: 'string' },
+          when: { type: 'string' },
+          check: { type: 'string' },
+        },
+      },
+    },
+    memory: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['dimension', 'polarity', 'evidence'],
+        properties: {
+          dimension: { type: 'string', enum: [...DIMENSIONS] },
+          polarity: { type: 'integer', minimum: -2, maximum: 2 },
+          evidence: { type: 'string' },
+        },
+      },
+    },
+    recommendQuery: {
+      type: ['object', 'null'],
+      additionalProperties: false,
+      required: ['flavors', 'exclude'],
+      properties: {
+        flavors: { type: 'array', items: { type: 'string' } },
+        exclude: { type: 'array', items: { type: 'string' } },
+      },
+    },
+  },
+} as const;
+
+/**
+ * 系统提示词。
+ *
+ * 重点解决「回答空泛」：强制结合当前菜谱的真实食材与用量给可执行动作，
+ * 每条动作必须含「做什么 / 多少 / 什么时候 / 怎么判断」。
+ */
 function systemPrompt(): string {
   return [
-    '你是「知味咪」厨房语音助手。用户正在做菜，可能手上很忙，回答要短、能听懂、能立刻用。',
+    '你是「知味咪」厨房助手，正在陪用户做一道具体的菜。',
     '',
-    '输出必须是 JSON 对象，字段如下：',
-    '{',
-    '  "intents": 数组，取值只能来自 remedy / suggest / recommend / remember / ask，可多选；',
-    '  "subtitle": 给用户看的一句话主回答，25 字以内，口语化；',
-    '  "detail": 最多 3 条要点的数组，每条 30 字以内，可为空数组；',
-    '  "memory": 数组，用户本轮**明确表达**的偏好，没有就给空数组；',
-    '  "recommendQuery": 需要推荐菜谱时给出检索条件，否则为 null。',
-    '}',
+    '【回答要求｜最重要】',
+    '1. 必须结合用户当前这道菜的**真实食材、真实用量、当前做到第几步**来回答。',
+    '2. 严禁空泛建议。不允许只说"加盐""加点酱油""注意火候"这类没有量、没有时机的废话。',
+    '3. 每条动作写清四件事：做什么（do）、用多少（amount）、什么时候做（when）、怎么判断做好了（check）。',
+    '4. 用量优先引用这道菜现有食材的比例或用量；没有对应食材时，明确说明"家里若有…可加"。',
+    '5. 如果用户的问题与当前这道菜无关，先用一句话说明，再回答通用问题。',
+    '6. answer 控制在 4 句以内，直接说人话；不要出现字段名、JSON、英文 key，也不要写「flavors:」「exclude:」这类字样。',
+    '7. actions 最多 3 条，只保留最关键的动作；纯粹推荐菜谱时 actions 可以为空。',
+    '8. 涉及推荐时，answer 里严禁自己编造或罗列菜名 —— 菜名只能由系统从真实菜谱库检索后展示。',
+    '   这种情况下 answer 只写一句引导语，例如「我给你从菜谱库里挑了几道辣的，看下面」。',
     '',
-    '意图判定规则：',
-    '- remedy：用户在说菜的状态不好（太淡/太咸/太辣/糊了/夹生等）或问怎么补救。',
-    '- suggest：用户问这道菜接下来还有什么建议、要注意什么。',
-    '- recommend：用户想要推荐别的菜。',
-    '- remember：用户在陈述自己的口味偏好（我喜欢辣、别放香菜）。',
+    '【语气｜硬性】',
+    '只给建议，不下命令。禁止出现「必须」「一定要」「你应该」「立刻」「马上」等绝对表达。',
+    '涉及继续加热、加盐、加油时，必须给出理由和可观察的判断标准，而不是下结论。',
+    '不编造加热时间、核心温度等安全数值，只能复述菜谱里已有的数值。',
+    '',
+    '【意图 intents（可多选）】',
+    '- remedy：用户说这道菜不对劲（太淡/太咸/太辣/糊了/夹生/水太多）或问怎么补救。',
+    '- suggest：用户问下一步该怎么做、还有什么建议。',
+    '- recommend：用户想要**推荐别的菜**（"推荐几道""来几个菜""有什么好吃的"）。',
+    '- remember：用户主动陈述自己的口味偏好（"我喜欢辣""别放香菜"）。',
     '- ask：其它烹饪问题。',
     '',
-    '记忆判定（非常重要）：',
-    '- 只有用户**主动陈述偏好**才写入 memory，source 填 explicit。',
-    '- 只是描述当前这道菜（这道菜有点淡）**不要**写入记忆，source 一律用 explicit，',
-    '  由客户端决定是否累积成推断偏好。',
-    '- memory 元素格式：{"dimension":"维度","polarity":-2到2的整数,"evidence":"用户原话片段"}',
-    '- dimension 只能是：' + DIMENSIONS.join(' / '),
-    '- polarity：正值表示"更多/更喜欢"，负值表示"更少/不喜欢"。',
+    '【记忆 memory】',
+    '只有用户**主动陈述偏好**才写 memory；只是描述当前这道菜（"这道菜有点淡"）时，memory 留空数组。',
+    'dimension 只能取：' + DIMENSIONS.join(' / '),
+    'polarity：-2 到 2 的整数，正数表示更喜欢/要更多，负数表示更少/不喜欢。',
     '',
-    '语气要求（硬性）：',
-    '- 只给建议，不下命令。禁止出现「必须」「一定要」「你应该」「立刻」「马上」这类绝对表达。',
-    '- 涉及继续加热、加盐、加油这类动作时，必须说明理由，并给出可观察的判断标准，',
-    '  例如"如果筷子还插不透，可以再煮 5~10 分钟看看"，而不是"再煮 10 分钟就熟了"。',
-    '- 不要编造加热时间、温度等安全数值；只能复述菜谱原文给的数值。',
-    '- 过敏与忌口信息**不得**用于修改菜谱或删除食材，只能用来提醒。',
+    '【推荐 recommendQuery】',
+    '当 intents 含 recommend 时，必须给出检索条件：',
+    'flavors 填口味关键词（如 辣、甜、酸、清淡、汤、西餐、甜品），exclude 填用户忌口食材。',
+    '不需要推荐时填 null。',
     '',
-    '不知道就说不确定，不要硬编。',
+    '【过敏忌口】',
+    '忌口信息只能用于提醒，不得据此修改菜谱或删除食材。',
+    '',
+    '回答用中文，口语化，像在旁边帮忙的人，不要写成教科书。',
   ].join('\n');
 }
 
-/** 从模型返回里取出文本（兼容字符串与分段数组两种形式）。 */
 function extractText(response: Json): string {
   const choices = Array.isArray(response.choices) ? response.choices : [];
   const first = choices[0];
@@ -138,7 +211,6 @@ function extractText(response: Json): string {
   throw new Error('模型没有返回文本内容');
 }
 
-/** 从可能带 ```json 围栏的文本里解析 JSON。 */
 function parseJsonLoose(text: string): Json {
   const trimmed = text.trim();
   const fenced = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/i);
@@ -153,31 +225,67 @@ function asString(value: unknown, fallback = ''): string {
   return typeof value === 'string' ? value : fallback;
 }
 
-function asStringArray(value: unknown): string[] {
+function asStringArray(value: unknown, limit = 8): string[] {
   return Array.isArray(value)
-    ? value.filter((item): item is string => typeof item === 'string').slice(0, 6)
+    ? value
+        .filter((item): item is string => typeof item === 'string')
+        .map((item) => item.trim())
+        .filter(Boolean)
+        .slice(0, limit)
     : [];
 }
 
-/** 校验并规整模型返回的对话结果，防止脏数据流到前端。 */
-export function normalizeChatResult(raw: Json): {
+export type VoiceAction = { do: string; amount: string; when: string; check: string };
+
+export type NormalizedReply = {
   intents: string[];
-  subtitle: string;
-  detail: string[];
+  answer: string;
+  actions: VoiceAction[];
   memory: { dimension: string; polarity: number; source: 'explicit'; evidence: string }[];
   recommendQuery: { flavors: string[]; exclude: string[] } | null;
-} {
+  /** 是否需要走本地推荐（意图命中，或用户原话明显在要推荐） */
+  wantRecommend: boolean;
+};
+
+/** 口味维度 → 菜谱库口味关键词，用于从记忆推导检索条件。 */
+const DIMENSION_FLAVOR: Record<string, { positive?: string[]; negative?: string[] }> = {
+  spiciness: { positive: ['辣'], negative: ['清淡'] },
+  sweetness: { positive: ['甜'] },
+  sourness: { positive: ['酸'] },
+  saltiness: { negative: ['清淡'] },
+  greasiness: { negative: ['清淡'] },
+  seasoning: { positive: ['咸鲜', '酱香'], negative: ['清淡'] },
+};
+
+/** 从用户原话 + 已生效记忆推导检索条件，作为模型没给 query 时的兜底。 */
+export function deriveRecommendQuery(
+  text: string,
+  memories: { dimension: string; polarity: number }[] = [],
+): { flavors: string[]; exclude: string[] } {
+  const flavors = new Set<string>();
+  const keywords = ['辣', '甜', '酸', '清淡', '汤', '西餐', '甜品', '面', '粥', '凉菜', '小吃'];
+  for (const word of keywords) {
+    if (text.includes(word)) flavors.add(word);
+  }
+  for (const memory of memories) {
+    const mapping = DIMENSION_FLAVOR[memory.dimension];
+    if (!mapping) continue;
+    const bucket = memory.polarity > 0 ? mapping.positive : mapping.negative;
+    for (const word of bucket ?? []) flavors.add(word);
+  }
+  return { flavors: Array.from(flavors), exclude: [] };
+}
+
+const RECOMMEND_HINT = /推荐|来几道|来几个|有什么(好吃|菜|选择)|换一道|换个菜/;
+
+/** 校验并规整模型返回，同时补齐模型偷懒漏掉的字段。 */
+export function normalizeChatResult(raw: Json, userText = ''): NormalizedReply {
   const rawIntents = asStringArray(raw.intents);
   const intents = rawIntents.filter((item): item is (typeof INTENTS)[number] =>
     (INTENTS as readonly string[]).includes(item),
   );
 
-  const memory: {
-    dimension: string;
-    polarity: number;
-    source: 'explicit';
-    evidence: string;
-  }[] = [];
+  const memory: NormalizedReply['memory'] = [];
   if (Array.isArray(raw.memory)) {
     for (const item of raw.memory) {
       if (!item || typeof item !== 'object') continue;
@@ -185,41 +293,73 @@ export function normalizeChatResult(raw: Json): {
       const dimension = asString(record.dimension);
       if (!(DIMENSIONS as readonly string[]).includes(dimension)) continue;
       const polarity = Number(record.polarity);
-      if (!Number.isFinite(polarity)) continue;
+      if (!Number.isFinite(polarity) || polarity === 0) continue;
       memory.push({
         dimension,
         polarity: Math.max(-2, Math.min(2, Math.round(polarity))),
         source: 'explicit',
-        evidence: asString(record.evidence).slice(0, 60),
+        evidence: asString(record.evidence, userText).slice(0, 80),
       });
     }
   }
 
-  let recommendQuery: { flavors: string[]; exclude: string[] } | null = null;
+  const actions: VoiceAction[] = [];
+  if (Array.isArray(raw.actions)) {
+    for (const item of raw.actions) {
+      if (!item || typeof item !== 'object') continue;
+      const record = item as Json;
+      const action = {
+        do: asString(record.do).trim(),
+        amount: asString(record.amount).trim(),
+        when: asString(record.when).trim(),
+        check: asString(record.check).trim(),
+      };
+      if (action.do) actions.push(action);
+    }
+  }
+
+  let recommendQuery: NormalizedReply['recommendQuery'] = null;
   if (raw.recommendQuery && typeof raw.recommendQuery === 'object') {
     const query = raw.recommendQuery as Json;
     recommendQuery = {
-      flavors: asStringArray(query.flavors),
-      exclude: asStringArray(query.exclude),
+      flavors: asStringArray(query.flavors, 6),
+      exclude: asStringArray(query.exclude, 6),
     };
   }
 
-  const subtitle = softenCommandLanguage(asString(raw.subtitle, '我没太听懂，你可以再说一次吗？'));
-  const detail = asStringArray(raw.detail).map((line) => softenCommandLanguage(line));
+  // 模型说"推荐"，或用户原话明显在要推荐，都强制走本地推荐
+  const wantsRecommend =
+    intents.includes('recommend') &&
+    !intents.every((item) => item === 'recommend' || item === 'remember');
+  const hinted = RECOMMEND_HINT.test(userText);
+  const wantRecommend = intents.includes('recommend') || hinted;
+  if (wantRecommend && !intents.includes('recommend')) intents.push('recommend');
+  if (wantRecommend && !recommendQuery) {
+    recommendQuery = deriveRecommendQuery(userText, memory);
+  }
+
+  const answer = cleanAnswer(softenCommandLanguage(asString(raw.answer, asString(raw.subtitle))));
 
   return {
     intents: intents.length ? intents : ['ask'],
-    subtitle,
-    detail,
+    answer: answer || '我没太听清，你可以再说一次吗？',
+    actions: actions.map((action) => ({
+      do: softenCommandLanguage(action.do),
+      amount: action.amount,
+      when: action.when,
+      check: softenCommandLanguage(action.check),
+    })),
     memory,
     recommendQuery,
+    wantRecommend: wantRecommend || wantsRecommend,
   };
 }
 
 async function callChatModel(
   config: VoiceGatewayConfig,
   messages: unknown[],
-): Promise<Json> {
+  userText: string,
+): Promise<NormalizedReply> {
   const apiKey = config.apiKey ?? process.env.VOICE_API_KEY;
   const model = config.model ?? process.env.VOICE_MODEL ?? DEFAULT_MODEL;
   const baseUrl = (config.baseUrl ?? process.env.VOICE_BASE_URL ?? DEFAULT_BASE_URL).replace(
@@ -231,32 +371,32 @@ async function callChatModel(
   const response = await fetch(`${baseUrl}/chat/completions`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     body: JSON.stringify({
       model,
       messages,
-      temperature: 0.4,
-      // 用 json_object 而非 json_schema：百炼对 json_object 支持稳定，
-      // json_schema + strict 需要额外确认，这里不冒险。
-      response_format: { type: 'json_object' },
+      temperature: 0.3,
+      // 关闭思考模式：这是把 30 秒降到 2 秒的关键
+      enable_thinking: false,
+      response_format: {
+        type: 'json_schema',
+        json_schema: { name: 'voice_reply', strict: true, schema: REPLY_SCHEMA },
+      },
     }),
   });
   const body = (await response.json()) as Json;
   if (!response.ok) {
     const error =
-      body.error && typeof body.error === 'object'
-        ? (body.error as Json).message
-        : body.message ?? undefined;
-    throw new Error(typeof error === 'string' ? error : `对话模型请求失败（${response.status}）`);
+      body.error && typeof body.error === 'object' ? (body.error as Json).message : undefined;
+    const message = error ?? body.message;
+    throw new Error(
+      typeof message === 'string' ? message : `对话模型请求失败（${response.status}）`,
+    );
   }
-  return normalizeChatResult(parseJsonLoose(extractText(body)));
+  return normalizeChatResult(parseJsonLoose(extractText(body)), userText);
 }
 
-/**
- * 调用 DashScope 非实时语音识别。
- *
- * 接口是 DashScope 原生格式（不是 OpenAI 兼容），因此单独拼装。
- * 文档：非实时语音识别（Qwen-Audio-3.x-ASR-Flash）HTTP API
- */
+/** 调用 DashScope 非实时语音识别（原生接口，非 OpenAI 兼容）。 */
 async function callAsr(
   config: VoiceGatewayConfig,
   audioDataUrl: string,
@@ -267,8 +407,11 @@ async function callAsr(
 ): Promise<{ text: string; duration?: number }> {
   const apiKey = config.apiKey ?? process.env.VOICE_API_KEY;
   const model = config.asrModel ?? process.env.VOICE_ASR_MODEL ?? DEFAULT_ASR_MODEL;
-  const base = (config.dashscopeBase ?? process.env.VOICE_DASHSCOPE_BASE ?? DEFAULT_DASHSCOPE_BASE)
-    .replace(/\/$/, '');
+  const base = (
+    config.dashscopeBase ??
+    process.env.VOICE_DASHSCOPE_BASE ??
+    DEFAULT_DASHSCOPE_BASE
+  ).replace(/\/$/, '');
   if (!apiKey) throw new Error('服务端未配置 VOICE_API_KEY，请检查 .env');
 
   const parameters: Json = { format };
@@ -276,34 +419,32 @@ async function callAsr(
   if (vocabulary && Object.keys(vocabulary).length) parameters.vocabulary = vocabulary;
   if (languageHints?.length) parameters.language_hints = languageHints.slice(0, 4);
 
-  const response = await fetch(
-    `${base}/api/v1/services/aigc/multimodal-generation/generation`,
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-        // 我们的语音是短句，不需要流式
-        'X-DashScope-SSE': 'disable',
-      },
-      body: JSON.stringify({
-        model,
-        input: {
-          messages: [
-            {
-              role: 'user',
-              content: [{ type: 'input_audio', input_audio: { data: audioDataUrl } }],
-            },
-          ],
-        },
-        parameters,
-      }),
+  const response = await fetch(`${base}/api/v1/services/aigc/multimodal-generation/generation`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+      'X-DashScope-SSE': 'disable',
     },
-  );
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+    body: JSON.stringify({
+      model,
+      input: {
+        messages: [
+          {
+            role: 'user',
+            content: [{ type: 'input_audio', input_audio: { data: audioDataUrl } }],
+          },
+        ],
+      },
+      parameters,
+    }),
+  });
   const body = (await response.json()) as Json;
   if (!response.ok) {
     const message =
-      body.message ?? (body.error && typeof body.error === 'object' ? (body.error as Json).message : undefined);
+      body.message ??
+      (body.error && typeof body.error === 'object' ? (body.error as Json).message : undefined);
     throw new Error(typeof message === 'string' ? message : `语音识别请求失败（${response.status}）`);
   }
   const output = (body.output ?? {}) as Json;
@@ -326,29 +467,65 @@ async function readJson(req: Connect.IncomingMessage): Promise<Json> {
   return JSON.parse(Buffer.concat(chunks).toString('utf8')) as Json;
 }
 
-/** 拼装对话用的用户消息（含当前烹饪上下文）。 */
-function buildUserMessage(body: Json): string {
+/** 把完整菜谱上下文拼成给模型看的文本 —— 这是回答是否具体的关键。 */
+export function buildUserMessage(body: Json): string {
   const context = (body.context ?? {}) as Json;
   const lines: string[] = [];
   lines.push(`用户说：${asString(body.text)}`);
-  if (context.recipeName) lines.push(`正在做的菜：${asString(context.recipeName)}`);
-  if (typeof context.stepIndex === 'number') {
-    const total = typeof context.stepTotal === 'number' ? ` / ${context.stepTotal}` : '';
-    lines.push(`当前步骤：第 ${context.stepIndex + 1}${total} 步`);
+
+  const name = asString(context.recipeName);
+  if (name) {
+    const meta: string[] = [];
+    const cuisines = asStringArray(context.cuisines, 4);
+    if (cuisines.length) meta.push(`菜系 ${cuisines.join('/')}`);
+    if (typeof context.servings === 'number') meta.push(`${context.servings} 人份`);
+    if (typeof context.estimatedMinutes === 'number') meta.push(`约 ${context.estimatedMinutes} 分钟`);
+    lines.push(`正在做的菜：${name}${meta.length ? `（${meta.join('，')}）` : ''}`);
   }
-  if (context.stepInstruction) lines.push(`这一步原文：${asString(context.stepInstruction)}`);
+
+  const ingredients = Array.isArray(context.ingredients) ? context.ingredients : [];
+  if (ingredients.length) {
+    const text = ingredients
+      .map((item) => {
+        if (!item || typeof item !== 'object') return '';
+        const record = item as Json;
+        const amount = asString(record.amount);
+        const group = asString(record.group);
+        return `${asString(record.name)}${amount ? ` ${amount}` : ''}${group ? `〔${group}〕` : ''}`;
+      })
+      .filter(Boolean)
+      .join('、');
+    lines.push(`这道菜的全部食材与用量：${text}`);
+  }
+
+  const steps = asStringArray(context.steps, 20);
+  if (steps.length) {
+    lines.push('完整步骤：');
+    steps.forEach((step, index) => lines.push(`  ${index + 1}. ${step}`));
+  }
+
+  if (typeof context.stepIndex === 'number') {
+    const total = typeof context.stepTotal === 'number' ? `（共 ${context.stepTotal} 步）` : '';
+    lines.push(`用户现在进行到：第 ${context.stepIndex + 1} 步${total}`);
+  }
+  if (context.stepInstruction) lines.push(`当前这一步的原文：${asString(context.stepInstruction)}`);
   if (context.check) lines.push(`这一步的判断标准：${asString(context.check)}`);
   if (context.tip) lines.push(`这一步的技巧：${asString(context.tip)}`);
-  const remedies = context.remedies;
-  if (remedies && typeof remedies === 'object') {
+  if (context.recipeTips) lines.push(`整道菜的小窍门：${asString(context.recipeTips)}`);
+  if (context.description) lines.push(`菜品简介：${asString(context.description).slice(0, 200)}`);
+
+  const remedyList = context.remedies;
+  if (remedyList && typeof remedyList === 'object') {
     lines.push(
-      `可用的本地补救方案：${JSON.stringify(remedies).slice(0, 600)}`,
+      `本地补救方案（可引用，但请结合这道菜说具体）：${JSON.stringify(remedyList).slice(0, 500)}`,
     );
   }
-  const taste = asStringArray(context.tastePreferences);
-  if (taste.length) lines.push(`用户口味偏好：${taste.join('、')}`);
-  const avoid = asStringArray(context.avoidIngredients);
+
+  const memories = asStringArray(context.tastePreferences, 8);
+  if (memories.length) lines.push(`用户已记录的口味偏好：${memories.join('、')}`);
+  const avoid = asStringArray(context.avoidIngredients, 8);
   if (avoid.length) lines.push(`用户忌口（仅用于提醒，不得据此改菜谱）：${avoid.join('、')}`);
+
   return lines.join('\n');
 }
 
@@ -373,7 +550,7 @@ export function voiceGateway(config: VoiceGatewayConfig = {}): Connect.NextHandl
           body.vocabulary && typeof body.vocabulary === 'object'
             ? (body.vocabulary as Record<string, number>)
             : undefined;
-        const languageHints = asStringArray(body.languageHints);
+        const languageHints = asStringArray(body.languageHints, 4);
         const result = await callAsr(
           config,
           audioDataUrl,
@@ -390,10 +567,14 @@ export function voiceGateway(config: VoiceGatewayConfig = {}): Connect.NextHandl
         const text = asString(body.text).trim();
         if (!text) throw new Error('请先说话或输入问题');
         if (text.length > 500) throw new Error('一次说的话请控制在 500 字以内');
-        const result = await callChatModel(config, [
-          { role: 'system', content: systemPrompt() },
-          { role: 'user', content: buildUserMessage(body) },
-        ]);
+        const result = await callChatModel(
+          config,
+          [
+            { role: 'system', content: systemPrompt() },
+            { role: 'user', content: buildUserMessage(body) },
+          ],
+          text,
+        );
         res.end(JSON.stringify(result));
         return;
       }

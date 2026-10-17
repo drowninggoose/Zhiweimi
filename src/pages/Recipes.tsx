@@ -1,21 +1,263 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useData } from '../app/data';
 import { repositories } from '../db/repositories';
 import { Empty, Image, ImageUpload, RecipeCard } from '../components/common';
 import { useUnsaved } from '../hooks/useUnsaved';
-import { filterRecipes, validateRecipe, type RecipeFilters } from '../services/recipeService';
-import { id, stamp, meals, mealLabels, type Recipe } from '../types/models';
+import { validateRecipe } from '../services/recipeService';
+import { id, stamp, meals, mealLabels, type MealType, type Recipe } from '../types/models';
+const DIFF_RANK: Record<string, number> = { easy: 1, normal: 2, advanced: 3 };
+// 品类（下钻第 1 层）
+const DISH_TYPES: { value: string; label: string; match: string[] }[] = [
+  { value: '热菜', label: '热菜', match: ['热菜'] },
+  { value: '凉菜', label: '凉菜', match: ['凉菜'] },
+  { value: '汤羹', label: '汤羹', match: ['汤羹'] },
+  { value: '主食面食', label: '主食面食', match: ['主食', '面食'] },
+  { value: '小吃', label: '小吃', match: ['小吃'] },
+  { value: '甜品烘焙', label: '甜品烘焙', match: ['甜品', '甜点', '烘焙'] },
+  { value: '西餐', label: '西餐', match: ['西餐'] },
+];
+// 菜系（下钻第 2 层）
+const CUISINE_FAMILIES = [
+  '家常菜',
+  '川菜',
+  '粤菜',
+  '鲁菜',
+  '苏菜',
+  '浙菜',
+  '闽菜',
+  '湘菜',
+  '徽菜',
+  '本帮菜',
+];
+const SORT_OPTIONS = [
+  { value: 'default', label: '综合排序' },
+  { value: 'time', label: '用时最短' },
+  { value: 'easy', label: '最快上手' },
+];
+const TIME_OPTIONS = [
+  { value: '', label: '全部用时' },
+  { value: '15', label: '15分钟内' },
+  { value: '30', label: '30分钟内' },
+  { value: '45', label: '45分钟内' },
+  { value: '60', label: '1小时内' },
+];
+const DIFF_OPTIONS = [
+  { value: '', label: '全部难度' },
+  { value: 'easy', label: '简单' },
+  { value: 'normal', label: '普通' },
+  { value: 'advanced', label: '进阶' },
+];
+function IndexRow({
+  options,
+  value,
+  onChange,
+}: {
+  options: { value: string; label: string }[];
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <div className="index-row">
+      {options.map((o) => (
+        <button
+          key={o.value || 'all'}
+          type="button"
+          className={value === o.value ? 'active' : ''}
+          onClick={() => onChange(o.value)}
+        >
+          {o.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+function Dropdown({
+  placeholder,
+  options,
+  value,
+  onChange,
+}: {
+  placeholder: string;
+  options: { value: string; label: string }[];
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    function onDoc(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener('mousedown', onDoc);
+    return () => document.removeEventListener('mousedown', onDoc);
+  }, [open]);
+  const current = options.find((o) => o.value === value);
+  return (
+    <div className="dropdown" ref={ref}>
+      <button
+        type="button"
+        className={`dropdown-toggle${value ? ' active' : ''}`}
+        aria-expanded={open}
+        onClick={() => setOpen(!open)}
+      >
+        {current ? current.label : placeholder} ▾
+      </button>
+      {open && (
+        <div className="dropdown-menu">
+          {options.map((o) => (
+            <button
+              key={o.value || 'all'}
+              type="button"
+              className={value === o.value ? 'active' : ''}
+              onClick={() => {
+                onChange(o.value);
+                setOpen(false);
+              }}
+            >
+              {o.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 export function RecipesPage() {
   const { data } = useData();
-  const [params, setParams] = useSearchParams();
-  const [filters, setFilters] = useState<RecipeFilters>({
-    query: params.get('q') ?? '',
-    ingredients: params.get('ingredients')?.split(',') ?? [],
-  });
+  const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const [query, setQuery] = useState(params.get('q') ?? '');
+  const [sort, setSort] = useState('default');
+  const [source, setSource] = useState('');
+  // 标准一 · 餐次（独立目录，点了直接出结果）
+  const [meal, setMeal] = useState('');
+  // 标准二 · 品类下钻链
+  const [depth, setDepth] = useState(1);
+  const [dishType, setDishType] = useState('');
+  const [cuisine, setCuisine] = useState('');
+  const [flavor, setFlavor] = useState('');
+  const [maxMinutes, setMaxMinutes] = useState('');
+  const [difficulty, setDifficulty] = useState('');
   if (!data) return null;
-  const results = filterRecipes(data.recipes, filters);
-  const update = (next: Partial<RecipeFilters>) => setFilters({ ...filters, ...next });
+
+  // 下钻链：每层的候选只从"当前剩下的菜"里取，保证点下去必有结果
+  const byDish = dishType
+    ? data.recipes.filter((r) =>
+        (DISH_TYPES.find((d) => d.value === dishType)?.match ?? []).some((m) =>
+          r.cuisines.includes(m),
+        ),
+      )
+    : data.recipes;
+  const cuisineOptions = [
+    { value: '', label: '全部菜系' },
+    ...[...new Set(byDish.flatMap((r) => r.cuisines))]
+      .filter((c) => CUISINE_FAMILIES.includes(c))
+      .sort()
+      .map((c) => ({ value: c, label: c })),
+  ];
+  const byCuisine = cuisine ? byDish.filter((r) => r.cuisines.includes(cuisine)) : byDish;
+  const flavorOptions = [
+    { value: '', label: '全部口味' },
+    ...[...new Set(byCuisine.flatMap((r) => r.flavorTags))]
+      .sort()
+      .map((f) => ({ value: f, label: f })),
+  ];
+  const byFlavor = flavor ? byCuisine.filter((r) => r.flavorTags.includes(flavor)) : byCuisine;
+  const byTime = maxMinutes
+    ? byFlavor.filter((r) => (r.estimatedMinutes ?? Infinity) <= Number(maxMinutes))
+    : byFlavor;
+  const byDiff = difficulty ? byTime.filter((r) => r.difficulty === difficulty) : byTime;
+
+  // 两个标准互斥：餐次模式 或 品类模式
+  let results = meal
+    ? data.recipes.filter((r) => r.mealTypes.includes(meal as MealType))
+    : byDiff;
+  if (source === 'mine') results = results.filter((r) => r.sourceType === 'user');
+  else if (source === 'favorites') results = results.filter((r) => r.favorite);
+  const kw = query.trim();
+  if (kw)
+    results = results.filter((r) =>
+      `${r.name} ${r.ingredients.map((i) => i.name).join(' ')}`.includes(kw),
+    );
+  if (sort === 'time')
+    results = [...results].sort(
+      (a, b) => (a.estimatedMinutes ?? 9999) - (b.estimatedMinutes ?? 9999),
+    );
+  else if (sort === 'easy')
+    results = [...results].sort(
+      (a, b) =>
+        (DIFF_RANK[a.difficulty ?? 'normal'] ?? 2) - (DIFF_RANK[b.difficulty ?? 'normal'] ?? 2),
+    );
+
+  // 搜索联想
+  const dishHits = kw ? data.recipes.filter((r) => r.name.includes(kw)).slice(0, 6) : [];
+  const ingredientHits = kw
+    ? [...new Set(data.recipes.flatMap((r) => r.ingredientTags))]
+        .filter((i) => i.includes(kw))
+        .slice(0, 6)
+    : [];
+  const showSuggest = kw !== '' && (dishHits.length > 0 || ingredientHits.length > 0);
+
+  // 两个标准互斥：选了其中一个，就清空另一个
+  function pickMeal(v: string) {
+    setMeal(v);
+    if (v) {
+      setDishType('');
+      setCuisine('');
+      setFlavor('');
+      setMaxMinutes('');
+      setDifficulty('');
+      setDepth(1);
+    }
+  }
+  function pickDishType(v: string) {
+    setMeal('');
+    setDishType(v);
+    setCuisine('');
+    setFlavor('');
+    setMaxMinutes('');
+    setDifficulty('');
+    setDepth(Math.max(depth, 2));
+  }
+  function pickCuisine(v: string) {
+    setMeal('');
+    setCuisine(v);
+    setFlavor('');
+    setMaxMinutes('');
+    setDifficulty('');
+    setDepth(Math.max(depth, 3));
+  }
+  function pickFlavor(v: string) {
+    setMeal('');
+    setFlavor(v);
+    setMaxMinutes('');
+    setDifficulty('');
+    setDepth(Math.max(depth, 4));
+  }
+  function pickTime(v: string) {
+    setMeal('');
+    setMaxMinutes(v);
+    setDifficulty('');
+    setDepth(Math.max(depth, 5));
+  }
+  function pickDifficulty(v: string) {
+    setMeal('');
+    setDifficulty(v);
+  }
+  function resetAll() {
+    setMeal('');
+    setDishType('');
+    setCuisine('');
+    setFlavor('');
+    setMaxMinutes('');
+    setDifficulty('');
+    setDepth(1);
+    setSource('');
+    setSort('default');
+    setQuery('');
+  }
   return (
     <>
       <div className="row between">
@@ -24,113 +266,120 @@ export function RecipesPage() {
           新建菜谱
         </Link>
       </div>
-      <section className="card fields">
-        <div className="row">
-          <input
-            aria-label="菜谱搜索"
-            placeholder="菜名或食材"
-            value={filters.query}
-            onChange={(e) => update({ query: e.target.value })}
+      <div className="search-box" style={{ marginBottom: 16 }}>
+        <input
+          aria-label="菜谱搜索"
+          placeholder="菜名或食材"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+        {showSuggest && (
+          <div className="suggest-list">
+            {dishHits.map((r) => (
+              <button
+                key={`d-${r.id}`}
+                onClick={() => {
+                  setQuery('');
+                  navigate(`/recipes/${r.id}`);
+                }}
+              >
+                {r.name}
+                <span className="suggest-kind">菜品</span>
+              </button>
+            ))}
+            {ingredientHits.map((i) => (
+              <button key={`i-${i}`} onClick={() => setQuery(i)}>
+                {i}
+                <span className="suggest-kind">食材</span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* 标准一 · 餐次：独立分类，选了直接出结果 */}
+      <div className="row" style={{ marginBottom: 10 }}>
+        <span className="index-label">按餐次</span>
+        <Dropdown
+          placeholder="全部餐次"
+          options={[
+            { value: '', label: '全部餐次' },
+            ...meals.map((m) => ({ value: m, label: mealLabels[m] })),
+          ]}
+          value={meal}
+          onChange={pickMeal}
+        />
+      </div>
+
+      {/* 标准二 · 品类：下拉逐级出现，点一层出下一层 */}
+      <div className="row" style={{ marginBottom: 14 }}>
+        <span className="index-label">按品类</span>
+        <Dropdown
+          placeholder="全部品类"
+          options={[
+            { value: '', label: '全部品类' },
+            ...DISH_TYPES.map((d) => ({ value: d.value, label: d.label })),
+          ]}
+          value={dishType}
+          onChange={pickDishType}
+        />
+        {depth >= 2 && (
+          <Dropdown
+            placeholder="全部菜系"
+            options={cuisineOptions}
+            value={cuisine}
+            onChange={pickCuisine}
           />
-          <select
-            aria-label="菜系"
-            onChange={(e) => update({ cuisine: e.target.value })}
-            value={filters.cuisine ?? ''}
-          >
-            <option value="">全部菜系</option>
-            {[...new Set(data.recipes.flatMap((r) => r.cuisines))].map((c) => (
-              <option key={c}>{c}</option>
-            ))}
-          </select>
-          <select
-            aria-label="餐次"
-            value={filters.meal ?? ''}
-            onChange={(e) => update({ meal: e.target.value })}
-          >
-            <option value="">全部餐次</option>
-            {meals.map((m) => (
-              <option key={m} value={m}>
-                {mealLabels[m]}
-              </option>
-            ))}
-          </select>
-          <select
-            aria-label="口味"
-            value={filters.flavor ?? ''}
-            onChange={(e) => update({ flavor: e.target.value })}
-          >
-            <option value="">全部口味</option>
-            {[...new Set(data.recipes.flatMap((r) => r.flavorTags))].map((f) => (
-              <option key={f}>{f}</option>
-            ))}
-          </select>
-          <select
-            aria-label="难度"
-            value={filters.difficulty ?? ''}
-            onChange={(e) => update({ difficulty: e.target.value })}
-          >
-            <option value="">全部难度</option>
-            <option value="easy">简单</option>
-            <option value="normal">普通</option>
-            <option value="advanced">进阶</option>
-          </select>
-          <select
-            aria-label="用时"
-            value={filters.maxMinutes ?? ''}
-            onChange={(e) => update({ maxMinutes: Number(e.target.value) || undefined })}
-          >
-            <option value="">不限用时</option>
-            <option value="15">15分钟内</option>
-            <option value="30">30分钟内</option>
-          </select>
-        </div>
+        )}
+        {depth >= 3 && (
+          <Dropdown
+            placeholder="全部口味"
+            options={flavorOptions}
+            value={flavor}
+            onChange={pickFlavor}
+          />
+        )}
+        {depth >= 4 && (
+          <Dropdown
+            placeholder="全部用时"
+            options={TIME_OPTIONS}
+            value={maxMinutes}
+            onChange={pickTime}
+          />
+        )}
+        {depth >= 5 && (
+          <Dropdown
+            placeholder="全部难度"
+            options={DIFF_OPTIONS}
+            value={difficulty}
+            onChange={pickDifficulty}
+          />
+        )}
+      </div>
+
+      <div className="row between" style={{ marginBottom: 14 }}>
+        <span className="muted">{results.length} 道菜</span>
         <div className="row">
-          {[...new Set(data.recipes.flatMap((r) => r.ingredientTags))].map((i) => (
-            <label key={i}>
-              <input
-                type="checkbox"
-                checked={filters.ingredients?.includes(i) ?? false}
-                onChange={(e) =>
-                  update({
-                    ingredients: e.target.checked
-                      ? [...(filters.ingredients ?? []), i]
-                      : filters.ingredients?.filter((x) => x !== i),
-                  })
-                }
-              />
-              {i}
-            </label>
-          ))}
-        </div>
-        <div className="row">
-          <label>
-            <input
-              type="checkbox"
-              checked={!!filters.mine}
-              onChange={(e) => update({ mine: e.target.checked })}
-            />
-            我的菜谱
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={!!filters.favorites}
-              onChange={(e) => update({ favorites: e.target.checked })}
-            />
-            我的收藏
-          </label>
+          <IndexRow options={SORT_OPTIONS} value={sort} onChange={setSort} />
           <button
-            className="secondary"
-            onClick={() => {
-              setFilters({});
-              setParams({});
-            }}
+            type="button"
+            className={source === 'mine' ? '' : 'secondary'}
+            onClick={() => setSource(source === 'mine' ? '' : 'mine')}
           >
+            我的菜谱
+          </button>
+          <button
+            type="button"
+            className={source === 'favorites' ? '' : 'secondary'}
+            onClick={() => setSource(source === 'favorites' ? '' : 'favorites')}
+          >
+            我的收藏
+          </button>
+          <button type="button" className="secondary" onClick={resetAll}>
             清除筛选
           </button>
-          <span>{results.length} 道菜</span>
         </div>
-      </section>
+      </div>
       {results.length ? (
         <div className="grid">
           {results.map((r) => (
@@ -167,8 +416,12 @@ export function RecipeDetail() {
             {recipe.cuisines.join(' · ')} / {recipe.estimatedMinutes} 分钟
           </p>
           <p>
-            {recipe.sourceType === 'demo' ? '演示菜谱' : '我的菜谱'} ·{' '}
-            {recipe.status === 'draft' ? '草稿' : '已发布'}
+            {recipe.sourceType === 'library'
+              ? '菜谱库'
+              : recipe.sourceType === 'demo'
+                ? '演示菜谱'
+                : '我的菜谱'}{' '}
+            · {recipe.status === 'draft' ? '草稿' : '已发布'}
           </p>
           <div className="row">
             <button
@@ -182,7 +435,7 @@ export function RecipeDetail() {
               </Link>
             )}
             <Link className="button secondary" to={`/recipes/${recipe.id}/edit`}>
-              {recipe.sourceType === 'demo' ? '创建副本' : '编辑菜谱'}
+              {recipe.sourceType === 'user' ? '编辑菜谱' : '创建副本'}
             </Link>
             {recipe.sourceType === 'user' && (
               <button
@@ -217,7 +470,6 @@ export function RecipeDetail() {
               {i + 1}. {s.instruction}
             </h3>
             {s.image && <Image image={s.image} alt={`步骤${i + 1}`} className="upload-preview" />}
-            {s.timerSeconds && <p>{s.timerSeconds}秒计时</p>}
           </article>
         ))}
         <p>{recipe.notes}</p>
@@ -251,9 +503,9 @@ export function RecipeEditor() {
     source
       ? {
           ...source,
-          ...(source.sourceType === 'demo' ? stamp() : {}),
+          ...(source.sourceType === 'user' ? {} : stamp()),
           sourceType: 'user',
-          name: source.sourceType === 'demo' ? `${source.name}（我的版本）` : source.name,
+          name: source.sourceType === 'user' ? source.name : `${source.name}（我的版本）`,
         }
       : blankRecipe(),
   );
@@ -294,7 +546,11 @@ export function RecipeEditor() {
   return (
     <section className="card fields">
       <h2>
-        {source?.sourceType === 'demo' ? '创建用户菜谱副本' : recipeId ? '编辑菜谱' : '新建菜谱'}
+        {source && source.sourceType !== 'user'
+          ? '创建用户菜谱副本'
+          : recipeId
+            ? '编辑菜谱'
+            : '新建菜谱'}
       </h2>
       <p className="muted">标签为本地模拟理解，可自由修改。不需要填写用餐人数。</p>
       {error && (
@@ -445,22 +701,6 @@ export function RecipeEditor() {
                 update({
                   steps: recipe.steps.map((x, j) =>
                     j === i ? { ...x, instruction: e.target.value } : x,
-                  ),
-                })
-              }
-            />
-          </label>
-          <label>
-            计时秒数
-            <input
-              type="number"
-              value={step.timerSeconds ?? ''}
-              onChange={(e) =>
-                update({
-                  steps: recipe.steps.map((x, j) =>
-                    j === i
-                      ? { ...x, timerSeconds: e.target.value ? Number(e.target.value) : undefined }
-                      : x,
                   ),
                 })
               }

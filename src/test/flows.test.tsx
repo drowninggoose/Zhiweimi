@@ -4,12 +4,14 @@ import userEvent from '@testing-library/user-event';
 import { App } from '../app/App';
 import { db } from '../db/database';
 import { initialize } from '../db/seed';
+import { fixtureRecipes } from './fixtures';
 beforeEach(async () => {
   await db.open();
   await db.transaction('rw', db.tables, async () => {
     for (const table of db.tables) await table.clear();
   });
   await initialize(db);
+  await db.recipes.bulkAdd(fixtureRecipes());
   vi.spyOn(window, 'confirm').mockReturnValue(true);
 });
 afterEach(() => {
@@ -61,17 +63,14 @@ test('阶段4界面：两件厨具创建、编辑与删除', async () => {
   expect(await db.utensils.count()).toBe(1);
 });
 test('阶段5界面：准备到分步、八种建议、完成保存日记', async () => {
-  window.history.replaceState({}, '', '/cook/demo-1');
+  window.history.replaceState({}, '', '/cook/fixture-1');
   render(<App />);
   const user = userEvent.setup();
-  await user.click(await screen.findByRole('link', { name: '准备完成，开始分步烹饪' }));
-  expect(screen.getByText('步骤 1 / 3')).toBeInTheDocument();
+  await user.click(
+    await screen.findByRole('button', { name: '准备完成，开始分步烹饪' }),
+  );
+  expect(await screen.findByText('步骤 1 / 3')).toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: '下一步' }));
-  expect(screen.getByRole('timer')).toHaveTextContent('03:00');
-  await user.click(screen.getByRole('button', { name: '启动计时' }));
-  await user.click(screen.getByRole('button', { name: '暂停计时' }));
-  await user.click(screen.getByRole('button', { name: '重置计时' }));
-  expect(screen.getByRole('timer')).toHaveTextContent('03:00');
   await user.click(screen.getByRole('button', { name: '太咸' }));
   expect(screen.getByText(/少量加入未调味的同类食材/)).toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: '下一步' }));
@@ -80,4 +79,6 @@ test('阶段5界面：准备到分步、八种建议、完成保存日记', asyn
   await user.click(screen.getByRole('button', { name: '保存到日记' }));
   await screen.findByRole('heading', { name: '每一餐，都值得记住' });
   expect((await db.diaryEntries.toArray())[0].notes).toBe('完成闭环');
+  // 保存到日记后应清掉这道菜的进度
+  expect(await db.cookingProgress.count()).toBe(0);
 });

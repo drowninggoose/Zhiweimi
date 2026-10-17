@@ -102,9 +102,11 @@ export function RecipeCard({ recipe }: { recipe: Recipe }) {
           {recipe.flavorTags.join(' · ')} ·{' '}
           {recipe.status === 'draft'
             ? '草稿'
-            : recipe.sourceType === 'demo'
-              ? '演示菜谱'
-              : '我的菜谱'}
+            : recipe.sourceType === 'library'
+              ? '菜谱库'
+              : recipe.sourceType === 'demo'
+                ? '演示菜谱'
+                : '我的菜谱'}
         </p>
         <div className="row">
           <button

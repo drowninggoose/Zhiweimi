@@ -1,6 +1,5 @@
 export const navigation = [
   ['/', '首页总览'],
-  ['/recommendations', '今日推荐'],
   ['/recipes', '菜谱总览'],
   ['/utensils', '家用厨具'],
   ['/cook', '开始烹饪'],

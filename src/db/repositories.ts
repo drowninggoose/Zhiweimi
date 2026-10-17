@@ -1,7 +1,26 @@
 import type { Table } from 'dexie';
 import { db, type Database } from './database';
-import { initialize, defaultPreferences, demoRecipes } from './seed';
-import type { Base, DataSnapshot, DiaryEntry, Recipe, Utensil, PantryItem } from '../types/models';
+import { initialize, defaultPreferences } from './seed';
+import { importLibrary } from './library';
+import {
+  buildRecommendation,
+  windowId,
+  type RecommendationBatch,
+} from '../services/recommendationService';
+import type {
+  Base,
+  CookingProgress,
+  DataSnapshot,
+  DiaryEntry,
+  Recipe,
+  RecommendationHistoryEntry,
+  RecommendationState,
+  Utensil,
+  PantryItem,
+} from '../types/models';
+
+/** 记住最近多少批推荐，用于「换一批」时避开刚看过的菜。 */
+const RECENT_BATCH_LIMIT = 8;
 export function repository<T extends Base>(table: Table<T, string>) {
   return {
     list: () => table.toArray(),
@@ -27,8 +46,6 @@ export function createRepositories(database: Database) {
         'rw',
         [database.recipes, database.diaryEntries, database.mealPlans],
         async () => {
-          const value = await database.recipes.get(id);
-          if (value?.sourceType === 'demo') throw new Error('演示菜谱不可删除');
           await database.recipes.delete(id);
           await database.diaryEntries
             .where('recipeId')
@@ -78,12 +95,103 @@ export function createRepositories(database: Database) {
       });
     },
   };
+  const recommendationState = {
+    get: () => database.recommendationState.get('current'),
+    /**
+     * 取当前时间段的推荐；如果换了时间段（比如从午餐切到晚餐），种子自动更新，
+     * 于是「每次登录看到不同的推荐」。
+     */
+    async ensure(now = new Date()): Promise<{ state: RecommendationState; rotated: boolean }> {
+      const current = await database.recommendationState.get('current');
+      const id = windowId(now);
+      const stampNow = new Date().toISOString();
+      if (!current) {
+        const fresh: RecommendationState = {
+          id: 'current',
+          version: 1,
+          lastWindowId: id,
+          seed: id,
+          refreshCount: 0,
+          updatedAt: stampNow,
+          recentBatches: [],
+        };
+        await database.recommendationState.put(fresh);
+        return { state: fresh, rotated: true };
+      }
+      if (current.lastWindowId !== id) {
+        const next: RecommendationState = { ...current, lastWindowId: id, seed: id, updatedAt: stampNow };
+        await database.recommendationState.put(next);
+        return { state: next, rotated: true };
+      }
+      return { state: current, rotated: false };
+    },
+    /** 换一批：换种子 + 记下刚推过的菜。 */
+    async refresh(now = new Date()): Promise<RecommendationState> {
+      const { state } = await recommendationState.ensure(now);
+      const stampNow = new Date().toISOString();
+      const next: RecommendationState = {
+        ...state,
+        seed: `${state.lastWindowId}-${Date.now()}`,
+        refreshCount: state.refreshCount + 1,
+        updatedAt: stampNow,
+      };
+      await database.recommendationState.put(next);
+      return next;
+    },
+    /** 把一批推荐记入历史，之后换批时优先避开这些菜。 */
+    async remember(state: RecommendationState, batch: RecommendationBatch): Promise<void> {
+      const entry: RecommendationHistoryEntry = {
+        windowId: batch.windowId,
+        seed: batch.seed,
+        at: new Date().toISOString(),
+        ids: batch.dishes.map((d) => d.recipe.id),
+      };
+      const next: RecommendationState = {
+        ...state,
+        recentBatches: [entry, ...state.recentBatches].slice(0, RECENT_BATCH_LIMIT),
+        updatedAt: entry.at,
+      };
+      await database.recommendationState.put(next);
+    },
+    async build(
+      recipes: Recipe[],
+      conditions: Parameters<typeof buildRecommendation>[1],
+      pantry: PantryItem[],
+      state: RecommendationState,
+      now = new Date(),
+    ): Promise<RecommendationBatch> {
+      const seenIds = [...new Set(state.recentBatches.flatMap((b) => b.ids))];
+      const previous = state.recentBatches[0]?.ids ?? [];
+      let batch = buildRecommendation(recipes, conditions, pantry, {
+        now,
+        seed: state.seed,
+        seenIds,
+      });
+      let attempt = 0;
+      // 极端情况下（候选太少）可能抽到和上一批完全一样的组合，换种子重抽。
+      while (
+        attempt < 5 &&
+        previous.length > 0 &&
+        batch.dishes.length > 0 &&
+        batch.dishes.map((d) => d.recipe.id).join(',') === previous.join(',')
+      ) {
+        attempt += 1;
+        batch = buildRecommendation(recipes, conditions, pantry, {
+          now,
+          seed: `${state.seed}-r${attempt}`,
+          seenIds,
+        });
+      }
+      return batch;
+    },
+  };
   return {
     recipes,
     utensils: repository<Utensil>(database.utensils),
     diaryEntries,
     mealPlans: repository(database.mealPlans),
     pantryItems: repository<PantryItem>(database.pantryItems),
+    recommendationState,
     async snapshot(): Promise<DataSnapshot> {
       await initialize(database);
       return {
@@ -99,6 +207,18 @@ export function createRepositories(database: Database) {
     preferences: {
       getById: () => database.preferences.get('current'),
       update: (value: DataSnapshot['preferences']) => database.preferences.put(value),
+    },
+    /**
+     * 烹饪进度：一道菜一条记录，主键用 recipeId。
+     * 页面每次状态变化都会调用 save()，所以做到一半关掉页面也不会丢。
+     */
+    cookingProgress: {
+      list: () =>
+        database.cookingProgress.orderBy('updatedAt').reverse().toArray(),
+      get: (recipeId: string) => database.cookingProgress.where('recipeId').equals(recipeId).first(),
+      save: (value: CookingProgress) => database.cookingProgress.put(value),
+      remove: (recipeId: string) => database.cookingProgress.where('recipeId').equals(recipeId).delete(),
+      clear: () => database.cookingProgress.clear(),
     },
     async restore(snapshot: DataSnapshot) {
       await database.transaction('rw', database.tables, async () => {
@@ -133,17 +253,57 @@ export function createRepositories(database: Database) {
         }
       });
     },
-    async resetDemo() {
-      await database.transaction('rw', [database.recipes, database.demoState], async () => {
-        await database.recipes.where('sourceType').equals('demo').delete();
-        await database.recipes.bulkAdd(demoRecipes());
-        await database.demoState.put({
-          id: 'current',
-          version: 1,
-          recentRecipeIds: [],
-          recentRecommendationIds: [],
-        });
-      });
+    /**
+     * 恢复菜谱库：删掉现有菜谱库菜谱后重新从 `recipes-library.json` 导入，
+     * 同时清理最近查看 / 推荐历史里指向已删除菜谱的记录，并修复日记与计划引用。
+     */
+    async restoreLibrary() {
+      // importLibrary 内部自带事务，必须在任何外层事务之外调用
+      const old = await database.recipes.where('sourceType').equals('library').toArray();
+      const oldIds = new Set(old.map((r) => r.id));
+      if (old.length) await database.recipes.bulkDelete([...oldIds]);
+      await importLibrary(database);
+      await database.transaction(
+        'rw',
+        [
+          database.demoState,
+          database.recommendationState,
+          database.diaryEntries,
+          database.mealPlans,
+        ],
+        async () => {
+          for (const entry of await database.diaryEntries.toArray()) {
+            if (entry.recipeId && oldIds.has(entry.recipeId)) {
+              const next = { ...entry };
+              delete next.recipeId;
+              await database.diaryEntries.put(next);
+            }
+          }
+          for (const plan of await database.mealPlans.toArray()) {
+            plan.days = plan.days.map((day) => ({
+              ...day,
+              breakfastRecipeId:
+                day.breakfastRecipeId && oldIds.has(day.breakfastRecipeId)
+                  ? undefined
+                  : day.breakfastRecipeId,
+              lunchRecipeId:
+                day.lunchRecipeId && oldIds.has(day.lunchRecipeId) ? undefined : day.lunchRecipeId,
+              dinnerRecipeId:
+                day.dinnerRecipeId && oldIds.has(day.dinnerRecipeId)
+                  ? undefined
+                  : day.dinnerRecipeId,
+            }));
+            await database.mealPlans.put(plan);
+          }
+          await database.demoState.put({
+            id: 'current',
+            version: 1,
+            recentRecipeIds: [],
+            recentRecommendationIds: [],
+          });
+          await database.recommendationState.clear();
+        },
+      );
     },
   };
 }

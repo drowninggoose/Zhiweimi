@@ -15,7 +15,6 @@ import { RecipesPage, RecipeDetail, RecipeEditor } from '../pages/Recipes';
 import { UtensilsPage } from '../pages/Utensils';
 import { CookingSelect, CookingPrepare, CookingSteps } from '../pages/Cooking';
 import { DiaryPage } from '../pages/Diary';
-import { RecommendationsPage } from '../pages/Recommendations';
 import { PantryPage } from '../pages/Pantry';
 import { PlannerPage } from '../pages/Planner';
 import { HomePage } from '../pages/Home';
@@ -34,8 +33,6 @@ function Shell() {
       <SettingsPage />
     ) : path === '/' ? (
       <HomePage />
-    ) : path === '/recommendations' ? (
-      <RecommendationsPage />
     ) : path === '/planner' ? (
       <Routes>
         <Route index element={<PlannerPage />} />

@@ -1,13 +1,84 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useData } from '../app/data';
 import { repositories } from '../db/repositories';
 import { Empty, Image, ImageUpload, RecipeCard } from '../components/common';
-import { useUnsaved } from '../hooks/useUnsaved';
-import { useTimer } from '../hooks/useTimer';
 import { filterRecipes } from '../services/recipeService';
 import { convertIngredient, remedies } from '../services/cookingService';
-import { meals, mealLabels, stamp, today, type MealType, type StoredImage } from '../types/models';
+import {
+  formatSavedAgo,
+  useCookingProgress,
+  type CookingDraft,
+} from '../hooks/useCookingProgress';
+import {
+  meals,
+  mealLabels,
+  stamp,
+  today,
+  type CookingProgress,
+  type MealType,
+  type Recipe,
+  type StoredImage,
+} from '../types/models';
+
+/** 「继续烹饪」入口：列出做到一半的菜，点一下回到原来的位置。 */
+export function ContinueCooking() {
+  const { data } = useData();
+  const [items, setItems] = useState<Awaited<ReturnType<typeof repositories.cookingProgress.list>>>(
+    [],
+  );
+  // 进度是异步写入的，这里读一次并订阅后续变更，避免刚离开烹饪时读到空
+  useEffect(() => {
+    let active = true;
+    const load = () =>
+      repositories.cookingProgress
+        .list()
+        .then((list) => {
+          if (active) setItems(list);
+        })
+        .catch(() => undefined);
+    void load();
+    // 启动后短暂补读一次，覆盖「刚写完就切页面」的时序
+    const timer = window.setTimeout(() => void load(), 800);
+    return () => {
+      active = false;
+      window.clearTimeout(timer);
+    };
+  }, [data?.recipes, data?.diaryEntries]);
+  if (!data || !items.length) return null;
+  return (
+    <section className="card continue-cooking">
+      <div className="row between">
+        <h2>继续上次的烹饪</h2>
+        <span className="tag">进度已自动保存</span>
+      </div>
+      <p className="muted">做到一半也可以先去忙别的，回来接着做。</p>
+      {items.map((item) => {
+        const recipe = data.recipes.find((r) => r.id === item.recipeId);
+        if (!recipe) return null;
+        const total = recipe.steps.length;
+        return (
+          <div className="row between continue-row" key={item.recipeId}>
+            <span>
+              <strong>{item.recipeName}</strong>
+              <small>
+                {item.completed
+                  ? '已完成，正在填写日记'
+                  : `第 ${Math.min(item.stepIndex + 1, total)} / ${total} 步`}
+                {' · '}
+                {formatSavedAgo(item.savedAt)}
+              </small>
+            </span>
+            <Link className="button" to={`/cook/${item.recipeId}/steps`}>
+              继续烹饪
+            </Link>
+          </div>
+        );
+      })}
+    </section>
+  );
+}
+
 export function CookingSelect() {
   const { data } = useData();
   const [query, setQuery] = useState('');
@@ -21,6 +92,7 @@ export function CookingSelect() {
   return (
     <>
       <h2>今天从哪道菜开始？</h2>
+      <ContinueCooking />
       <div className="card row">
         <input
           aria-label="烹饪菜谱搜索"
@@ -56,15 +128,47 @@ export function CookingSelect() {
 }
 export function CookingPrepare() {
   const { recipeId } = useParams();
-  const { data } = useData();
+  const { data, run } = useData();
+  const navigate = useNavigate();
   const recipe = data?.recipes.find((r) => r.id === recipeId && r.status === 'published');
-  const [selected, setSelected] = useState<Record<string, string>>({});
+  const progress = useCookingProgress(recipeId);
+  /** 本次页面上手改过的选择，优先于历史进度。 */
+  const [mine, setMine] = useState<Record<string, string> | null>(null);
+  const remembered = progress.initial?.utensilChoices ?? {};
+  const selected: Record<string, string> = { ...remembered, ...(mine ?? {}) };
+
   if (!recipe || !data)
     return (
       <Empty>
         菜谱不可用。<Link to="/cook">重新选择</Link>
       </Empty>
     );
+  /** 进入分步烹饪：先把换算选择存成进度。 */
+  const target = recipe;
+  async function startSteps() {
+    const now = new Date().toISOString();
+    await run(
+      () =>
+        repositories.cookingProgress.save({
+          id: `progress-${recipe!.id}`,
+          createdAt: now,
+          updatedAt: now,
+          savedAt: now,
+          recipeId: target.id,
+          recipeName: target.name,
+          stage: 'steps',
+          stepIndex: 0,
+          completed: false,
+          utensilChoices: selected,
+          rating: '满意',
+          notes: '',
+          date: today(),
+          mealType: 'dinner',
+        }),
+      '',
+    );
+    navigate(`/cook/${target.id}/steps`);
+  }
   return (
     <>
       <section className="card">
@@ -78,7 +182,7 @@ export function CookingPrepare() {
             <select
               aria-label={`${i.name}换算厨具`}
               value={selected[i.id] ?? ''}
-              onChange={(e) => setSelected({ ...selected, [i.id]: e.target.value })}
+              onChange={(e) => setMine({ ...selected, [i.id]: e.target.value })}
             >
               <option value="">自动匹配全部厨具</option>
               {data.utensils.map((u) => (
@@ -94,50 +198,114 @@ export function CookingPrepare() {
             还没有厨具，将展示原始单位。<Link to="/utensils?new=1">添加厨具</Link>
           </p>
         )}
-        <Link className="button" to={`/cook/${recipe.id}/steps`}>
-          准备完成，开始分步烹饪
-        </Link>
+        <button onClick={() => void startSteps()}>准备完成，开始分步烹饪</button>
+        <p className="muted">开始后进度会自动保存，随时可以离开再回来。</p>
       </section>
     </>
   );
 }
 export function CookingSteps() {
   const { recipeId } = useParams();
-  const { data, run } = useData();
-  const navigate = useNavigate();
+  const { data } = useData();
   const recipe = data?.recipes.find((r) => r.id === recipeId && r.status === 'published');
-  const [index, setIndex] = useState(0);
-  const { seconds, running, setSeconds, setRunning } = useTimer(
-    recipe?.steps[0]?.timerSeconds ?? 0,
-  );
-  const [complete, setComplete] = useState(false);
-  const [finished, setFinished] = useState(false);
-  const [problem, setProblem] = useState<keyof typeof remedies>();
-  const [image, setImage] = useState<StoredImage>();
-  const [rating, setRating] = useState('满意');
-  const [notes, setNotes] = useState('');
-  const [date, setDate] = useState(today());
-  const [meal, setMeal] = useState<MealType>('dinner');
-  const permitLeave = useUnsaved(!finished, '离开烹饪页后进度不会保存，确认离开？');
-  const step = recipe?.steps[index];
-  if (!recipe || !step)
+  const progress = useCookingProgress(recipeId);
+
+  if (!recipe)
     return (
       <Empty>
         菜谱步骤不可用。<Link to="/cook">重新选择</Link>
       </Empty>
     );
-  function move(next: number) {
-    setIndex(next);
-    setRunning(false);
-    setSeconds(recipe!.steps[next].timerSeconds ?? 0);
-  }
+  if (progress.loading)
+    return (
+      <section className="card">
+        <p className="muted">正在恢复上次的进度…</p>
+      </section>
+    );
+  // key 只跟菜谱绑定：读取完成前不会渲染内层，所以初值一定拿得到；
+  // 结束后也不换 key，避免重挂载把已删除的进度又写回来。
+  return (
+    <CookingStepsView
+      key={recipe.id}
+      recipe={recipe}
+      saved={progress.initial}
+      savedAt={progress.savedAt}
+      onSave={progress.save}
+      onDiscard={progress.discard}
+    />
+  );
+}
+
+/** 分步烹饪主体：状态初值来自上次保存的进度，之后每次改动自动保存。 */
+function CookingStepsView({
+  recipe,
+  saved,
+  savedAt,
+  onSave,
+  onDiscard,
+}: {
+  recipe: Recipe;
+  saved: CookingProgress | null;
+  savedAt?: string;
+  onSave: (draft: CookingDraft) => void;
+  onDiscard: () => Promise<void>;
+}) {
+  const { data, run } = useData();
+  const navigate = useNavigate();
+  const maxIndex = Math.max(recipe.steps.length - 1, 0);
+  const [index, setIndex] = useState(() =>
+    Math.min(Math.max(saved?.stepIndex ?? 0, 0), maxIndex),
+  );
+  const [complete, setComplete] = useState(() => Boolean(saved?.completed));
+  const [problem, setProblem] = useState<keyof typeof remedies | undefined>(
+    saved?.problem as keyof typeof remedies | undefined,
+  );
+  const [image, setImage] = useState<StoredImage | undefined>(saved?.image);
+  const [rating, setRating] = useState(saved?.rating || '满意');
+  const [notes, setNotes] = useState(saved?.notes ?? '');
+  const [date, setDate] = useState(saved?.date || today());
+  const [meal, setMeal] = useState<MealType>(saved?.mealType || 'dinner');
+  /** 已经结束（保存日记 / 仅完成），不再自动保存。 */
+  const [finished, setFinished] = useState(false);
+  const utensilChoices = useMemo(() => saved?.utensilChoices ?? {}, [saved]);
+  const step = recipe.steps[index];
+
+  // 每次改动都自动保存（Hook 内部防抖 600ms）；结束后停止写入
+  useEffect(() => {
+    if (finished) return;
+    onSave({
+      stage: complete ? 'complete' : 'steps',
+      stepIndex: index,
+      completed: complete,
+      utensilChoices,
+      problem,
+      rating,
+      notes,
+      date,
+      mealType: meal,
+      image,
+    });
+  }, [
+    finished,
+    onSave,
+    complete,
+    index,
+    utensilChoices,
+    problem,
+    rating,
+    notes,
+    date,
+    meal,
+    image,
+  ]);
+
   async function saveDiary() {
     const entry = {
       ...stamp(),
       date,
       mealType: meal,
-      dishName: recipe!.name,
-      recipeId: recipe!.id,
+      dishName: recipe.name,
+      recipeId: recipe.id,
       image,
       tasteRating: rating,
       notes,
@@ -148,14 +316,17 @@ export function CookingSteps() {
     if (
       await run(() => repositories.diaryEntries.save(entry, !!existing), '烹饪成果已保存到日记')
     ) {
-      permitLeave();
       setFinished(true);
+      await onDiscard();
       navigate('/diary');
     }
   }
   return complete ? (
     <section className="card fields">
       <h2>完成啦，记录这一餐</h2>
+      {savedAt ? (
+        <p className="save-hint">↺ 已恢复上次的进度（{formatSavedAgo(savedAt)}保存）</p>
+      ) : null}
       <ImageUpload label="成品照片" value={image} onChange={setImage} />
       <div className="row">
         <label>
@@ -190,14 +361,17 @@ export function CookingSteps() {
         <button
           className="secondary"
           onClick={() => {
-            permitLeave();
-            setFinished(true);
-            navigate('/cook');
+            void (async () => {
+              setFinished(true);
+              await onDiscard();
+              navigate('/cook');
+            })();
           }}
         >
           仅完成
         </button>
       </div>
+      <p className="muted">填写内容也会自动保存，中途离开不会丢。</p>
     </section>
   ) : (
     <>
@@ -210,54 +384,23 @@ export function CookingSteps() {
         {step.image && (
           <Image image={step.image} alt={`步骤${index + 1}`} className="upload-preview" />
         )}
-        <div className="timer" role="timer">
-          {String(Math.floor(seconds / 60)).padStart(2, '0')}:
-          {String(seconds % 60).padStart(2, '0')}
-        </div>
-        <label>
-          计时秒数
-          <input
-            aria-label="计时秒数"
-            type="number"
-            min="0"
-            value={seconds}
-            disabled={running && seconds > 0}
-            onChange={(e) => setSeconds(Math.max(0, Number(e.target.value)))}
-          />
-        </label>
-        <div className="row">
-          <button disabled={seconds <= 0} onClick={() => setRunning(!running)}>
-            {running && seconds > 0 ? '暂停计时' : '启动计时'}
-          </button>
+        <div className="row between">
           <button
             className="secondary"
-            onClick={() => {
-              setRunning(false);
-              setSeconds(step.timerSeconds ?? 0);
-            }}
+            disabled={index === 0}
+            onClick={() => setIndex(index - 1)}
           >
-            重置计时
-          </button>
-          {running && seconds === 0 && <span role="status">计时结束</span>}
-        </div>
-        <div className="row between">
-          <button className="secondary" disabled={index === 0} onClick={() => move(index - 1)}>
             上一步
           </button>
           {index < recipe.steps.length - 1 ? (
-            <button onClick={() => move(index + 1)}>下一步</button>
+            <button onClick={() => setIndex(index + 1)}>下一步</button>
           ) : (
-            <button
-              onClick={() => {
-                setRunning(false);
-                setComplete(true);
-              }}
-            >
-              完成烹饪
-            </button>
+            <button onClick={() => setComplete(true)}>完成烹饪</button>
           )}
         </div>
-        <p className="muted">离开后进度不会保存，再次进入需重新开始。</p>
+        <p className="muted save-hint">
+          {savedAt ? '↺ 已恢复上次进度 · ' : ''}进度会自动保存，可以先去浏览别的功能，回来接着做。
+        </p>
       </section>
       <section className="card">
         <h2>味道或状态需要调整？</h2>

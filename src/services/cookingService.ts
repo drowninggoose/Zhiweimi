@@ -5,7 +5,8 @@ export function convertIngredient(
   selectedId?: string,
 ) {
   const original = `${ingredient.amount ?? ''} ${ingredient.unit ?? ''}`.trim();
-  if (ingredient.unit !== 'ml' || !ingredient.amount || ingredient.amount <= 0)
+  const amountNum = typeof ingredient.amount === 'number' ? ingredient.amount : undefined;
+  if (ingredient.unit !== 'ml' || !amountNum || amountNum <= 0)
     return { text: original };
   const usable = utensils.filter(
     (u) => u.capacity > 0 && Number.isFinite(u.capacity) && (!selectedId || u.id === selectedId),
@@ -13,7 +14,7 @@ export function convertIngredient(
   const easy = [0.25, 0.5, 1, 1.5, 2, 3, 4];
   const choices = usable
     .map((u) => {
-      const portions = ingredient.amount! / u.capacity;
+      const portions = amountNum / u.capacity;
       const score =
         Math.min(...easy.map((n) => Math.abs(portions - n))) + Math.max(0, portions - 4);
       return { u, portions, score };

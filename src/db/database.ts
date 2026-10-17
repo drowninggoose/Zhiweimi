@@ -9,6 +9,8 @@ import type {
   DemoState,
   RecommendationState,
   CookingProgress,
+  PreferenceMemory,
+  AssistantMessage,
 } from '../types/models';
 export class Database extends Dexie {
   recipes!: Table<Recipe, string>;
@@ -20,6 +22,8 @@ export class Database extends Dexie {
   demoState!: Table<DemoState, string>;
   recommendationState!: Table<RecommendationState, string>;
   cookingProgress!: Table<CookingProgress, string>;
+  preferenceMemory!: Table<PreferenceMemory, string>;
+  assistantMessages!: Table<AssistantMessage, string>;
   constructor(name = 'zhiweimi') {
     super(name);
     this.version(1).stores({
@@ -53,6 +57,20 @@ export class Database extends Dexie {
       demoState: 'id',
       recommendationState: 'id,updatedAt',
       cookingProgress: 'id,recipeId,updatedAt',
+    });
+    // v4：新增语音助手的聊天记录与口味/忌口记忆表
+    this.version(4).stores({
+      recipes: 'id,name,sourceType,status,favorite',
+      utensils: 'id,type',
+      diaryEntries: 'id,date,&[date+mealType],recipeId',
+      mealPlans: 'id,startDate',
+      pantryItems: 'id,status',
+      preferences: 'id',
+      demoState: 'id',
+      recommendationState: 'id,updatedAt',
+      cookingProgress: 'id,recipeId,updatedAt',
+      preferenceMemory: 'id,dimension,active,updatedAt',
+      assistantMessages: 'id,createdAt,recipeId',
     });
   }
 }

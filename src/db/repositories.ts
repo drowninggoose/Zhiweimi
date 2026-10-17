@@ -1,4 +1,9 @@
 import type { Table } from 'dexie';
+import {
+  applyMemoryEvidence,
+  type MemoryApplyResult,
+  type MemoryEvidenceInput,
+} from '../services/memoryPolicy';
 import { db, type Database } from './database';
 import { initialize, defaultPreferences } from './seed';
 import { importLibrary } from './library';
@@ -9,6 +14,7 @@ import {
 } from '../services/recommendationService';
 import type {
   Base,
+  AssistantMessage,
   CookingProgress,
   DataSnapshot,
   DiaryEntry,
@@ -17,6 +23,7 @@ import type {
   RecommendationState,
   Utensil,
   PantryItem,
+  PreferenceMemory,
 } from '../types/models';
 
 /** 记住最近多少批推荐，用于「换一批」时避开刚看过的菜。 */
@@ -219,6 +226,39 @@ export function createRepositories(database: Database) {
       save: (value: CookingProgress) => database.cookingProgress.put(value),
       remove: (recipeId: string) => database.cookingProgress.where('recipeId').equals(recipeId).delete(),
       clear: () => database.cookingProgress.clear(),
+    },
+    /**
+     * 口味 / 忌口记忆。写入走 `applyEvidence`，内部套用 3 次阈值规则，
+     * 保证「用户随口一说」不会被当成长期偏好。
+     */
+    preferenceMemory: {
+      list: () => database.preferenceMemory.toArray(),
+      active: () => database.preferenceMemory.filter((item) => item.active).toArray(),
+      get: (dimension: PreferenceMemory['dimension']) =>
+        database.preferenceMemory.get(`memory-${dimension}`),
+      /** 直接覆盖保存，供界面手动修改/删除使用 */
+      save: (value: PreferenceMemory) => database.preferenceMemory.put(value),
+      remove: (dimension: PreferenceMemory['dimension']) =>
+        database.preferenceMemory.delete(`memory-${dimension}`),
+      clear: () => database.preferenceMemory.clear(),
+      /**
+       * 写入一条证据并按阈值规则更新。
+       * 返回更新后的记忆，以及是否「首次生效」。
+       */
+      async applyEvidence(input: MemoryEvidenceInput): Promise<MemoryApplyResult> {
+        const current = await database.preferenceMemory.get(`memory-${input.dimension}`);
+        const result = applyMemoryEvidence(current, input);
+        await database.preferenceMemory.put(result.next);
+        return result;
+      },
+    },
+    /** 语音助手聊天记录（可回看）。只存文本，不存原始音频。 */
+    assistantMessages: {
+      list: (limit = 100) =>
+        database.assistantMessages.orderBy('createdAt').reverse().limit(limit).toArray(),
+      add: (value: AssistantMessage) => database.assistantMessages.put(value),
+      remove: (id: string) => database.assistantMessages.delete(id),
+      clear: () => database.assistantMessages.clear(),
     },
     async restore(snapshot: DataSnapshot) {
       await database.transaction('rw', database.tables, async () => {

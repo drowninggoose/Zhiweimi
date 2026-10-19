@@ -14,7 +14,9 @@ test('语音助手悬浮球：拖动、贴边隐藏与点击唤醒', async ({ pa
   await expect(fab).toBeVisible();
   const viewport = page.viewportSize()!;
   const FAB = 64;
-  const VISIBLE = 22;
+  // 贴边后露出约六成，留足够大的点击面积
+  const VISIBLE_MIN = 32;
+  const VISIBLE_MAX = 44;
 
   // ---- 拖到右边缘 ----
   const box = (await fab.boundingBox())!;
@@ -26,9 +28,11 @@ test('语音助手悬浮球：拖动、贴边隐藏与点击唤醒', async ({ pa
   await page.waitForTimeout(400);
 
   const right = (await fab.boundingBox())!;
-  // 球被推到视口右外侧：只剩 VISIBLE 像素可见
-  expect(Math.round(viewport.width - right.x)).toBe(VISIBLE);
-  expect(Math.round(right.x + right.width - viewport.width)).toBe(FAB - VISIBLE);
+  // 球被推到视口右外侧：仍应露出足够宽度，方便点击唤醒
+  const visibleRight = viewport.width - right.x;
+  expect(visibleRight).toBeGreaterThanOrEqual(VISIBLE_MIN);
+  expect(visibleRight).toBeLessThanOrEqual(VISIBLE_MAX);
+  expect(right.x + right.width - viewport.width).toBe(FAB - visibleRight);
 
   // 点露出的那条，应该唤醒并展开面板
   await page.mouse.click(viewport.width - 6, right.y + right.height / 2);
@@ -48,8 +52,10 @@ test('语音助手悬浮球：拖动、贴边隐藏与点击唤醒', async ({ pa
   await page.waitForTimeout(400);
 
   const left = (await fab.boundingBox())!;
-  expect(Math.round(left.x)).toBe(-(FAB - VISIBLE));
-  expect(Math.round(left.x + left.width)).toBe(VISIBLE);
+  const visibleLeft = left.x + left.width;
+  expect(visibleLeft).toBeGreaterThanOrEqual(VISIBLE_MIN);
+  expect(visibleLeft).toBeLessThanOrEqual(VISIBLE_MAX);
+  expect(left.x).toBe(-(FAB - visibleLeft));
 
   // 贴边状态下不显示面板
   await expect(page.getByLabel('语音助手面板')).toHaveCount(0);

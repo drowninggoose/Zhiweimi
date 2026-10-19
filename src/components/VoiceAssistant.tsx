@@ -8,9 +8,12 @@ import { useVoiceAssistant } from '../hooks/useVoiceAssistant';
 import { buildContext, type VoiceContext } from '../services/voiceService';
 import type { Recipe } from '../types/models';
 
-/** 悬浮球尺寸与贴边后可见宽度（约保留三分之一）。 */
+/**
+ * 悬浮球尺寸与贴边后可见宽度。
+ * 露出 38px（约六成）—— 太窄会不好点，这里保留足够的点击面。
+ */
 const FAB_SIZE = 64;
-const FAB_VISIBLE = 22;
+const FAB_VISIBLE = 38;
 /** 离边缘多少像素内松手就吸附。 */
 const EDGE_SNAP = 30;
 const FAB_KEY = 'zhiweimi:voice-fab';

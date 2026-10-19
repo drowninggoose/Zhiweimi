@@ -168,27 +168,6 @@ export function SettingsPage() {
             }}
           />
         </label>
-        <button
-          className="secondary"
-          onClick={() => {
-            void (async () => {
-              const ok = await confirm({
-                title: '重新导入菜谱库？',
-                message: '菜谱库里的菜会全部重新载入（517 道）。',
-                details: [
-                  '你收藏过的菜会保留收藏状态',
-                  '日记、饮食计划与菜谱的关联：只要那道菜还在就保留',
-                  '自建菜谱、厨具、家庭食材、口味偏好、日记内容都会保留',
-                  '若新版本菜谱库删掉了某道菜，它的关联会被解除',
-                ],
-                confirmText: '重新导入',
-              });
-              if (ok) void run(() => repositories.restoreLibrary(), '菜谱库已重新导入');
-            })();
-          }}
-        >
-          恢复菜谱库
-        </button>
       </section>
       <section className="card">
         <h2>清空数据</h2>

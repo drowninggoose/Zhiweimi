@@ -89,6 +89,8 @@ test('完整本地闭环：图片、刷新持久化、三周期计划、备份�
   await page.reload();
   await expect(page.getByRole('button', { name: '查看计划' })).toHaveCount(2);
   await page.getByRole('navigation').getByRole('link', { name: '数据与设置' }).click();
+  // 产品认为日常用不到，入口已移除
+  await expect(page.getByRole('button', { name: '恢复菜谱库' })).toHaveCount(0);
   await page.getByLabel('字体大小').selectOption('large');
   await page.getByRole('button', { name: '保存偏好' }).click();
   await expect(page.locator('html')).toHaveCSS('font-size', '18px');

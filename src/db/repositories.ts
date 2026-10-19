@@ -294,56 +294,87 @@ export function createRepositories(database: Database) {
       });
     },
     /**
-     * 恢复菜谱库：删掉现有菜谱库菜谱后重新从 `recipes-library.json` 导入，
-     * 同时清理最近查看 / 推荐历史里指向已删除菜谱的记录，并修复日记与计划引用。
+     * 恢复菜谱库：按 `recipes-library.json` 重新导入。
+     *
+     * 与早期实现相比更安全：
+     * - **保留收藏**：导入前记下收藏过的库菜谱 id，导入后回写；
+     * - **不再无谓断开关联**：菜谱 id 是稳定的（JSON 里自带），
+     *   只有在新版本菜谱库里**确实消失**的菜，才解除日记与计划里的引用；
+     * - 最近查看记录只过滤掉失效 id，不再整体清空；
+     * - 推荐换批历史保留（其中的失效 id 不影响随机结果）。
      */
     async restoreLibrary() {
       // importLibrary 内部自带事务，必须在任何外层事务之外调用
       const old = await database.recipes.where('sourceType').equals('library').toArray();
       const oldIds = new Set(old.map((r) => r.id));
+      /** 用户收藏过的库菜谱，导入后要恢复 */
+      const favoriteIds = old.filter((r) => r.favorite).map((r) => r.id);
+
       if (old.length) await database.recipes.bulkDelete([...oldIds]);
       await importLibrary(database);
+
+      const fresh = await database.recipes.where('sourceType').equals('library').toArray();
+      const freshIds = new Set(fresh.map((r) => r.id));
+      /** 新版菜谱库里已经没有的菜：只有它们的引用需要清理 */
+      const goneIds = new Set([...oldIds].filter((id) => !freshIds.has(id)));
+
       await database.transaction(
         'rw',
-        [
-          database.demoState,
-          database.recommendationState,
-          database.diaryEntries,
-          database.mealPlans,
-        ],
+        [database.recipes, database.demoState, database.diaryEntries, database.mealPlans],
         async () => {
-          for (const entry of await database.diaryEntries.toArray()) {
-            if (entry.recipeId && oldIds.has(entry.recipeId)) {
-              const next = { ...entry };
-              delete next.recipeId;
-              await database.diaryEntries.put(next);
+          // 1) 恢复收藏
+          for (const id of favoriteIds) {
+            if (freshIds.has(id)) await database.recipes.update(id, { favorite: true });
+          }
+
+          // 2) 只清理真的消失了的菜谱引用
+          if (goneIds.size) {
+            for (const entry of await database.diaryEntries.toArray()) {
+              if (entry.recipeId && goneIds.has(entry.recipeId)) {
+                const next = { ...entry };
+                delete next.recipeId;
+                await database.diaryEntries.put(next);
+              }
+            }
+            for (const plan of await database.mealPlans.toArray()) {
+              plan.days = plan.days.map((day) => ({
+                ...day,
+                breakfastRecipeId:
+                  day.breakfastRecipeId && goneIds.has(day.breakfastRecipeId)
+                    ? undefined
+                    : day.breakfastRecipeId,
+                lunchRecipeId:
+                  day.lunchRecipeId && goneIds.has(day.lunchRecipeId)
+                    ? undefined
+                    : day.lunchRecipeId,
+                dinnerRecipeId:
+                  day.dinnerRecipeId && goneIds.has(day.dinnerRecipeId)
+                    ? undefined
+                    : day.dinnerRecipeId,
+              }));
+              await database.mealPlans.put(plan);
             }
           }
-          for (const plan of await database.mealPlans.toArray()) {
-            plan.days = plan.days.map((day) => ({
-              ...day,
-              breakfastRecipeId:
-                day.breakfastRecipeId && oldIds.has(day.breakfastRecipeId)
-                  ? undefined
-                  : day.breakfastRecipeId,
-              lunchRecipeId:
-                day.lunchRecipeId && oldIds.has(day.lunchRecipeId) ? undefined : day.lunchRecipeId,
-              dinnerRecipeId:
-                day.dinnerRecipeId && oldIds.has(day.dinnerRecipeId)
-                  ? undefined
-                  : day.dinnerRecipeId,
-            }));
-            await database.mealPlans.put(plan);
+
+          // 3) 最近查看：过滤掉失效 id，其余保留
+          const demo = await database.demoState.get('current');
+          if (demo) {
+            await database.demoState.put({
+              ...demo,
+              recentRecipeIds: demo.recentRecipeIds.filter((id) => !goneIds.has(id)),
+              recentRecommendationIds: demo.recentRecommendationIds.filter(
+                (id) => !goneIds.has(id),
+              ),
+            });
           }
-          await database.demoState.put({
-            id: 'current',
-            version: 1,
-            recentRecipeIds: [],
-            recentRecommendationIds: [],
-          });
-          await database.recommendationState.clear();
         },
       );
+
+      return {
+        total: freshIds.size,
+        favorites: favoriteIds.filter((id) => freshIds.has(id)).length,
+        removed: goneIds.size,
+      };
     },
   };
 }

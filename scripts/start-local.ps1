@@ -2,6 +2,11 @@
 $ErrorActionPreference='Stop'
 $projectDirectory=Split-Path -Parent $PSScriptRoot
 Set-Location -LiteralPath $projectDirectory
+# esbuild 的中间文件统一放项目内，避免系统临时目录拒绝删除导致构建失败
+$localTemp=Join-Path $projectDirectory '.tmp'
+New-Item -ItemType Directory -Force -Path $localTemp | Out-Null
+$env:TMP=$localTemp
+$env:TEMP=$localTemp
 if(-not (Get-Command node -ErrorAction SilentlyContinue)){throw '请先安装 Node.js 24 LTS。'}
 if(-not (Test-Path -LiteralPath (Join-Path $projectDirectory 'node_modules'))){throw '请先在项目目录执行 npm install。'}
 if(-not $SkipBuild){& npm.cmd run build;if($LASTEXITCODE -ne 0){throw '构建失败，服务未启动。'}}
@@ -15,7 +20,7 @@ if($existing){
 }else{
   $nodePath=(Get-Command node).Source
   $vitePath=Join-Path $projectDirectory 'node_modules\vite\bin\vite.js'
-  $serverProcess=Start-Process -FilePath $nodePath -ArgumentList @(('"'+$vitePath+'"'),'preview','--host','localhost','--port','4173','--strictPort') -WorkingDirectory $projectDirectory -WindowStyle Hidden -PassThru
+  $serverProcess=Start-Process -FilePath $nodePath -ArgumentList @('--import','"./scripts/tmp-env.mjs"',('"'+$vitePath+'"'),'preview','--host','localhost','--port','4173','--strictPort') -WorkingDirectory $projectDirectory -WindowStyle Hidden -PassThru
   $ready=$false
   $readinessError=''
   for($attempt=0;$attempt -lt 30;$attempt++){

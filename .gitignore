@@ -27,3 +27,6 @@ logo-concepts/
 # 设计稿渲染产物（源文件仍保留）
 docs/design/mockups/out/
 docs/design/screens/
+
+# 构建/测试用的本地临时目录
+.tmp/

@@ -16,6 +16,9 @@ export type RecipeIngredient = {
   amount?: number | string; // 数值（换算用）或文本（如"少许""2个"）
   unit?: string;
   note?: string;
+  normalizedAmount?: number | string; // 仅在开始烹饪后用于厨具换算
+  normalizedUnit?: string;
+  normalizationNote?: string;
   group?: '主料' | '辅料' | '调料' | string; // 食材分组
 };
 export type RecipeStep = {
@@ -27,6 +30,9 @@ export type RecipeStep = {
   durationSeconds?: number; // 本步时长（秒）
   tip?: string; // 技巧/原因
   check?: string; // 判断标准（做到什么程度算好）
+  action?: string; // 结构化动作：切、拌、炒、蒸等
+  utensil?: string; // 本步使用的器具
+  personalization?: string; // 可选的个人口味调整
 };
 export type Recipe = Base & {
   name: string;
@@ -49,6 +55,7 @@ export type Recipe = Base & {
   sourceType: 'demo' | 'user' | 'library'; // 新增 library
   status: 'draft' | 'published';
   favorite: boolean;
+  dataStandard?: 'structured-v1' | 'structured-v2' | 'structured-v3' | 'structured-v4';
 };
 export type Utensil = Base & {
   name: string;

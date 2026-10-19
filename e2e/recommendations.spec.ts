@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 /** 从卡片流里取出当前这批推荐对应的菜谱 id。 */
 async function shownRecipeIds(page: import('@playwright/test').Page) {
   return page
-    .locator('.rec-card h3 a')
+    .locator('.rec-strip-link')
     .evaluateAll((links) =>
       links.map((link) => (link as HTMLAnchorElement).getAttribute('href') ?? ''),
     );
@@ -20,7 +20,7 @@ test('首页推荐中心：随机 6 道、换一批给新组合、卡片流可�
   await expect(page.getByText('演示推荐')).toHaveCount(0);
   await expect(page.getByText('按类型看')).toHaveCount(0);
   // 一批固定 6 道
-  await expect(page.getByText(/本批 6 道/)).toBeVisible();
+  await expect(page.getByText(/共 6 道/)).toBeVisible();
 
   // 一屏一道的卡片流 + 换一批
   const first = await shownRecipeIds(page);
@@ -46,14 +46,25 @@ test('首页推荐中心：随机 6 道、换一批给新组合、卡片流可�
   expect(errors).toEqual([]);
 });
 
-test('首页推荐中心：卡片可收藏、可进入烹饪', async ({ page }) => {
+test('首页推荐中心：轮播可翻页、可进入菜谱详情，且保留换一批', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('heading', { name: '今日推荐' })).toBeVisible();
-  await expect(page.getByRole('button', { name: '下一道推荐' })).toBeVisible();
+  const strip = page.getByRole('region', { name: '今日推荐图片轮播' });
+  await expect(strip).toBeVisible();
 
-  // 收藏按钮可用
-  await page.getByRole('button', { name: /^收藏/ }).first().click();
-  await expect(page.getByRole('button', { name: /^取消收藏/ }).first()).toBeVisible();
+  // 轮播翻页
+  const first = await page.locator('.rec-strip-title').innerText();
+  await page.getByRole('button', { name: '下一道推荐' }).click();
+  await expect
+    .poll(async () => page.locator('.rec-strip-title').innerText(), { timeout: 5000 })
+    .not.toBe(first);
+
+  // 需求：保留「换一批」
+  await expect(page.getByRole('button', { name: /换一批/ })).toBeVisible();
+
+  // 条幅可以进入菜谱详情
+  await page.locator('.rec-strip-link').click();
+  await expect(page).toHaveURL(/\/recipes\//);
 });
 
 test('推荐已合并进首页：左侧不再有独立入口，也没有「查看全部推荐」跳转', async ({ page }) => {

@@ -160,7 +160,8 @@ export function RecipesPage() {
       </div>
       {pickMode ? (
         <p role="status" className="notice">
-          正在为饮食计划挑菜：选中后会自动回到计划页替换。<Link to="/planner">放弃选择，返回计划</Link>
+          正在为饮食计划挑菜：选中后会自动回到计划页替换。
+          <Link to="/planner">放弃选择，返回计划</Link>
         </p>
       ) : null}
       <div className="search-box" style={{ marginBottom: 16 }}>
@@ -207,7 +208,10 @@ export function RecipesPage() {
         />
         <TileRow
           label="按时间"
-          options={[{ value: '', label: '全部' }, ...TIME_RANGES.map((t) => ({ value: t.value, label: t.label }))]}
+          options={[
+            { value: '', label: '全部' },
+            ...TIME_RANGES.map((t) => ({ value: t.value, label: t.label })),
+          ]}
           value={timeRange}
           onChange={setTimeRange}
         />
@@ -380,6 +384,18 @@ export function RecipeDetail() {
             <h3>
               {i + 1}. {s.instruction}
             </h3>
+            <p className="muted">
+              {[
+                s.action && `动作：${s.action}`,
+                s.utensil && `器具：${s.utensil}`,
+                s.heat && `火力：${s.heat}`,
+                s.durationSeconds && `时长：${Math.ceil(s.durationSeconds / 60)}分钟`,
+                s.check && `完成标准：${s.check}`,
+              ]
+                .filter(Boolean)
+                .join(' · ')}
+            </p>
+            {s.personalization && <p className="muted">{s.personalization}</p>}
             {s.image && <Image image={s.image} alt={`步骤${i + 1}`} className="upload-preview" />}
           </article>
         ))}

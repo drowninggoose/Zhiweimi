@@ -31,12 +31,7 @@ export function HomePage() {
         <img className="hero-mascot" src="/app-icon.svg" alt="知味咪厨师猫" />
       </section>
       <section className="card rec-home" id="today-recommendation">
-        <div className="row between">
-          <div>
-            <span className="tag">每次打开都是新的一批 · 也可随时换一批</span>
-            <h2>今日推荐</h2>
-          </div>
-        </div>
+        <h2>今日推荐</h2>
         <RecommendationCenter />
       </section>
       <ContinueCooking />

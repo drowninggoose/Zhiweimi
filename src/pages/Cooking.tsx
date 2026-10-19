@@ -4,7 +4,7 @@ import { useData } from '../app/data';
 import { repositories } from '../db/repositories';
 import { Empty, Image, ImageUpload, RecipeCard } from '../components/common';
 import { filterRecipes } from '../services/recipeService';
-import { convertIngredient, remedies } from '../services/cookingService';
+import { adaptInstructionForUtensils, remedies } from '../services/cookingService';
 import { formatSavedAgo, useCookingProgress, type CookingDraft } from '../hooks/useCookingProgress';
 import { useConfirm } from '../components/dialogContext';
 import {
@@ -194,21 +194,14 @@ export function CookingPrepare() {
     <>
       <section className="card">
         <h2>准备制作 {recipe.name}</h2>
-        <span className="tag">模拟换算</span>
-        <p className="muted">用量会按你已上传的厨具自动换算；仅支持毫升换算，其余保留原始用量。</p>
+        <span className="tag">原始菜谱用量</span>
+        <p className="muted">开始烹饪后，才会根据你家中的厨具换算用量。</p>
         {recipe.ingredients.map((i) => (
           <div className="ingredient-row" key={i.id}>
             <strong>{i.name}</strong>
-            <span>{convertIngredient(i, data.utensils).text || '适量'}</span>
+            <span>{`${i.amount ?? '适量'} ${i.unit ?? ''}`.trim()}</span>
           </div>
         ))}
-        {!data.utensils.length && (
-          <p role="status" className="notice">
-            ⚠️ 你还没有添加任何厨具，当前显示的是菜谱原始用量。
-            <Link to="/utensils?new=1">去添加厨具</Link>
-            之后就能按自家餐具看到具体用量。
-          </p>
-        )}
         <button onClick={() => void startSteps()}>准备完成，开始分步烹饪</button>
         <p className="muted">开始后进度会自动保存，随时可以离开再回来。</p>
       </section>
@@ -410,7 +403,21 @@ function CookingStepsView({
           步骤 {index + 1} / {recipe.steps.length}
         </span>
         <h2>{recipe.name}</h2>
-        <p className="step-instruction">{step.instruction}</p>
+        <p className="step-instruction">
+          {adaptInstructionForUtensils(step.instruction, recipe.ingredients, data?.utensils ?? [])}
+        </p>
+        <p className="muted">
+          {[
+            step.action && `动作：${step.action}`,
+            step.utensil && `器具：${step.utensil}`,
+            step.heat && `火力：${step.heat}`,
+            step.durationSeconds && `时长：${Math.ceil(step.durationSeconds / 60)}分钟`,
+            step.check && `完成标准：${step.check}`,
+          ]
+            .filter(Boolean)
+            .join(' · ')}
+        </p>
+        {step.personalization && <p className="muted">{step.personalization}</p>}
         {step.image && (
           <Image image={step.image} alt={`步骤${index + 1}`} className="upload-preview" />
         )}

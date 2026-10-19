@@ -25,12 +25,11 @@ test('完整本地闭环：图片、刷新持久化、三周期计划、备份�
   await expect(page.getByRole('heading', { name: '今天想吃点什么？' })).toBeVisible();
   await expect(page.getByRole('heading', { name: '今日推荐' })).toBeVisible();
   // 首页承载完整的推荐中心：随机 6 道
-  await expect(page.getByText(/本批 6 道/)).toBeVisible();
-  expect(await page.locator('.rec-card').count()).toBeGreaterThanOrEqual(1);
-  const initial = await page.locator('.rec-card h3').allTextContents();
+  await expect(page.getByText(/共 6 道/)).toBeVisible();
+  const initial = await page.locator('.rec-strip-title').allTextContents();
   await page.getByRole('button', { name: '🔄 换一批' }).click();
   await expect
-    .poll(async () => page.locator('.rec-card h3').allTextContents(), { timeout: 10000 })
+    .poll(async () => page.locator('.rec-strip-title').allTextContents(), { timeout: 10000 })
     .not.toEqual(initial);
   await page.screenshot({ path: testInfo.outputPath('home.png'), fullPage: true });
   await page.getByRole('link', { name: '新建菜谱', exact: true }).click();
@@ -154,7 +153,8 @@ test('异常与取消：无效图片/表单/备份、菜谱库副本、取消删
   await page.getByRole('dialog').getByRole('button', { name: '取消' }).click();
   await expect(page.getByRole('heading', { name: '异常测试杯' })).toBeVisible();
   // 菜谱库菜谱：编辑时生成用户副本，不覆盖内置菜谱
-  await page.goto('/recipes/lib-1/edit');
+  // 菜谱库升级到 structured-v4 后 id 有调整，这里用库里实际存在的一道
+  await page.goto('/recipes/lib-3/edit');
   await expect(page.getByRole('heading', { name: '创建用户菜谱副本' })).toBeVisible();
   await page.getByLabel('菜名', { exact: true }).fill('菜谱库副本');
   await page.getByRole('navigation').getByRole('link', { name: '首页总览' }).click();
@@ -164,8 +164,8 @@ test('异常与取消：无效图片/表单/备份、菜谱库副本、取消删
   await expect(page.getByLabel('菜名', { exact: true })).toHaveValue('菜谱库副本');
   await page.getByRole('button', { name: '正式保存' }).click();
   await expect(page.getByRole('heading', { name: '菜谱库副本' })).toBeVisible();
-  await page.goto('/recipes/lib-1');
-  await expect(page.getByRole('heading', { name: '青椒五花肉' })).toBeVisible();
+  await page.goto('/recipes/lib-3');
+  await expect(page.getByRole('heading', { name: '千张结烧肉' })).toBeVisible();
   await page.goto('/settings');
   await page
     .getByLabel('导入备份', { exact: true })

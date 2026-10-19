@@ -13,4 +13,9 @@ export default tseslint.config(
     plugins: { 'react-hooks': reactHooks, 'react-refresh': reactRefresh },
     rules: { ...reactHooks.configs.recommended.rules, ...reactRefresh.configs.vite.rules },
   },
+  {
+    // 菜谱清洗脚本等 Node 端工具需要 node 全局变量（console / process 等）
+    files: ['tools/**/*.mjs', 'server/**/*.ts'],
+    languageOptions: { ecmaVersion: 2022, globals: { ...globals.node } },
+  },
 );

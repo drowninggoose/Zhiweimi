@@ -6,6 +6,7 @@ import { db } from '../db/database';
 import { repositories } from '../db/repositories';
 import { initialize } from '../db/seed';
 import { stamp, today } from '../types/models';
+import { setDialogAutoConfirm } from '../components/dialogContext';
 import { fixtureRecipes } from './fixtures';
 beforeEach(async () => {
   await db.open();
@@ -44,23 +45,24 @@ test('阶段10：IndexedDB写入失败显示可见错误，已有数据保留', 
 test('阶段6/10：同日同餐冲突取消保留原记录、确认替换后唯一', async () => {
   const date = today();
   await db.diaryEntries.add({ ...stamp(), date, mealType: 'dinner', dishName: '原晚餐' });
-  const confirm = vi.spyOn(window, 'confirm').mockReturnValue(false);
+  // 先让确认框返回「取消」，验证原记录被保留
+  setDialogAutoConfirm(false);
   window.history.replaceState({}, '', '/diary');
   render(<App />);
   const user = userEvent.setup();
   await user.click(await screen.findByRole('button', { name: '添加记录' }));
   await user.type(screen.getByLabelText('菜名'), '新晚餐');
   await user.click(screen.getByRole('button', { name: '保存日记' }));
-  expect(confirm).toHaveBeenCalled();
   expect((await db.diaryEntries.toArray())[0].dishName).toBe('原晚餐');
-  confirm.mockReturnValue(true);
+  // 再改成确认，验证替换生效
+  setDialogAutoConfirm(true);
   await user.click(screen.getByRole('button', { name: '保存日记' }));
   await screen.findByRole('button', { name: new RegExp(`${date}晚餐查看新晚餐`) });
   expect(await db.diaryEntries.count()).toBe(1);
   expect((await db.diaryEntries.toArray())[0].dishName).toBe('新晚餐');
 });
 test('阶段3/10：未保存离开取消仍在编辑，菜谱库副本不会覆盖原菜谱', async () => {
-  vi.spyOn(window, 'confirm').mockReturnValue(false);
+  setDialogAutoConfirm(false);
   window.history.replaceState({}, '', '/recipes/fixture-1/edit');
   render(<App />);
   const user = userEvent.setup();

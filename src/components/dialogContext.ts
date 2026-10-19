@@ -31,3 +31,19 @@ export function useConfirm(): ConfirmFn {
   if (!confirm) throw new Error('useConfirm 必须在 DialogProvider 内使用');
   return confirm;
 }
+
+/**
+ * 测试专用：让 `useConfirm` 直接返回固定结果、不渲染对话框。
+ *
+ * 传 `null` 恢复真实对话框。单元测试里大量流程依赖「确认/取消」，
+ * 逐个点按钮太脆弱，所以提供这个开关；e2e 与生产代码不使用。
+ */
+let autoConfirm: boolean | null = null;
+
+export function setDialogAutoConfirm(value: boolean | null) {
+  autoConfirm = value;
+}
+
+export function getDialogAutoConfirm() {
+  return autoConfirm;
+}

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useData } from '../app/data';
+import { useConfirm } from '../components/dialogContext';
 import { repositories } from '../db/repositories';
 import { Empty, Image, ImageUpload } from '../components/common';
 import { useUnsaved } from '../hooks/useUnsaved';
@@ -20,6 +21,7 @@ const blank = (): Utensil => ({
 });
 export function UtensilsPage() {
   const { data, run } = useData();
+  const confirm = useConfirm();
   const [params] = useSearchParams();
   const [editing, setEditing] = useState<Utensil | null>(() =>
     params.has('new') ? blank() : null,
@@ -149,10 +151,20 @@ export function UtensilsPage() {
             <button
               className="secondary"
               onClick={() => {
-                if (!dirty || confirm('放弃未保存的厨具修改？')) {
-                  setEditing(null);
-                  setDirty(false);
-                }
+                void (async () => {
+                  const ok =
+                    !dirty ||
+                    (await confirm({
+                      title: '放弃未保存的厨具修改？',
+                      message: '这次编辑的内容不会保存。',
+                      confirmText: '放弃修改',
+                      danger: true,
+                    }));
+                  if (ok) {
+                    setEditing(null);
+                    setDirty(false);
+                  }
+                })();
               }}
             >
               取消
@@ -182,8 +194,15 @@ export function UtensilsPage() {
                 <button
                   className="danger"
                   onClick={() => {
-                    if (confirm(`确认删除厨具“${u.name}”？`))
-                      void run(() => repositories.utensils.delete(u.id), '厨具已删除');
+                    void (async () => {
+                      const ok = await confirm({
+                        title: `删除厨具“${u.name}”？`,
+                        message: '删除后不可恢复。',
+                        confirmText: '删除',
+                        danger: true,
+                      });
+                      if (ok) void run(() => repositories.utensils.delete(u.id), '厨具已删除');
+                    })();
                   }}
                 >
                   删除

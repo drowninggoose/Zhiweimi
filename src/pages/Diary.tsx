@@ -5,9 +5,11 @@ import { repositories } from '../db/repositories';
 import { Image, ImageUpload } from '../components/common';
 import { useUnsaved } from '../hooks/useUnsaved';
 import { diaryRows, validateDiary } from '../services/diaryService';
+import { useConfirm } from '../components/dialogContext';
 import { stamp, today, meals, mealLabels, type DiaryEntry, type MealType } from '../types/models';
 export function DiaryPage() {
   const { data, run } = useData();
+  const confirm = useConfirm();
   const [params] = useSearchParams();
   const linked = data?.diaryEntries.find((e) => e.id === params.get('entry'));
   /** day = 只看某一天（默认今天）；all = 全部记录 */
@@ -44,7 +46,15 @@ export function DiaryPage() {
       const existing = data!.diaryEntries.find(
         (e) => e.date === entry.date && e.mealType === entry.mealType && e.id !== entry.id,
       );
-      if (existing && !confirm('同一天同一餐已有记录，替换原记录？')) return;
+      if (existing) {
+        const replace = await confirm({
+          title: '替换这条日记？',
+          message: '同一天同一餐已有记录，保存后会覆盖原来那条。',
+          confirmText: '替换',
+          danger: true,
+        });
+        if (!replace) return;
+      }
       if (await run(() => repositories.diaryEntries.save(entry, !!existing))) {
         setEntry(null);
         setDirty(false);
@@ -86,10 +96,20 @@ export function DiaryPage() {
             <button
               className="secondary"
               onClick={() => {
-                if (!dirty || confirm('放弃未保存的日记修改？')) {
-                  setEntry(null);
-                  setDirty(false);
-                }
+                void (async () => {
+                  const ok =
+                    !dirty ||
+                    (await confirm({
+                      title: '放弃未保存的修改？',
+                      message: '这次编辑的内容不会保存。',
+                      confirmText: '放弃修改',
+                      danger: true,
+                    }));
+                  if (ok) {
+                    setEntry(null);
+                    setDirty(false);
+                  }
+                })();
               }}
             >
               关闭
@@ -119,8 +139,14 @@ export function DiaryPage() {
                 <button
                   className="danger"
                   onClick={async () => {
+                    const ok = await confirm({
+                      title: '删除这条日记？',
+                      message: '删除后无法自动撤销。',
+                      confirmText: '删除',
+                      danger: true,
+                    });
                     if (
-                      confirm('确认删除这条日记？') &&
+                      ok &&
                       (await run(() => repositories.diaryEntries.delete(entry.id), '日记已删除'))
                     )
                       setEntry(null);

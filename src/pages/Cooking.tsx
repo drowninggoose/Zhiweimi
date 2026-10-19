@@ -6,6 +6,7 @@ import { Empty, Image, ImageUpload, RecipeCard } from '../components/common';
 import { filterRecipes } from '../services/recipeService';
 import { convertIngredient, remedies } from '../services/cookingService';
 import { formatSavedAgo, useCookingProgress, type CookingDraft } from '../hooks/useCookingProgress';
+import { useConfirm } from '../components/dialogContext';
 import {
   meals,
   mealLabels,
@@ -20,6 +21,7 @@ import {
 /** 「继续烹饪」入口：列出做到一半的菜，点一下回到原来的位置。 */
 export function ContinueCooking() {
   const { data } = useData();
+  const confirm = useConfirm();
   const [items, setItems] = useState<Awaited<ReturnType<typeof repositories.cookingProgress.list>>>(
     [],
   );
@@ -46,7 +48,13 @@ export function ContinueCooking() {
   const unfinished = items.filter((item) => !item.completed);
   if (!unfinished.length) return null;
   async function removeProgress(recipeId: string, recipeName: string) {
-    if (!window.confirm(`确定删除「${recipeName}」的烹饪进度吗？删除后不能再接着做。`)) return;
+    const confirmed = await confirm({
+      title: `删除「${recipeName}」的进度？`,
+      message: '删除后不能再接着做，需要从头开始。',
+      confirmText: '删除进度',
+      danger: true,
+    });
+    if (!confirmed) return;
     try {
       await repositories.cookingProgress.remove(recipeId);
       setItems((prev) => prev.filter((item) => item.recipeId !== recipeId));
@@ -257,6 +265,7 @@ function CookingStepsView({
   onDiscard: () => Promise<void>;
 }) {
   const { data, run } = useData();
+  const confirm = useConfirm();
   const navigate = useNavigate();
   const maxIndex = Math.max(recipe.steps.length - 1, 0);
   const [index, setIndex] = useState(() => Math.min(Math.max(saved?.stepIndex ?? 0, 0), maxIndex));
@@ -325,7 +334,15 @@ function CookingStepsView({
       adjustmentNotes: problem ? `${problem}：${remedies[problem]}` : undefined,
     };
     const existing = data?.diaryEntries.find((e) => e.date === date && e.mealType === meal);
-    if (existing && !confirm('同一天同一餐已有日记，是否替换？')) return;
+    if (existing) {
+      const replace = await confirm({
+        title: '替换这条日记？',
+        message: '同一天同一餐已有记录，保存后会覆盖原来那条。',
+        confirmText: '替换',
+        danger: true,
+      });
+      if (!replace) return;
+    }
     if (
       await run(() => repositories.diaryEntries.save(entry, !!existing), '烹饪成果已保存到日记')
     ) {

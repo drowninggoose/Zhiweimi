@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useData } from '../app/data';
+import { useConfirm } from '../components/dialogContext';
 import { repositories } from '../db/repositories';
 import { Empty } from '../components/common';
 import { useUnsaved } from '../hooks/useUnsaved';
@@ -9,6 +10,7 @@ import { stamp, type PantryItem } from '../types/models';
 const blank = (): PantryItem => ({ ...stamp(), name: '', category: '蔬菜', status: 'available' });
 export function PantryPage() {
   const { data, run } = useData();
+  const confirm = useConfirm();
   const [params] = useSearchParams();
   const [editing, setEditing] = useState<PantryItem | null>(() =>
     params.has('new') ? blank() : null,
@@ -106,10 +108,20 @@ export function PantryPage() {
             <button
               className="secondary"
               onClick={() => {
-                if (!dirty || confirm('放弃未保存修改？')) {
-                  setEditing(null);
-                  setDirty(false);
-                }
+                void (async () => {
+                  const ok =
+                    !dirty ||
+                    (await confirm({
+                      title: '放弃未保存的修改？',
+                      message: '这次编辑的内容不会保存。',
+                      confirmText: '放弃修改',
+                      danger: true,
+                    }));
+                  if (ok) {
+                    setEditing(null);
+                    setDirty(false);
+                  }
+                })();
               }}
             >
               取消

@@ -5,6 +5,7 @@ import { useData } from '../app/data';
 import { repositories } from '../db/repositories';
 import { remedies } from '../services/cookingService';
 import { useVoiceAssistant } from '../hooks/useVoiceAssistant';
+import { useConfirm } from './dialogContext';
 import { buildContext, type VoiceContext } from '../services/voiceService';
 import type { Recipe } from '../types/models';
 
@@ -146,6 +147,7 @@ export function VoiceAssistant() {
     [data],
   );
 
+  const confirm = useConfirm();
   const assistant = useVoiceAssistant({ getContext, getRecipe, recommend });
   const { status, error, result, history } = assistant;
 
@@ -354,7 +356,13 @@ export function VoiceAssistant() {
                   type="button"
                   className="secondary"
                   onClick={async () => {
-                    if (confirm('清空全部对话记录？记忆不会受影响。')) {
+                    const ok = await confirm({
+                      title: '清空全部对话记录？',
+                      message: '记忆与口味偏好不会受影响。',
+                      confirmText: '清空记录',
+                      danger: true,
+                    });
+                    if (ok) {
                       await repositories.assistantMessages.clear();
                       await assistant.refreshHistory();
                     }

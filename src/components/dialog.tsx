@@ -13,7 +13,12 @@
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
-import { DialogContext, type ConfirmFn, type DialogOptions } from './dialogContext';
+import {
+  DialogContext,
+  getDialogAutoConfirm,
+  type ConfirmFn,
+  type DialogOptions,
+} from './dialogContext';
 
 type DialogRequest = DialogOptions & { resolve: (ok: boolean) => void };
 
@@ -21,10 +26,12 @@ export function DialogProvider({ children }: { children: ReactNode }) {
   const [request, setRequest] = useState<DialogRequest | null>(null);
   const confirmRef = useRef<HTMLButtonElement>(null);
 
-  const confirm = useCallback<ConfirmFn>(
-    (options) => new Promise<boolean>((resolve) => setRequest({ ...options, resolve })),
-    [],
-  );
+  const confirm = useCallback<ConfirmFn>((options) => {
+    // 单元测试可以跳过界面直接返回结果
+    const preset = getDialogAutoConfirm();
+    if (preset !== null) return Promise.resolve(preset);
+    return new Promise<boolean>((resolve) => setRequest({ ...options, resolve }));
+  }, []);
 
   const close = useCallback((ok: boolean) => {
     setRequest((current) => {

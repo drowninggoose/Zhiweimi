@@ -148,15 +148,19 @@ test('异常与取消：无效图片/表单/备份、菜谱库副本、取消删
   await page.getByLabel('容量（ml）').fill('200');
   await page.getByRole('button', { name: '保存厨具' }).click();
   await expect(page.getByRole('heading', { name: '异常测试杯' })).toBeVisible();
-  page.once('dialog', (d) => d.dismiss());
   await page.getByRole('button', { name: '删除', exact: true }).click();
+  // 删除确认已改为应用内对话框，点取消后条目仍在
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await page.getByRole('dialog').getByRole('button', { name: '取消' }).click();
   await expect(page.getByRole('heading', { name: '异常测试杯' })).toBeVisible();
   // 菜谱库菜谱：编辑时生成用户副本，不覆盖内置菜谱
   await page.goto('/recipes/lib-1/edit');
   await expect(page.getByRole('heading', { name: '创建用户菜谱副本' })).toBeVisible();
   await page.getByLabel('菜名', { exact: true }).fill('菜谱库副本');
-  page.once('dialog', (d) => d.dismiss());
   await page.getByRole('navigation').getByRole('link', { name: '首页总览' }).click();
+  // 未保存离开确认：选「留在本页」
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await page.getByRole('dialog').getByRole('button', { name: '留在本页' }).click();
   await expect(page.getByLabel('菜名', { exact: true })).toHaveValue('菜谱库副本');
   await page.getByRole('button', { name: '正式保存' }).click();
   await expect(page.getByRole('heading', { name: '菜谱库副本' })).toBeVisible();
@@ -167,8 +171,10 @@ test('异常与取消：无效图片/表单/备份、菜谱库副本、取消删
     .getByLabel('导入备份', { exact: true })
     .setInputFiles({ name: 'bad.json', mimeType: 'application/json', buffer: Buffer.from('{') });
   await expect(page.getByRole('alert')).toContainText('不是有效');
-  page.once('dialog', (d) => d.dismiss());
   await page.getByRole('button', { name: '清空全部数据', exact: true }).click();
+  // 取消清空，数据应保持
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await page.getByRole('dialog').getByRole('button', { name: '取消' }).click();
   await page.goto('/utensils');
   await expect(page.getByRole('heading', { name: '异常测试杯' })).toBeVisible();
 });

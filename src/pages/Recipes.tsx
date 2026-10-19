@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useData } from '../app/data';
+import { useConfirm } from '../components/dialogContext';
 import { repositories } from '../db/repositories';
 import { Empty, Image, ImageUpload, RecipeCard } from '../components/common';
 import { useUnsaved } from '../hooks/useUnsaved';
@@ -296,6 +297,7 @@ export function RecipesPage() {
   );
 }
 export function RecipeDetail() {
+  const confirm = useConfirm();
   const { id: recipeId } = useParams();
   const { data, run } = useData();
   const navigate = useNavigate();
@@ -344,8 +346,14 @@ export function RecipeDetail() {
               <button
                 className="danger"
                 onClick={async () => {
+                  const ok = await confirm({
+                    title: '删除这道菜谱？',
+                    message: '关联的日记会保留，饮食计划里的引用会被移除。',
+                    confirmText: '删除菜谱',
+                    danger: true,
+                  });
                   if (
-                    confirm('删除菜谱？关联日记会保留，计划中的引用将移除。') &&
+                    ok &&
                     (await run(() => repositories.recipes.delete(recipe.id), '菜谱已删除'))
                   )
                     navigate('/recipes');

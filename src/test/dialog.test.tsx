@@ -1,8 +1,8 @@
-import { afterEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DialogProvider } from '../components/dialog';
-import { useConfirm, type DialogOptions } from '../components/dialogContext';
+import { setDialogAutoConfirm, useConfirm, type DialogOptions } from '../components/dialogContext';
 
 /** 测试外壳：点按钮发起一个确认框，把结果回传出来。 */
 function Harness({
@@ -37,6 +37,7 @@ function setup(options: DialogOptions) {
 }
 
 describe('应用内对话框', () => {
+  beforeEach(() => setDialogAutoConfirm(null));
   afterEach(() => cleanup());
 
   test('点确认返回 true，并展示标题、说明与要点', async () => {

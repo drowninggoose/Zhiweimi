@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { useData } from '../app/data';
+import { useConfirm } from '../components/dialogContext';
 import { repositories } from '../db/repositories';
 import {
   generatePlan,
@@ -55,6 +56,7 @@ import { Empty } from '../components/common';
 import { today, meals, mealLabels, type MealPlan, type PlanConditions } from '../types/models';
 export function PlannerPage() {
   const { data, run } = useData();
+  const confirm = useConfirm();
   const navigate = useNavigate();
   /** 天数输入框：用字符串存，允许中间态为空，生成时再解析 */
   const [dayInput, setDayInput] = useState('1');
@@ -322,8 +324,14 @@ export function PlannerPage() {
                 <button
                   className="danger"
                   onClick={async () => {
+                    const ok = await confirm({
+                      title: '删除这份饮食计划？',
+                      message: '删除后无法自动撤销。',
+                      confirmText: '删除计划',
+                      danger: true,
+                    });
                     if (
-                      confirm('确认删除这份计划？') &&
+                      ok &&
                       (await run(() => repositories.mealPlans.delete(p.id), '计划已删除'))
                     )
                       if (plan?.id === p.id) setPlan(null);

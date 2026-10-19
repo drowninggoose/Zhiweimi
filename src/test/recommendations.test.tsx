@@ -378,24 +378,18 @@ describe('界面：首页的推荐中心（推荐已合并进首页）', () => {
     vi.restoreAllMocks();
   });
 
-  test('首页推荐中心随机给 6 道，点「换一批」会换一组菜并记账', async () => {
+  test('首页推荐中心只显示一张横幅图片，并使用左右箭头轮播', async () => {
     window.history.replaceState({}, '', '/');
     render(<App />);
-    const user = userEvent.setup();
     await screen.findByRole('heading', { name: '今日推荐' });
     // 改成随机推荐后不再有时段信息
     expect(screen.queryByText(/距离换时段还有/)).not.toBeInTheDocument();
     expect(screen.queryByText('演示推荐')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '按类型看' })).not.toBeInTheDocument();
-    // 一批 6 道
-    expect(await screen.findByText(/第 1 \/ 6 道/)).toBeInTheDocument();
-    const refresh = screen.getAllByRole('button', { name: /换一批/ });
-    await user.click(refresh[0]);
-    await waitFor(async () => {
-      const stored = await db.recommendationState.get('current');
-      expect(stored?.refreshCount).toBe(1);
-      expect(stored?.recentBatches[0]?.ids.length).toBeGreaterThan(0);
-    });
+    expect(await screen.findByRole('region', { name: '今日推荐图片轮播' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '上一道推荐' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '下一道推荐' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /换一批/ })).not.toBeInTheDocument();
   });
 
   test('推荐按口味偏好加权：命中口味的菜会带上理由', async () => {
@@ -412,13 +406,11 @@ describe('界面：首页的推荐中心（推荐已合并进首页）', () => {
     expect(batch.dishes.some((d) => d.reasons.some((r) => r.includes('合你的口味')))).toBe(true);
   });
 
-  test('推荐卡片的按钮可用（可收藏、可进入烹饪）', async () => {
+  test('推荐横幅图片可以进入菜谱详情', async () => {
     window.history.replaceState({}, '', '/');
     render(<App />);
     await screen.findByRole('heading', { name: '今日推荐' });
-    // 等推荐卡片真正渲染出来（首页别处也有「开始烹饪」入口，不能只靠它判断）
-    await screen.findByText(/第 1 \/ \d+ 道/);
-    expect(screen.getAllByRole('link', { name: '开始烹饪' }).length).toBeGreaterThan(0);
-    expect(screen.getAllByRole('button', { name: /收藏/ }).length).toBeGreaterThan(0);
+    const carousel = await screen.findByRole('region', { name: '今日推荐图片轮播' });
+    expect(carousel.querySelector('a[href^="/recipes/"]')).not.toBeNull();
   });
 });

@@ -101,8 +101,13 @@ test('完整本地闭环：图片、刷新持久化、三周期计划、备份�
   const backupPath = testInfo.outputPath('complete-backup.json');
   await download.saveAs(backupPath);
   await page.getByRole('button', { name: '清空全部数据', exact: true }).click();
+  // 现在使用应用内对话框，需要显式点确认
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await page.getByRole('dialog').getByRole('button', { name: '全部清空' }).click();
   await expect(page.getByRole('status')).toContainText('全部数据已清空');
   await page.getByLabel('导入备份', { exact: true }).setInputFiles(backupPath);
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await page.getByRole('dialog').getByRole('button', { name: '覆盖并恢复' }).click();
   await expect(page.getByRole('status')).toContainText('备份恢复成功');
   await page.goto(recipeUrl);
   await expect(page.getByRole('heading', { name: '浏览器测试炒蛋' })).toBeVisible();

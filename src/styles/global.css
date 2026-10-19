@@ -989,3 +989,64 @@ dialog::backdrop {
 .voice-fab.docked:hover {
   opacity: 1;
 }
+
+/* ------------------------- 应用内对话框 ------------------------- */
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(61, 42, 26, 0.38);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 200;
+  animation: dialog-fade 0.16s ease-out;
+}
+.dialog-card {
+  width: min(460px, 100%);
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 24px 26px 20px;
+  box-shadow: 0 24px 60px rgba(87, 52, 27, 0.28);
+  animation: dialog-pop 0.18s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+.dialog-title {
+  margin: 0 0 10px;
+  font-size: 20px;
+  line-height: 1.4;
+}
+.dialog-message {
+  margin: 0 0 12px;
+  line-height: 1.65;
+}
+.dialog-list {
+  margin: 0 0 16px;
+  padding-left: 20px;
+  display: grid;
+  gap: 6px;
+  line-height: 1.6;
+  color: var(--muted);
+  font-size: 14px;
+}
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 4px;
+}
+.dialog-card button {
+  padding: 10px 20px;
+  border-radius: 12px;
+}
+@keyframes dialog-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes dialog-pop {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}

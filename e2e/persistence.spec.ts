@@ -117,6 +117,9 @@ test('浏览器关闭重开与本地服务重启：五类记录和Blob照片保�
       mimeType: 'application/json',
       buffer: Buffer.from(await exportBackup(snapshot)),
     });
+    // 备份恢复确认框已改为应用内对话框，需要显式点确认
+    await expect(page.getByRole('dialog')).toBeVisible();
+    await page.getByRole('dialog').getByRole('button', { name: '覆盖并恢复' }).click();
     await expect(page.getByRole('status')).toContainText('备份恢复成功');
     await context.close();
     context = undefined;

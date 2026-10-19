@@ -20,6 +20,7 @@ import { PlannerPage } from '../pages/Planner';
 import { HomePage } from '../pages/Home';
 import { SettingsPage } from '../pages/Settings';
 import { VoiceAssistant } from '../components/VoiceAssistant';
+import { DialogProvider } from '../components/dialog';
 function Shell() {
   const { data, error, notice } = useData();
   const location = useLocation();
@@ -131,7 +132,9 @@ export function App() {
   const [router] = useState(() => createBrowserRouter([{ path: '*', element: <Shell /> }]));
   return (
     <DataProvider>
-      <RouterProvider router={router} />
+      <DialogProvider>
+        <RouterProvider router={router} />
+      </DialogProvider>
     </DataProvider>
   );
 }

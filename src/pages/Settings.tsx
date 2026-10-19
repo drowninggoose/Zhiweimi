@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useData } from '../app/data';
+import { useConfirm } from '../components/dialogContext';
 import { repositories } from '../db/repositories';
 import { exportBackup, parseBackup, downloadBackup } from '../services/backupService';
 import { today, type Preferences } from '../types/models';
 export function SettingsPage() {
   const { data, run } = useData();
+  const confirm = useConfirm();
   const [preferences, setPreferences] = useState<Preferences>(() => data!.preferences);
   const [error, setError] = useState('');
   const counts = data
@@ -29,11 +31,14 @@ export function SettingsPage() {
       if (file.size > 100 * 1024 * 1024) throw new Error('备份文件不能超过100 MB');
       const snapshot = parseBackup(await file.text());
       setError('');
-      if (
-        confirm(
-          `备份已完整校验：${snapshot.recipes.length}道菜谱、${snapshot.utensils.length}件厨具、${snapshot.diaryEntries.length}条日记。继续将覆盖全部现有数据（包含图片），确认恢复？`,
-        )
-      ) {
+      const ok = await confirm({
+        title: '用备份覆盖当前数据？',
+        message: `备份已完整校验：${snapshot.recipes.length} 道菜谱、${snapshot.utensils.length} 件厨具、${snapshot.diaryEntries.length} 条日记。`,
+        details: ['当前全部数据（含上传图片）会被备份内容替换', '此操作无法自动撤销'],
+        confirmText: '覆盖并恢复',
+        danger: true,
+      });
+      if (ok) {
         if (await run(() => repositories.restore(snapshot), '备份恢复成功'))
           setPreferences(snapshot.preferences);
       }
@@ -166,20 +171,20 @@ export function SettingsPage() {
         <button
           className="secondary"
           onClick={() => {
-            if (
-              confirm(
-                [
-                  '重新导入完整菜谱库（517 道）？',
-                  '',
-                  '· 菜谱库里的菜会全部重新载入，你收藏过的菜会保留收藏状态',
-                  '· 日记、饮食计划与菜谱的关联：只要那道菜还在就保留',
-                  '· 自建菜谱、厨具、家庭食材、口味偏好、日记内容都会保留',
-                  '',
-                  '如果新版本菜谱库里删掉了某道菜，它在日记与计划里的关联会被解除。',
-                ].join('\n'),
-              )
-            )
-              void run(() => repositories.restoreLibrary(), '菜谱库已重新导入');
+            void (async () => {
+              const ok = await confirm({
+                title: '重新导入菜谱库？',
+                message: '菜谱库里的菜会全部重新载入（517 道）。',
+                details: [
+                  '你收藏过的菜会保留收藏状态',
+                  '日记、饮食计划与菜谱的关联：只要那道菜还在就保留',
+                  '自建菜谱、厨具、家庭食材、口味偏好、日记内容都会保留',
+                  '若新版本菜谱库删掉了某道菜，它的关联会被解除',
+                ],
+                confirmText: '重新导入',
+              });
+              if (ok) void run(() => repositories.restoreLibrary(), '菜谱库已重新导入');
+            })();
           }}
         >
           恢复菜谱库
@@ -194,8 +199,15 @@ export function SettingsPage() {
               className="danger"
               key={key}
               onClick={() => {
-                if (confirm(`确认清空${label}？`))
-                  void run(() => repositories.clear(key), `${label}已清空`);
+                void (async () => {
+                  const ok = await confirm({
+                    title: `清空${label}？`,
+                    message: '清空后无法自动撤销，可通过备份恢复。',
+                    confirmText: '清空',
+                    danger: true,
+                  });
+                  if (ok) void run(() => repositories.clear(key), `${label}已清空`);
+                })();
               }}
             >
               清空{label}
@@ -204,10 +216,16 @@ export function SettingsPage() {
           <button
             className="danger"
             onClick={() => {
-              if (
-                confirm('确认清空全部本地数据（包括菜谱库、上传图片和偏好）？请先备份。')
-              )
-                void run(() => repositories.clear('all'), '全部数据已清空');
+              void (async () => {
+                const ok = await confirm({
+                  title: '清空全部本地数据？',
+                  message: '包括菜谱库、上传图片与偏好设置，全部删除。',
+                  details: ['请先导出备份，否则无法恢复'],
+                  confirmText: '全部清空',
+                  danger: true,
+                });
+                if (ok) void run(() => repositories.clear('all'), '全部数据已清空');
+              })();
             }}
           >
             清空全部数据

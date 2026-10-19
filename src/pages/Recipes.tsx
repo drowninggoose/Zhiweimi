@@ -332,6 +332,7 @@ export function RecipeDetail() {
           </p>
           <div className="row">
             <button
+              className="secondary"
               onClick={() => void run(() => repositories.recipes.favorite(recipe), '收藏已更新')}
             >
               {recipe.favorite ? '取消收藏' : '收藏'}

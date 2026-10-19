@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>知味咪 · 烹饪步骤设计稿</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .crumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+  .crumb a { color: var(--line); text-decoration: none; }
+  .cook-grid { display: grid; grid-template-columns: 1fr 330px; gap: 20px; align-items: start; }
+  .step-card { padding: 24px 26px 22px; }
+  .step-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+  .step-no { font-family: var(--font-title); font-size: 16px; color: var(--ink-2); letter-spacing: 1px; }
+  .step-no b { font-size: 34px; color: var(--line); font-weight: 400; margin: 0 4px; }
+  .step-tags { display: flex; gap: 8px; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; padding: 5px 12px;
+    border: 1.6px solid var(--line-soft); border-radius: 20px 16px 20px 14px; background: #fff;
+  }
+  .pill.hot { background: var(--cream); border-color: var(--line); }
+  .pill i { font-style: normal; color: var(--red); }
+  .instruction {
+    font-family: var(--font-title); font-size: 30px; line-height: 1.75; letter-spacing: 1px;
+    margin: 0 0 22px; color: var(--ink);
+  }
+  .timer {
+    display: flex; align-items: center; gap: 18px; padding: 16px 20px; margin-bottom: 16px;
+    background: var(--cream-soft); border: 2px dashed var(--line-soft); border-radius: 18px 22px 16px 24px;
+  }
+  .timer .digits { font-family: var(--font-title); font-size: 40px; letter-spacing: 4px; color: var(--line); }
+  .timer .lbl { font-size: 12.5px; color: var(--muted); letter-spacing: 1px; }
+  .check-strip {
+    display: flex; align-items: center; gap: 10px; padding: 11px 16px; margin-bottom: 20px;
+    border-left: 4px solid var(--red); background: #fff8f2; font-family: var(--font-title);
+    font-size: 15px; color: var(--ink-2);
+  }
+  .check-strip b { color: var(--red); font-weight: 400; }
+  .step-actions { display: flex; gap: 12px; align-items: center; }
+  .spacer { flex: 1; }
+  .timeline { display: flex; align-items: center; gap: 0; margin-top: 6px; }
+  .tnode { width: 22px; height: 22px; border: 2px solid var(--line-soft); border-radius: 50%; background: #fff; flex: none; position: relative; }
+  .tnode.done { background: var(--cream); border-color: var(--line); }
+  .tnode.now { border-color: var(--red); background: var(--red); }
+  .tnode.now::after { content: ''; position: absolute; inset: 4px; border-radius: 50%; background: #fff; opacity: .55; }
+  .tline { flex: 1; height: 2px; background: repeating-linear-gradient(90deg, var(--line-soft) 0 6px, transparent 6px 12px); }
+  .rail .card { margin-bottom: 16px; }
+  .ing { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px dashed #eddcc9; font-size: 14px; }
+  .ing:last-child { border-bottom: none; }
+  .ing .box { width: 18px; height: 18px; border: 1.8px solid var(--line-soft); border-radius: 6px; flex: none; display: grid; place-items: center; color: var(--red); font-size: 12px; }
+  .ing.done .box { background: var(--cream); border-color: var(--line); }
+  .ing.done .nm { text-decoration: line-through; color: var(--muted); }
+  .ing .nm { flex: 1; }
+  .ing .amt { color: var(--ink-2); font-family: var(--font-title); }
+  .tip { font-family: var(--font-title); font-size: 14px; line-height: 1.8; color: var(--ink-2); margin: 0; }
+  .head-right { display: flex; gap: 10px; align-items: center; }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="spine">
+    <svg class="rings" viewBox="0 0 22 340" fill="none" stroke="#c68a6e" stroke-width="2.2" stroke-linecap="round">
+      <ellipse cx="9" cy="18" rx="9" ry="7"/><ellipse cx="9" cy="58" rx="9" ry="7"/>
+      <ellipse cx="9" cy="98" rx="9" ry="7"/><ellipse cx="9" cy="138" rx="9" ry="7"/>
+      <ellipse cx="9" cy="178" rx="9" ry="7"/><ellipse cx="9" cy="218" rx="9" ry="7"/>
+      <ellipse cx="9" cy="258" rx="9" ry="7"/><ellipse cx="9" cy="298" rx="9" ry="7"/>
+    </svg>
+    <div class="brand">
+      <img src="mascot.svg" alt="知味咪">
+      <div><strong>知味咪</strong><small>把每餐做成小幸福</small></div>
+    </div>
+    <nav>
+      <a href="#"><span class="dot"></span>首页总览</a>
+      <a href="#"><span class="dot"></span>菜谱总览</a>
+      <a href="#"><span class="dot"></span>家用厨具</a>
+      <a class="active" href="#"><span class="dot"></span>开始烹饪</a>
+      <a href="#"><span class="dot"></span>DIY美食日记</a>
+      <a href="#"><span class="dot"></span>饮食计划助手</a>
+      <a href="#"><span class="dot"></span>数据与设置</a>
+    </nav>
+    <p class="local-note"><span class="seal-mini">存</span>本地保存 · 离线可用</p>
+  </aside>
+
+  <section class="workspace">
+    <div class="crumb"><a href="#">开始烹饪</a><span>›</span><span>花椒排骨</span></div>
+    <header class="top">
+      <h1>花椒排骨</h1>
+      <div class="head-right">
+        <button class="btn ghost">保存进度</button>
+        <button class="btn ghost">退出烹饪</button>
+      </div>
+    </header>
+
+    <div class="cook-grid">
+      <section class="card step-card">
+        <div class="step-top">
+          <span class="step-no">第<b>3</b>步 / 共 6 步</span>
+          <div class="step-tags">
+            <span class="pill"><i>✎</i>动作 · 炒</span>
+            <span class="pill hot"><i>♨</i>中火</span>
+            <span class="pill"><i>◍</i>炒锅</span>
+          </div>
+        </div>
+
+        <p class="instruction">加入排骨翻炒，倒入料酒，<br>炒至表面微微上色。</p>
+
+        <div class="timer">
+          <svg width="46" height="46" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="26" r="16" stroke="#9D5033" stroke-width="2.6"/>
+            <path d="M24 27V18M24 27l7 4" stroke="#B8232A" stroke-width="2.6" stroke-linecap="round"/>
+            <path d="M20 6h8M24 6v4" stroke="#9D5033" stroke-width="2.6" stroke-linecap="round"/>
+          </svg>
+          <div>
+            <div class="lbl">本步计时</div>
+            <div class="digits">02:30</div>
+          </div>
+          <div class="spacer"></div>
+          <button class="btn primary">开始计时</button>
+        </div>
+
+        <div class="check-strip"><b>判断标准 ·</b> 排骨表面金黄、边缘微微焦香</div>
+
+        <div class="step-actions">
+          <button class="btn ghost">← 上一步</button>
+          <div class="spacer"></div>
+          <button class="btn ghost">完成这道菜</button>
+          <button class="btn primary">下一步 →</button>
+        </div>
+
+        <div class="timeline" style="margin-top:26px">
+          <span class="tnode done"></span><span class="tline"></span>
+          <span class="tnode done"></span><span class="tline"></span>
+          <span class="tnode now"></span><span class="tline"></span>
+          <span class="tnode"></span><span class="tline"></span>
+          <span class="tnode"></span><span class="tline"></span>
+          <span class="tnode"></span>
+        </div>
+      </section>
+
+      <div class="rail">
+        <section class="card">
+          <h2>食材 <span class="small muted" style="font-family:var(--font-body);letter-spacing:0">点击划线</span></h2>
+          <div class="ing done"><span class="box">✓</span><span class="nm">排骨</span><span class="amt">500 g</span></div>
+          <div class="ing done"><span class="box">✓</span><span class="nm">花椒</span><span class="amt">5 g</span></div>
+          <div class="ing"><span class="box"></span><span class="nm">生抽</span><span class="amt">10 g</span></div>
+          <div class="ing"><span class="box"></span><span class="nm">冰糖</span><span class="amt">8 g</span></div>
+          <div class="ing"><span class="box"></span><span class="nm">姜</span><span class="amt">5 g</span></div>
+          <div class="ing"><span class="box"></span><span class="nm">料酒</span><span class="amt">15 ml</span></div>
+        </section>
+
+        <section class="card">
+          <h2>本步用具</h2>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <span class="chip active">炒锅</span><span class="chip">锅铲</span>
+          </div>
+          <p class="small muted" style="margin:12px 0 0">没有炒锅？<a href="#" style="color:var(--line)">换成平底锅</a></p>
+        </section>
+
+        <section class="card">
+          <div class="tape"></div>
+          <h2>小贴士</h2>
+          <p class="tip">排骨先冷水下锅焯一遍，撇掉浮沫再炒，汤会更清、腥味更淡。</p>
+        </section>
+      </div>
+    </div>
+  </section>
+</div>
+</body>
+</html>

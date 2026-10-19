@@ -60,7 +60,7 @@ function Shell() {
     <div className="app-shell">
       <aside>
         <div className="brand">
-          <img className="brand-cat" src="/app-icon.svg" alt="戴厨师帽、拿量勺的知味咪小猫" />
+          <img className="brand-cat" src="/mascot-cat.png" alt="戴厨师帽、拿量勺的知味咪小猫" />
           <strong>知味咪</strong>
           <small>把每餐做成小幸福</small>
         </div>

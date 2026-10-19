@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>知味咪 · 设计语言</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  body { padding: 40px 56px 56px; }
+  .board-head { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 34px; }
+  .board-head h1 { font-size: 38px; }
+  .board-head .sub { font-family: var(--font-title); color: var(--muted); font-size: 14px; margin-top: 10px; letter-spacing: 1px; }
+  .kicker { font-family: var(--font-title); font-size: 20px; color: var(--line); letter-spacing: 2px; margin: 0 0 4px; }
+  .hint { font-size: 12.5px; color: var(--muted); margin: 0 0 18px; letter-spacing: .5px; }
+  .block { margin-bottom: 40px; }
+  .swatches { display: grid; grid-template-columns: repeat(7, 1fr); gap: 14px; }
+  .sw { border: 2px solid var(--line); border-radius: var(--r-hand-2); background: #fff; padding: 10px; box-shadow: 3px 4px 0 rgba(157,80,51,.12); }
+  .sw .chipcolor { height: 74px; border-radius: 12px 14px 10px 16px; border: 1.6px solid rgba(157,80,51,.35); margin-bottom: 10px; }
+  .sw b { display: block; font-family: var(--font-title); font-weight: 400; font-size: 15px; letter-spacing: 1px; }
+  .sw code { font-size: 11.5px; color: var(--muted); }
+  .sw small { display: block; font-size: 11px; color: var(--ink-2); margin-top: 6px; line-height: 1.5; }
+  .cols { display: grid; grid-template-columns: 1.15fr 1fr; gap: 22px; align-items: start; }
+  .type-demo .d1 { font-family: var(--font-display); font-size: 44px; letter-spacing: 2px; line-height: 1.3; }
+  .type-demo .d2 { font-family: var(--font-title); font-size: 26px; letter-spacing: 1.5px; margin-top: 8px; }
+  .type-demo .d3 { font-size: 15px; line-height: 1.85; color: var(--ink-2); margin-top: 12px; }
+  .type-demo .d4 { font-size: 12.5px; color: var(--muted); margin-top: 8px; }
+  .type-row { display: flex; align-items: baseline; gap: 14px; padding: 10px 0; border-bottom: 1px dashed #eddcc9; }
+  .type-row:last-child { border: none; }
+  .type-row .spec { width: 128px; flex: none; font-size: 11.5px; color: var(--muted); }
+  .comp-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .comp { padding: 16px; }
+  .comp h3 { font-size: 12px; letter-spacing: 2px; color: var(--muted); font-weight: 400; margin: 0 0 12px; font-family: var(--font-body); }
+  .demo-line { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
+  .rules { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .rule { padding: 16px 18px; }
+  .rule b { font-family: var(--font-title); font-weight: 400; font-size: 16px; letter-spacing: .8px; }
+  .rule p { font-size: 12.5px; color: var(--ink-2); line-height: 1.75; margin: 8px 0 0; }
+  .rule .sample { margin-top: 12px; height: 56px; display: grid; place-items: center; }
+  .bad { border-color: #c9b7a8; box-shadow: none; border-style: dashed; }
+  .bad .x { color: #b8232a; font-family: var(--font-title); }
+  .bad .demo { margin-top: 10px; border-radius: 14px; padding: 10px; font-size: 12px; }
+  .bad .g1 { background: linear-gradient(135deg,#7b61ff,#26d0ce); color:#fff; text-align:center; }
+  .bad .g2 { background:#fff; box-shadow:0 6px 18px rgba(0,0,0,.12); border-radius:14px; color:#555; }
+  .bad .g3 { letter-spacing:3px; font-size:11px; color:#666; text-transform:uppercase; }
+  .foot { display:flex; justify-content:space-between; align-items:center; border-top: 2px dashed var(--line-soft); padding-top: 18px; color: var(--muted); font-size: 12.5px; }
+  .seal { width: 54px; height: 54px; border: 3px solid var(--red); color: var(--red); border-radius: 10px;
+          display: grid; place-items: center; font-family: var(--font-title); font-size: 26px; transform: rotate(-8deg); opacity: .9; }
+</style>
+</head>
+<body>
+  <div class="board-head">
+    <div>
+      <p class="kicker">知味咪 · 设计语言 v0.1</p>
+      <h1>一本手写食谱本</h1>
+      <div class="sub">纸、铅笔线、蜡笔色、红印章 —— 界面就是那本被翻旧的菜谱本子</div>
+    </div>
+    <div class="seal">咪</div>
+  </div>
+
+  <section class="block">
+    <p class="kicker" style="font-size:17px">颜色</p>
+    <p class="hint">全部取自 logo 本身；绿色只留给「完成 / 成功」，不做装饰。</p>
+    <div class="swatches">
+      <div class="sw"><div class="chipcolor" style="background:#FFFCF5"></div><b>纸白</b><code>#FFFCF5</code><small>页面底色</small></div>
+      <div class="sw"><div class="chipcolor" style="background:#FBE7CD"></div><b>奶黄</b><code>#FBE7CD</code><small>卡片底 / 选中态</small></div>
+      <div class="sw"><div class="chipcolor" style="background:#9D5033"></div><b>描边棕</b><code>#9D5033</code><small>所有线稿与描边</small></div>
+      <div class="sw"><div class="chipcolor" style="background:#3A241A"></div><b>墨</b><code>#3A241A</code><small>正文与标题</small></div>
+      <div class="sw"><div class="chipcolor" style="background:#B8232A"></div><b>朱红</b><code>#B8232A</code><small>只用于主行动、印章</small></div>
+      <div class="sw"><div class="chipcolor" style="background:#8C7A6B"></div><b>铅笔灰</b><code>#8C7A6B</code><small>注释与次要信息</small></div>
+      <div class="sw"><div class="chipcolor" style="background:#7C9473"></div><b>鼠尾草</b><code>#7C9473</code><small>仅「完成 / 成功」</small></div>
+    </div>
+  </section>
+
+  <div class="cols block">
+    <section class="card type-demo">
+      <p class="kicker" style="font-size:17px;margin-bottom:12px">字体</p>
+      <div class="d1">今天想吃点什么？</div>
+      <div class="d2">番茄土豆牛肉汤 · 花椒排骨</div>
+      <div class="d3">冰箱里还有土豆和洋葱，今天想喝点热的。炖 30 分钟就够，不用一直盯着。</div>
+      <div class="d4">10.18 · 晚餐 &nbsp;/&nbsp; 45 道菜在册</div>
+      <div style="margin-top:18px">
+        <div class="type-row"><span class="spec">方正舒体 · 46/60</span><span style="font-family:var(--font-display);font-size:26px">今天想吃点什么？</span></div>
+        <div class="type-row"><span class="spec">华文楷体 · 30/1.75</span><span style="font-family:var(--font-title);font-size:22px">炒至表面微微上色</span></div>
+        <div class="type-row"><span class="spec">微软雅黑 · 15/1.85</span><span style="font-size:14px;color:var(--ink-2)">正文用无衬线，保证长时间阅读</span></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="kicker" style="font-size:17px;margin-bottom:12px">形状规则</p>
+      <div class="rules" style="grid-template-columns:1fr 1fr">
+        <div class="rule" style="padding:12px 0;border:none">
+          <b>不对称圆角</b>
+          <p>每个容器四角半径不同，像手画的框。半径 14–26px。</p>
+        </div>
+        <div class="rule" style="padding:12px 0;border:none">
+          <b>2px 描边</b>
+          <p>所有卡片都有棕色描边，不用灰阴影做层级。</p>
+        </div>
+        <div class="rule" style="padding:12px 0;border:none">
+          <b>纸片阴影</b>
+          <p>3–4px 硬偏移，颜色是描边棕的 13–18% 透明。</p>
+        </div>
+        <div class="rule" style="padding:12px 0;border:none">
+          <b>6% 纸纹</b>
+          <p>全局一层噪声，千万别再加渐变光晕。</p>
+        </div>
+      </div>
+      <div style="margin-top:6px;display:flex;gap:10px;align-items:center">
+        <div style="flex:1;height:58px;border:2px solid var(--line);border-radius:var(--r-hand);box-shadow:3px 4px 0 rgba(157,80,51,.13);background:#fff;display:grid;place-items:center;font-size:12.5px;color:var(--ink-2)">卡片 · 2px 描边</div>
+        <div style="flex:1;height:58px;border:2px dashed var(--line-soft);border-radius:var(--r-hand-2);background:var(--cream-soft);display:grid;place-items:center;font-size:12.5px;color:var(--ink-2)">提示 · 虚线</div>
+        <div style="width:56px;height:56px;border:3px solid var(--red);border-radius:9px;color:var(--red);display:grid;place-items:center;font-family:var(--font-title);font-size:24px;transform:rotate(-8deg);margin-right:6px">咪</div>
+      </div>
+    </section>
+  </div>
+
+  <section class="block">
+    <p class="kicker" style="font-size:17px">组件</p>
+    <p class="hint">按钮只有两种：朱红实心＝主行动，虚线白底＝次要。绝不同级放两个实心按钮。</p>
+    <div class="comp-grid">
+      <div class="card comp">
+        <h3>按钮</h3>
+        <div class="demo-line"><button class="btn primary">就做这道</button><button class="btn ghost">换一道</button></div>
+        <div class="demo-line"><button class="btn">普通按钮</button><button class="btn ghost" disabled style="opacity:.5">不可用</button></div>
+      </div>
+
+      <div class="card comp">
+        <h3>标签与筛选</h3>
+        <div class="demo-line"><span class="chip active">全部</span><span class="chip">热菜</span><span class="chip">汤羹</span></div>
+        <div class="demo-line"><span class="tag">你好，今天也好好吃饭</span></div>
+        <div class="demo-line"><span class="chip">10 分钟</span><span class="chip">微辣</span><span class="chip" style="border-style:dashed">＋ 添加</span></div>
+      </div>
+
+      <div class="card comp">
+        <h3>输入与进度</h3>
+        <div class="search" style="margin-bottom:12px">
+          <input placeholder="搜索菜名或食材…" style="flex:1;width:auto;min-width:0">
+          <button style="padding:11px 16px">搜索</button>
+        </div>
+        <div class="progress"><i style="width:46%"></i></div>
+        <p class="small muted" style="margin:8px 0 0">进度条用斜纹，像铅笔反复涂抹。</p>
+      </div>
+
+      <div class="card comp">
+        <h3>卡片</h3>
+        <div style="display:flex;gap:10px">
+          <div style="flex:1;border:2px solid var(--line);border-radius:var(--r-hand);padding:10px 12px;font-size:12.5px;background:#fff;box-shadow:3px 4px 0 rgba(157,80,51,.12)">正在烹饪中…</div>
+          <div style="flex:1;border:2px dashed var(--line-soft);border-radius:var(--r-hand-2);padding:10px 12px;font-size:12.5px;background:var(--cream-soft)">空状态 / 提示</div>
+        </div>
+      </div>
+
+      <div class="card comp">
+        <h3>贴纸与手写注</h3>
+        <div class="demo-line"><span style="display:inline-block;width:62px;height:16px;background:#f0c3ba;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.55) 0 5px,transparent 5px 11px);border-radius:2px;transform:rotate(-3deg)"></span></div>
+        <p style="font-family:var(--font-title);font-size:14px;line-height:1.8;color:var(--ink-2);margin:0">
+          冰箱里还有土豆和洋葱，<br>今天想喝点热的。
+        </p>
+      </div>
+
+      <div class="card comp">
+        <h3>图标</h3>
+        <div class="demo-line">
+          <svg width="30" height="30" viewBox="0 0 30 30" fill="none" stroke="#9D5033" stroke-width="2.2" stroke-linecap="round"><circle cx="15" cy="16" r="9"/><path d="M15 16v-5M15 16l4 2"/></svg>
+          <svg width="30" height="30" viewBox="0 0 30 30" fill="none" stroke="#9D5033" stroke-width="2.2" stroke-linecap="round"><path d="M6 14h18c0 6-4 9-9 9s-9-3-9-9z"/><path d="M6 14h18M12 9q3-3 6 0"/></svg>
+          <svg width="30" height="30" viewBox="0 0 30 30" fill="none" stroke="#9D5033" stroke-width="2.2" stroke-linecap="round"><path d="M15 4l3 7 8 1-6 6 2 8-7-4-7 4 2-8-6-6 8-1z"/></svg>
+          <svg width="30" height="30" viewBox="0 0 30 30" fill="none" stroke="#B8232A" stroke-width="2.4" stroke-linecap="round"><path d="M15 5v20M5 15h20"/></svg>
+        </div>
+        <p class="small muted" style="margin:0">统一 2–2.4px 圆头线稿，不用实心图标。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <p class="kicker" style="font-size:17px">别这样做</p>
+    <p class="hint">这三件事会让手绘感立刻变成「AI 生成的页面」。</p>
+    <div class="rules">
+      <div class="card rule bad"><b><span class="x">×</span> 紫色渐变</b><div class="demo g1">AI 风渐变按钮</div><p>和纸、铅笔、蜡笔完全不搭。</p></div>
+      <div class="card rule bad"><b><span class="x">×</span> 统一圆角 + 灰阴影</b><div class="demo g2">一模一样的卡片</div><p>所有卡片长得一样，就没有手账感了。</p></div>
+      <div class="card rule bad"><b><span class="x">×</span> 全大写标签</b><div class="demo g3">all caps eyebrow</div><p>中文界面里更显突兀，标题就用楷体。</p></div>
+    </div>
+  </section>
+
+  <div class="foot">
+    <span>知味咪 · UI 改造方案 v0.1 &nbsp;·&nbsp; 功能不变，仅视觉与手绘语言统一</span>
+    <span>配色取样自品牌 logo · 字体：方正舒体 / 华文楷体 / 微软雅黑</span>
+  </div>
+</body>
+</html>

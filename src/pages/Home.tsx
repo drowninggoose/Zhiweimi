@@ -28,7 +28,7 @@ export function HomePage() {
           <span className="tag">你好，今天也好好吃饭</span>
           <h2>今天想吃点什么？</h2>
         </div>
-        <img className="hero-mascot" src="/app-icon.svg" alt="知味咪厨师猫" />
+        <img className="hero-mascot" src="/mascot-cat.png" alt="知味咪厨师猫" />
       </section>
       <section className="card rec-home" id="today-recommendation">
         <h2>今日推荐</h2>

@@ -20,3 +20,10 @@ dump_*.html
 
 # Logo è®¾è®¡ç¨¿ï¼ˆæœ¬åœ°è®¾è®¡æ¢ç´¢ï¼Œä¸å…¥åº“ï¼‰
 logo-concepts/
+
+# ±¾µØ°²×°µÄµÚÈı·½ skill ÎÄµµ
+.skills/
+
+# Éè¼Æ¸åäÖÈ¾²úÎï£¨Ô´ÎÄ¼şÈÔ±£Áô£©
+docs/design/mockups/out/
+docs/design/screens/

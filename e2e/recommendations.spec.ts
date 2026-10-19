@@ -9,28 +9,23 @@ async function shownRecipeIds(page: import('@playwright/test').Page) {
     );
 }
 
-test('首页推荐中心：按时段推荐、换一批给新组合、卡片流可翻页', async ({ page }) => {
+test('首页推荐中心：随机 6 道、换一批给新组合、卡片流可翻页', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
 
   await page.goto('/');
   await expect(page.getByRole('heading', { name: '今日推荐' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: /现在推荐/ })).toBeVisible();
-  // 时段提示：9 点前早餐、9–14 点午餐、14 点后晚餐
-  await expect(page.getByText(/距离换时段还有/)).toBeVisible();
-  // 说明菜谱库（517 道）已导入，而不是只有 16 道演示菜
-  await expect(page.getByText(/候选 \d+ 道/)).toBeVisible();
-  const 候选文案 = await page.getByText(/候选 \d+ 道/).innerText();
-  const 候选数 = Number(候选文案.match(/候选 (\d+) 道/)?.[1] ?? '0');
-  expect(候选数).toBeGreaterThan(16);
+  // 改成随机推荐后不再有时段信息，也没有演示标识
+  await expect(page.getByText(/距离换时段还有/)).toHaveCount(0);
+  await expect(page.getByText('演示推荐')).toHaveCount(0);
+  await expect(page.getByText('按类型看')).toHaveCount(0);
+  // 一批固定 6 道
+  await expect(page.getByText(/本批 6 道/)).toBeVisible();
 
   // 一屏一道的卡片流 + 换一批
   const first = await shownRecipeIds(page);
   expect(first.length).toBeGreaterThan(0);
-  await page
-    .getByRole('button', { name: /换一批/ })
-    .first()
-    .click();
+  await page.getByRole('button', { name: /换一批/ }).first().click();
   await expect
     .poll(async () => (await shownRecipeIds(page)).join(','), { timeout: 10000 })
     .not.toBe(first.join(','));
@@ -43,25 +38,18 @@ test('首页推荐中心：按时段推荐、换一批给新组合、卡片流�
   await page.getByRole('button', { name: '上一道推荐' }).click();
   expect(await shownRecipeIds(page)).toEqual(afterRefresh);
 
-  // 换一批之后刷新页面，推荐仍在（种子已持久化），不会变成空白
+  // 换一批之后刷新页面，推荐仍在，不会变成空白
   await page.reload();
-  await expect(page.getByRole('heading', { name: /现在推荐/ })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '今日推荐' })).toBeVisible();
   expect((await shownRecipeIds(page)).length).toBeGreaterThan(0);
 
   expect(errors).toEqual([]);
 });
 
-test('首页推荐中心：手动切到晚餐、按类型看、收藏可用', async ({ page }) => {
+test('首页推荐中心：卡片可收藏、可进入烹饪', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: /现在推荐/ })).toBeVisible();
-
-  await page.getByRole('button', { name: '晚餐' }).click();
-  await expect(page.getByText('手动选择餐次')).toBeVisible();
-  await expect(page.getByRole('heading', { name: /现在推荐 · 晚餐/ })).toBeVisible();
-
-  await page.getByRole('button', { name: '按类型看' }).click();
-  await expect(page.getByRole('heading', { name: '今晚主菜' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '暖身汤羹' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '今日推荐' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '下一道推荐' })).toBeVisible();
 
   // 收藏按钮可用
   await page.getByRole('button', { name: /^收藏/ }).first().click();

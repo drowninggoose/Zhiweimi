@@ -740,6 +740,9 @@ dialog::backdrop {
 
 /* ------------------------- 语音助手 ------------------------- */
 .voice-fab {
+  touch-action: none;
+  cursor: grab;
+  user-select: none;
   position: fixed;
   right: 26px;
   bottom: 26px;
@@ -973,4 +976,16 @@ dialog::backdrop {
   bottom: 12px;
   z-index: 2;
   box-shadow: 0 4px 12px #57341b33;
+}
+
+.voice-fab.dragging {
+  cursor: grabbing;
+  transition: none;
+}
+.voice-fab.docked {
+  opacity: 0.9;
+  border-radius: 50% 6px 6px 50%;
+}
+.voice-fab.docked:hover {
+  opacity: 1;
 }

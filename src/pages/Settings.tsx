@@ -96,20 +96,6 @@ export function SettingsPage() {
           </select>
         </label>
         <label>
-          主题
-          <select
-            aria-label="主题"
-            value={preferences.theme}
-            onChange={(e) =>
-              setPreferences({ ...preferences, theme: e.target.value as Preferences['theme'] })
-            }
-          >
-            <option value="cream-orange-green">奶油白 / 番茄橙 / 鼠尾草绿</option>
-            <option value="sage-green-cream">鼠尾草绿 / 奶油白</option>
-            <option value="tomato-orange-cream">番茄橙 / 暖奶油</option>
-          </select>
-        </label>
-        <label>
           字体大小
           <select
             aria-label="字体大小"

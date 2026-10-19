@@ -5,6 +5,7 @@ import { useData } from '../app/data';
 import { repositories } from '../db/repositories';
 import { remedies } from '../services/cookingService';
 import { useVoiceAssistant } from '../hooks/useVoiceAssistant';
+import { mergeRescueSteps, type RescuePlan } from '../services/rescuePlan';
 import { useConfirm } from './dialogContext';
 import { buildContext, type VoiceContext } from '../services/voiceService';
 import type { Recipe } from '../types/models';
@@ -148,7 +149,39 @@ export function VoiceAssistant() {
   );
 
   const confirm = useConfirm();
-  const assistant = useVoiceAssistant({ getContext, getRecipe, recommend });
+
+  /**
+   * 把抢救方案落到「这次烹饪」上：
+   * 当前步骤及之前保持不变，插入抢救步骤并改写后续步骤，存进烹饪进度。
+   */
+  const applyRescue = useCallback(
+    async (plan: RescuePlan) => {
+      const active = await current();
+      if (!active) return null;
+      const progress = await repositories.cookingProgress.get(active.recipe.id);
+      if (!progress || progress.stage !== 'steps') return null;
+      const baseSteps = progress.adaptedSteps?.length ? progress.adaptedSteps : active.recipe.steps;
+      const merged = mergeRescueSteps(baseSteps, progress.stepIndex, plan, () => crypto.randomUUID());
+      const now = new Date().toISOString();
+      await repositories.cookingProgress.save({
+        ...progress,
+        adaptedSteps: merged.steps,
+        adaptationSummary: `抢救：${plan.diagnosis}`,
+        savedAt: now,
+        updatedAt: now,
+      });
+      // 通知分步页面重新读取进度
+      window.dispatchEvent(
+        new CustomEvent('zhiweimi:cooking-progress-updated', {
+          detail: { recipeId: active.recipe.id },
+        }),
+      );
+      return { inserted: merged.inserted, replaced: merged.replaced };
+    },
+    [current],
+  );
+
+  const assistant = useVoiceAssistant({ getContext, getRecipe, recommend, applyRescue });
   const { status, error, result, history } = assistant;
 
   // ---- 悬浮球拖动与贴边隐藏 ----
@@ -445,6 +478,17 @@ export function VoiceAssistant() {
                         </li>
                       ))}
                     </ul>
+                  ) : null}
+                  {result.rescue ? (
+                    <p className="voice-rescue">
+                      🛠 {result.rescue.diagnosis}
+                      <small>
+                        已更新这次烹饪的后续步骤
+                        {result.rescue.inserted ? `（新增 ${result.rescue.inserted} 步抢救）` : ''}
+                        {result.rescue.replaced ? `（改写 ${result.rescue.replaced} 步）` : ''}
+                        ，回到烹饪页面即可看到。
+                      </small>
+                    </p>
                   ) : null}
                   {result.justRemembered.length ? (
                     <p className="voice-memory">

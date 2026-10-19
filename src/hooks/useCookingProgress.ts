@@ -92,6 +92,26 @@ export function useCookingProgress(recipeId: string | undefined): CookingProgres
     };
   }, [recipeId]);
 
+  // 别处（例如语音助手的抢救方案）改写了这次烹饪的步骤时，重新读取一次
+  useEffect(() => {
+    if (!recipeId) return;
+    function onUpdated(event: Event) {
+      const detail = (event as CustomEvent<{ recipeId?: string }>).detail;
+      if (detail?.recipeId && detail.recipeId !== recipeId) return;
+      void repositories.cookingProgress
+        .get(recipeId!)
+        .then((found) => {
+          if (!found) return;
+          setInitial(found);
+          setSavedAt(found.savedAt);
+        })
+        .catch(() => undefined);
+    }
+    window.addEventListener('zhiweimi:cooking-progress-updated', onUpdated);
+    return () =>
+      window.removeEventListener('zhiweimi:cooking-progress-updated', onUpdated);
+  }, [recipeId]);
+
   const loading = loadedFor !== recipeId;
 
   const write = useCallback(async () => {

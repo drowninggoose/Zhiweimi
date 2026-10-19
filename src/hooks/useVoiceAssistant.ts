@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { repositories } from '../db/repositories';
 import { stamp, type AssistantMessage, type Recipe } from '../types/models';
 import { memoryLabels } from '../services/memoryPolicy';
+import { shouldApplyRescue, type RescuePlan } from '../services/rescuePlan';
 import {
   askAssistant,
   buildVocabulary,
@@ -23,6 +24,11 @@ export type VoiceAssistantOptions = {
   getRecipe?: () => Recipe | undefined;
   /** 本地推荐：语音说"推荐几道辣菜"时走本地引擎，不让模型编菜名 */
   recommend?: (query: { flavors: string[]; exclude: string[] }) => Recipe[];
+  /**
+   * 把抢救方案落到当前这次烹饪上（改写后续步骤）。
+   * 返回插入/替换了多少步；无法应用时返回 null。
+   */
+  applyRescue?: (plan: RescuePlan) => Promise<{ inserted: number; replaced: number } | null>;
 };
 
 export type VoiceAssistantResult = {
@@ -38,6 +44,8 @@ export type VoiceAssistantResult = {
   wantRecommend: boolean;
   /** 本次新写入并生效的记忆（用于界面提示） */
   justRemembered: string[];
+  /** 抢救方案落实结果：诊断、插入与替换的步数 */
+  rescue?: { diagnosis: string; inserted: number; replaced: number };
 };
 
 const MAX_RECORD_MS = 30_000;
@@ -61,6 +69,7 @@ export function useVoiceAssistant({
   getContext,
   getRecipe,
   recommend,
+  applyRescue,
 }: VoiceAssistantOptions) {
   const [status, setStatus] = useState<AssistantStatus>('idle');
   const [error, setError] = useState('');
@@ -145,6 +154,23 @@ export function useVoiceAssistant({
           }
         }
 
+        // 抢救方案：用户说菜出问题时，改写当前这次烹饪的后续步骤
+        let rescueInfo: VoiceAssistantResult['rescue'];
+        if (shouldApplyRescue(chat.rescue) && applyRescue) {
+          try {
+            const applied = await applyRescue(chat.rescue);
+            if (applied) {
+              rescueInfo = {
+                diagnosis: chat.rescue.diagnosis,
+                inserted: applied.inserted,
+                replaced: applied.replaced,
+              };
+            }
+          } catch {
+            // 改写失败不影响回答展示
+          }
+        }
+
         const message: AssistantMessage = {
           ...stamp(),
           inputMode,
@@ -174,6 +200,7 @@ export function useVoiceAssistant({
           recommended,
           wantRecommend: chat.wantRecommend,
           justRemembered,
+          rescue: rescueInfo,
         });
         setStatus('speaking');
         const spoken = [
@@ -191,7 +218,7 @@ export function useVoiceAssistant({
         setStatus('idle');
       }
     },
-    [getContext, recommend, refreshHistory],
+    [applyRescue, getContext, recommend, refreshHistory],
   );
 
   const stopRecording = useCallback(() => {

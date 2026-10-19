@@ -1,4 +1,5 @@
 import type { Recipe } from '../types/models';
+import type { DishKind, RescuePlan } from './rescuePlan';
 
 /** 语音识别结果 */
 export type AsrResult = { text: string; duration?: number };
@@ -15,6 +16,8 @@ export type ChatResult = {
   recommendQuery: { flavors: string[]; exclude: string[] } | null;
   /** 是否需要走本地推荐（模型意图或用户原话命中） */
   wantRecommend: boolean;
+  /** 抢救方案：用户报告菜出了问题、需要对后续步骤做改写时才有 */
+  rescue: RescuePlan | null;
 };
 
 /**
@@ -26,6 +29,14 @@ export type ChatResult = {
 export type VoiceContext = {
   recipeName?: string;
   cuisines?: string[];
+  /** 菜品形态（汤菜 / 炒烧 / 炖焖 / 凉菜 …），决定补救思路 */
+  dishKind?: DishKind;
+  /** 当前步骤的结构化信息，便于模型判断做到哪一步了 */
+  currentAction?: string;
+  currentHeat?: string;
+  currentDurationSeconds?: number;
+  /** 后续步骤的结构化清单（当前步骤之后） */
+  remainingSteps?: { order: number; instruction: string; action?: string; heat?: string; durationSeconds?: number; check?: string }[];
   servings?: number;
   estimatedMinutes?: number;
   /** 全部食材（含用量与分组） */
@@ -46,6 +57,9 @@ export type VoiceContext = {
 };
 
 export type PreparedAudio = { dataUrl: string; format: string; sampleRate: number };
+
+export { dishKindOf } from './rescuePlan';
+import { dishKindOf } from './rescuePlan';
 
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
   const bytes = new Uint8Array(buffer);
@@ -183,6 +197,18 @@ export function buildContext(
   return {
     recipeName: recipe?.name,
     cuisines: recipe?.cuisines,
+    dishKind: recipe ? dishKindOf(recipe) : undefined,
+    currentAction: step?.action,
+    currentHeat: step?.heat,
+    currentDurationSeconds: step?.durationSeconds,
+    remainingSteps: recipe?.steps.slice(stepIndex + 1).map((item, index) => ({
+      order: stepIndex + index + 2,
+      instruction: item.instruction,
+      action: item.action,
+      heat: item.heat,
+      durationSeconds: item.durationSeconds,
+      check: item.check,
+    })),
     servings: recipe?.servings,
     estimatedMinutes: recipe?.estimatedMinutes,
     ingredients: recipe?.ingredients.map((item) => ({

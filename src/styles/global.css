@@ -1118,3 +1118,20 @@ dialog::backdrop {
   from { opacity: 0; transform: translateY(8px) scale(0.98); }
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
+
+/* 语音助手的抢救方案提示 */
+.voice-rescue {
+  margin: 0;
+  background: #fff3e6;
+  border: 1px dashed #e0a271;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.voice-rescue small {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+}

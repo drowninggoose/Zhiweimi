@@ -92,11 +92,96 @@ export function cleanAnswer(text: string): string {
     .trim();
 }
 
+/**
+ * 抢救方案相关类型。
+ *
+ * 刻意在网关侧单独定义（与 `src/services/rescuePlan.ts` 结构一致但不跨项目引用），
+ * 避免 server 的 tsconfig 去编译前端源码。
+ */
+export type RescueAction = { do: string; amount: string; when: string; check: string };
+export type RescueStepPatch = {
+  instruction: string;
+  action?: string;
+  heat?: string;
+  durationSeconds?: number;
+  check?: string;
+  tip?: string;
+};
+export type RescuePlan = {
+  diagnosis: string;
+  fixes: RescueAction[];
+  insertNow?: RescueStepPatch;
+  remaining?: RescueStepPatch[];
+};
+
+function normalizeStepPatch(raw: unknown): RescueStepPatch | undefined {
+  if (!raw || typeof raw !== 'object') return undefined;
+  const record = raw as Json;
+  const instruction = asString(record.instruction).trim();
+  if (!instruction) return undefined;
+  const duration = Number(record.durationSeconds);
+  return {
+    instruction,
+    action: asString(record.action) || undefined,
+    heat: asString(record.heat) || undefined,
+    durationSeconds: Number.isFinite(duration) && duration > 0 ? Math.round(duration) : undefined,
+    check: asString(record.check) || undefined,
+    tip: asString(record.tip) || undefined,
+  };
+}
+
+/** 只有用户报告菜出问题时，模型才会给 rescue；这里做防御性解析。 */
+export function normalizeRescue(raw: unknown): RescuePlan | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const record = raw as Json;
+
+  const fixes: RescueAction[] = [];
+  if (Array.isArray(record.fixes)) {
+    for (const item of record.fixes) {
+      if (!item || typeof item !== 'object') continue;
+      const entry = item as Json;
+      const action = {
+        do: asString(entry.do).trim(),
+        amount: asString(entry.amount).trim(),
+        when: asString(entry.when).trim(),
+        check: asString(entry.check).trim(),
+      };
+      if (action.do) {
+        fixes.push({
+          do: softenCommandLanguage(action.do),
+          amount: action.amount,
+          when: action.when,
+          check: softenCommandLanguage(action.check),
+        });
+      }
+    }
+  }
+
+  const insertNow = normalizeStepPatch(record.insertNow);
+  const remaining: RescueStepPatch[] = [];
+  if (Array.isArray(record.remaining)) {
+    for (const item of record.remaining) {
+      const patch = normalizeStepPatch(item);
+      if (patch && !/^null$/i.test(patch.instruction)) remaining.push(patch);
+    }
+  }
+
+  const diagnosis = softenCommandLanguage(asString(record.diagnosis)).trim();
+  if (!diagnosis && !fixes.length && !insertNow && !remaining.length) return null;
+
+  return {
+    diagnosis: diagnosis || '这道菜现在的状态需要先做一步处理，再继续后面的步骤。',
+    fixes,
+    insertNow,
+    remaining,
+  };
+}
+
 /** 严格 JSON Schema：强制模型返回合法结构。 */
 const REPLY_SCHEMA = {
   type: 'object',
   additionalProperties: false,
-  required: ['intents', 'answer', 'actions', 'memory', 'recommendQuery'],
+  required: ['intents', 'answer', 'actions', 'memory', 'recommendQuery', 'rescue'],
   properties: {
     intents: {
       type: 'array',
@@ -137,6 +222,58 @@ const REPLY_SCHEMA = {
       properties: {
         flavors: { type: 'array', items: { type: 'string' } },
         exclude: { type: 'array', items: { type: 'string' } },
+      },
+    },
+    // 抢救方案：用户报告菜出了问题、需要改写后续步骤时才有内容
+    rescue: {
+      type: ['object', 'null'],
+      additionalProperties: false,
+      required: ['diagnosis', 'fixes'],
+      properties: {
+        diagnosis: { type: 'string' },
+        fixes: {
+          type: 'array',
+          items: {
+            type: 'object',
+            additionalProperties: false,
+            required: ['do', 'amount', 'when', 'check'],
+            properties: {
+              do: { type: 'string' },
+              amount: { type: 'string' },
+              when: { type: 'string' },
+              check: { type: 'string' },
+            },
+          },
+        },
+        insertNow: {
+          type: ['object', 'null'],
+          additionalProperties: false,
+          required: ['instruction'],
+          properties: {
+            instruction: { type: 'string' },
+            action: { type: 'string' },
+            heat: { type: 'string' },
+            durationSeconds: { type: ['number', 'null'] },
+            check: { type: 'string' },
+            tip: { type: 'string' },
+          },
+        },
+        remaining: {
+          type: 'array',
+          items: {
+            type: 'object',
+            additionalProperties: false,
+            required: ['instruction'],
+            properties: {
+              instruction: { type: 'string' },
+              action: { type: 'string' },
+              heat: { type: 'string' },
+              durationSeconds: { type: ['number', 'null'] },
+              check: { type: 'string' },
+              tip: { type: 'string' },
+            },
+          },
+        },
       },
     },
   },
@@ -184,6 +321,29 @@ function systemPrompt(): string {
     '当 intents 含 recommend 时，必须给出检索条件：',
     'flavors 填口味关键词（如 辣、甜、酸、清淡、汤、西餐、甜品），exclude 填用户忌口食材。',
     '不需要推荐时填 null。',
+    '',
+    '【抢救 rescue｜用户说菜出问题了才填】',
+    '- 用户说太咸/太淡/太辣/糊了/夹生/水太多时，intents 必须含 remedy，并给出 rescue 对象。',
+    '- 其它情况 rescue 填 null。',
+    '- 必须先按「菜品形态」选对补救思路，不要一套话套所有菜：',
+    '  · 汤菜／羹类：优先「加热水/淡汤稀释」「加食材吸味」「加少量糖圆味」，不能倒掉重做；',
+    '  · 炒／烧类：优先「盛出部分汤汁」「补同款未调味食材」「加少量糖或醋平衡」，不要再加水；',
+    '  · 炖／焖菜：可以「加水稀释后延长收汁」，注意延长会改变口感；',
+    '  · 蒸菜：只能「补淋调味汁」或「换一碟蘸料」，不能在蒸笼里加水；',
+    '  · 凉菜：优先「补糖醋/芝麻酱平衡」「加黄瓜丝等清淡配菜」，不能回锅；',
+    '  · 主食面食：汤面可「兑汤」，拌面/炒饭可「加蛋或蔬菜」，不要加盐；',
+    '  · 甜品烘焙：优先「加奶/糖/酸」平衡，不要加咸味调料；',
+    '  · 西餐：按酱汁思路处理，可用奶油/高汤/柠檬调节。',
+    '- dining context 里给了 dishKind、currentAction、remainingSteps，必须据此判断还能做什么；',
+    '  已经收汁或装盘的菜，不要给「倒掉水重做」这类做不到的建议。',
+    '- fixes 是现在马上做的动作（含用量与判断标准）。',
+    '- insertNow：把 fixes 里**需要立刻动手**的那一步写成可执行步骤（instruction 要具体到量），',
+    '  它会被插入到当前步骤之后、原后续步骤之前；只有完全没有可执行动作时才填 null。',
+    '- remaining 是**改写后的后续步骤**：必须假设 insertNow 已经执行过，',
+    '  保持原步骤的数量级与逻辑顺序，只调整受影响的步骤',
+    '  （例如补了水就要加一步收汁）；若后续步骤完全不受影响，remaining 留空数组。',
+    '- 时长只能沿用原步骤已有的数值或写合理区间，不要编造精确秒数；不得编造温度。',
+    '- 抢救只针对口味与火候，不得为了「减咸」而删掉过敏原或忌口食材。',
     '',
     '【过敏忌口】',
     '忌口信息只能用于提醒，不得据此修改菜谱或删除食材。',
@@ -243,6 +403,8 @@ export type NormalizedReply = {
   actions: VoiceAction[];
   memory: { dimension: string; polarity: number; source: 'explicit'; evidence: string }[];
   recommendQuery: { flavors: string[]; exclude: string[] } | null;
+  /** 抢救方案：用户报告菜出问题时才有 */
+  rescue: RescuePlan | null;
   /** 是否需要走本地推荐（意图命中，或用户原话明显在要推荐） */
   wantRecommend: boolean;
 };
@@ -318,6 +480,8 @@ export function normalizeChatResult(raw: Json, userText = ''): NormalizedReply {
     }
   }
 
+  const rescue = normalizeRescue(raw.rescue);
+
   let recommendQuery: NormalizedReply['recommendQuery'] = null;
   if (raw.recommendQuery && typeof raw.recommendQuery === 'object') {
     const query = raw.recommendQuery as Json;
@@ -351,6 +515,7 @@ export function normalizeChatResult(raw: Json, userText = ''): NormalizedReply {
     })),
     memory,
     recommendQuery,
+    rescue,
     wantRecommend: wantRecommend || wantsRecommend,
   };
 }
@@ -481,6 +646,32 @@ export function buildUserMessage(body: Json): string {
     if (typeof context.servings === 'number') meta.push(`${context.servings} 人份`);
     if (typeof context.estimatedMinutes === 'number') meta.push(`约 ${context.estimatedMinutes} 分钟`);
     lines.push(`正在做的菜：${name}${meta.length ? `（${meta.join('，')}）` : ''}`);
+  }
+
+  // 菜品形态：决定补救思路（汤菜能稀释，干炒不能加水）
+  if (context.dishKind) lines.push(`菜品形态：${asString(context.dishKind)}`);
+  if (context.currentAction) lines.push(`当前步骤的动作：${asString(context.currentAction)}`);
+  if (context.currentHeat) lines.push(`当前步骤的火候：${asString(context.currentHeat)}`);
+  if (typeof context.currentDurationSeconds === 'number') {
+    lines.push(`当前步骤原本的时长：${Math.round(context.currentDurationSeconds)} 秒`);
+  }
+
+  const remaining = Array.isArray(context.remainingSteps) ? context.remainingSteps : [];
+  if (remaining.length) {
+    lines.push('当前步骤之后的剩余步骤（改写时以此为基准，不要凭空增删与原流程无关的步骤）：');
+    for (const item of remaining) {
+      if (!item || typeof item !== 'object') continue;
+      const record = item as Json;
+      const extra = [
+        asString(record.action) && `动作 ${asString(record.action)}`,
+        asString(record.heat) && `火候 ${asString(record.heat)}`,
+        typeof record.durationSeconds === 'number' && `约 ${Math.round(record.durationSeconds)} 秒`,
+        asString(record.check) && `判断 ${asString(record.check)}`,
+      ].filter(Boolean);
+      lines.push(
+        `  第 ${record.order ?? '?'} 步：${asString(record.instruction)}${extra.length ? `（${extra.join('；')}）` : ''}`,
+      );
+    }
   }
 
   const ingredients = Array.isArray(context.ingredients) ? context.ingredients : [];

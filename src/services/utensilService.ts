@@ -13,6 +13,7 @@ export const utensilTypes = {
 };
 export function validateUtensil(value: Utensil) {
   if (!value.name.trim()) throw new Error('请填写厨具名称');
-  if (!Number.isFinite(value.capacity) || value.capacity <= 0) throw new Error('容量必须大于0');
+  if (!Number.isFinite(value.capacity) || value.capacity <= 0)
+    throw new Error('请填写厨具容量（毫升）');
   if (!(value.type in utensilTypes)) throw new Error('请选择有效厨具类型');
 }

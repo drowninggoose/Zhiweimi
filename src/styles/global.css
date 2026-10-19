@@ -737,3 +737,240 @@ dialog::backdrop {
 .rec-peek .rec-desc {
   font-size: 14px;
 }
+
+/* ------------------------- 语音助手 ------------------------- */
+.voice-fab {
+  position: fixed;
+  right: 26px;
+  bottom: 26px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  font-size: 26px;
+  line-height: 1;
+  z-index: 90;
+  box-shadow: 0 10px 26px #57341b33;
+  padding: 0;
+}
+.voice-fab.recording {
+  animation: voice-pulse 1.2s ease-in-out infinite;
+}
+@keyframes voice-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+.voice-panel {
+  position: fixed;
+  right: 26px;
+  bottom: 102px;
+  width: 380px;
+  max-height: min(70vh, 620px);
+  overflow-y: auto;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: 0 18px 44px #57341b2e;
+  padding: 20px;
+  z-index: 91;
+  display: grid;
+  gap: 12px;
+}
+.voice-head-actions button {
+  padding: 7px 14px;
+  font-size: 14px;
+}
+.voice-status {
+  margin: 0;
+  font-size: 14px;
+}
+.voice-mic {
+  font-size: 17px;
+  padding: 14px 26px;
+  border-radius: 14px;
+}
+.voice-mic.recording {
+  background: #b34235;
+}
+.voice-error {
+  margin: 0;
+  font-size: 14px;
+  padding: 10px 12px;
+}
+.voice-input {
+  flex-wrap: nowrap;
+}
+.voice-input input {
+  flex: 1;
+  min-width: 0;
+}
+.voice-reply {
+  display: grid;
+  gap: 10px;
+  background: #fffaf1;
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+.voice-q {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+.voice-answer {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.55;
+  font-weight: 600;
+}
+.voice-a {
+  margin: 0;
+  font-size: 15px;
+}
+.voice-detail {
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 6px;
+  line-height: 1.6;
+}
+.voice-memory {
+  margin: 0;
+  background: #eaf3e7;
+  color: #385c39;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+.voice-recommend {
+  display: grid;
+  gap: 8px;
+}
+.voice-recipe {
+  display: grid;
+  gap: 2px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px 12px;
+  text-decoration: none;
+  color: var(--ink);
+}
+.voice-recipe:hover {
+  border-color: var(--orange);
+}
+.voice-recipe small {
+  color: var(--muted);
+}
+.voice-hint {
+  font-size: 12px;
+  margin: 0;
+}
+.voice-history {
+  display: grid;
+  gap: 10px;
+}
+.voice-history-item {
+  border-bottom: 1px dashed var(--line);
+  padding-bottom: 10px;
+  display: grid;
+  gap: 4px;
+}
+.voice-history-item small {
+  font-size: 12px;
+}
+
+/* 语音助手的可执行动作清单 */
+.voice-actions {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+.voice-actions > li {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 9px 12px;
+  display: grid;
+  gap: 4px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.voice-action-meta {
+  display: grid;
+  gap: 2px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.voice-recipe-empty {
+  margin: 0;
+  font-size: 13px;
+  background: #f7f4ee;
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+/* 菜谱筛选：一行一个维度的平铺标签 */
+.tile-rows {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.tile-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.tile-row .index-label {
+  flex: 0 0 auto;
+  padding-top: 8px;
+}
+.tile-scroll {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+.tile-scroll button {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: white;
+  color: var(--ink);
+  font-size: 14px;
+}
+.tile-scroll button.active {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: white;
+}
+.rec-toolbar {
+  margin-bottom: 10px;
+}
+
+/* 饮食计划：菜品照片 */
+.meal-card-media {
+  display: block;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 6px 0;
+}
+.meal-card-media img {
+  width: 100%;
+  height: 110px;
+  object-fit: cover;
+  display: block;
+}
+/* 从饮食计划跳来挑菜 */
+.pick-cell {
+  position: relative;
+}
+.pick-choose {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 2;
+  box-shadow: 0 4px 12px #57341b33;
+}

@@ -7,11 +7,15 @@ import { useUnsaved } from '../hooks/useUnsaved';
 import { stamp, type Utensil } from '../types/models';
 import { utensilTypes, validateUtensil } from '../services/utensilService';
 import { analyzeUtensil } from '../services/aiService';
+/**
+ * 新建厨具的初始值：名称与容量都留空。
+ * 容量用 0 表示「尚未填写」，输入框会显示为空，保存时由 validateUtensil 拦截。
+ */
 const blank = (): Utensil => ({
   ...stamp(),
   name: '',
   type: 'cup',
-  capacity: 200,
+  capacity: 0,
   capacityUnit: 'ml',
 });
 export function UtensilsPage() {
@@ -86,7 +90,6 @@ export function UtensilsPage() {
           添加厨具
         </button>
       </div>
-      <p className="muted">上传照片后可由 AI 估算容量；估算不是精确测量，保存前请确认。</p>
       {editing && (
         <section className="card fields">
           <h2>{data?.utensils.some((u) => u.id === editing.id) ? '编辑厨具' : '添加厨具'}</h2>
@@ -116,7 +119,9 @@ export function UtensilsPage() {
             容量（ml）
             <input
               type="number"
-              value={editing.capacity}
+              min={1}
+              placeholder="请填写，例如 500"
+              value={editing.capacity || ''}
               onChange={(e) => update({ capacity: Number(e.target.value) })}
             />
           </label>

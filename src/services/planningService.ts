@@ -60,13 +60,16 @@ export function generatePlan(
   period: MealPlan['period'],
   startDate: string,
   previous?: MealPlan,
+  /** 计划天数：传入时以它为准（1~30），忽略 period 推导 */
+  dayCount?: number,
 ): MealPlan {
   const candidates = eligibleRecipes(recipes, conditions);
   if (!candidates.length) throw new Error('没有符合条件的菜谱，请调整忌口、难度或用时');
   const start = new Date(`${startDate}T12:00:00`);
   if (Number.isNaN(start.getTime())) throw new Error('请选择有效开始日期');
-  const count =
-    period === 'today'
+  const count = dayCount
+    ? Math.max(1, Math.min(30, Math.round(dayCount)))
+    : period === 'today'
       ? 1
       : period === 'week'
         ? 7
@@ -112,6 +115,7 @@ export function generatePlan(
   return {
     ...stamp(),
     period,
+    dayCount: count,
     startDate: days[0].date,
     endDate: days.at(-1)!.date,
     conditions,
@@ -147,4 +151,20 @@ export function validatePantry(item: PantryItem) {
   if (!item.name.trim()) throw new Error('请填写食材名称');
   if (item.quantity !== undefined && (!Number.isFinite(item.quantity) || item.quantity < 0))
     throw new Error('食材数量不能为负数');
+}
+
+/** 把某天某餐精确替换成指定的菜（来自「全部菜品」选择）。 */
+export function pickMealRecipe(
+  plan: MealPlan,
+  date: string,
+  meal: MealType,
+  recipeId: string,
+): MealPlan {
+  const day = plan.days.find((d) => d.date === date);
+  if (!day) throw new Error('计划日期不存在');
+  return {
+    ...plan,
+    updatedAt: new Date().toISOString(),
+    days: plan.days.map((d) => (d.date === date ? { ...d, [`${meal}RecipeId`]: recipeId } : d)),
+  };
 }

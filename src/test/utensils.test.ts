@@ -13,7 +13,7 @@ test('阶段4：厨具名称和正容量验证', () => {
   expect(() => validateUtensil(value)).not.toThrow();
   expect(() => validateUtensil({ ...value, name: '' })).toThrow('名称');
   for (const capacity of [0, -1, NaN])
-    expect(() => validateUtensil({ ...value, capacity })).toThrow('大于0');
+    expect(() => validateUtensil({ ...value, capacity })).toThrow('容量');
 });
 test('阶段4：超大与错误图片格式拒绝', () => {
   expect(() => validateImage(new File(['x'], 'x.svg', { type: 'image/svg+xml' }))).toThrow(

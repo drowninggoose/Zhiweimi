@@ -10,17 +10,20 @@ export function DiaryPage() {
   const { data, run } = useData();
   const [params] = useSearchParams();
   const linked = data?.diaryEntries.find((e) => e.id === params.get('entry'));
-  const [from, setFrom] = useState(() => {
-    const d = new Date();
-    d.setDate(d.getDate() - 6);
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-  });
-  const [to, setTo] = useState(today());
+  /** day = 只看某一天（默认今天）；all = 全部记录 */
+  const [mode, setMode] = useState<'day' | 'all'>('day');
+  const [day, setDay] = useState(today());
   const [entry, setEntry] = useState<DiaryEntry | null>(linked ?? null);
   const [view, setView] = useState(!!linked);
   const [dirty, setDirty] = useState(false);
   const [error, setError] = useState('');
   useUnsaved(dirty);
+  /** 当前视图要展示的行：单日或全部 */
+  const rows = data
+    ? mode === 'day'
+      ? diaryRows(data.diaryEntries, day, day)
+      : diaryRows(data.diaryEntries)
+    : [];
   if (!data) return null;
   function open(date: string, mealType: MealType, existing?: DiaryEntry) {
     setEntry(existing ?? { ...stamp(), date, mealType, dishName: '' });
@@ -59,18 +62,22 @@ export function DiaryPage() {
       </div>
       <section className="card row">
         <label>
-          开始日期
-          <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
+          查看日期
+          <input
+            type="date"
+            value={day}
+            disabled={mode === 'all'}
+            onChange={(e) => setDay(e.target.value)}
+          />
         </label>
-        <label>
-          结束日期
-          <input type="date" value={to} onChange={(e) => setTo(e.target.value)} />
-        </label>
-        {from > to && (
-          <span role="alert" className="error">
-            开始日期不能晚于结束日期
-          </span>
-        )}
+        <button
+          type="button"
+          className={mode === 'day' ? 'secondary' : ''}
+          aria-pressed={mode === 'all'}
+          onClick={() => setMode(mode === 'all' ? 'day' : 'all')}
+        >
+          全部记录
+        </button>
       </section>
       {entry && (
         <section className="card fields">
@@ -200,7 +207,7 @@ export function DiaryPage() {
           )}
         </section>
       )}
-      {from <= to && (
+      {(
         <section className="card">
           <div className="diary-row diary-heading">
             <span>日期</span>
@@ -208,7 +215,7 @@ export function DiaryPage() {
               <strong key={m}>{mealLabels[m]}</strong>
             ))}
           </div>
-          {diaryRows(data.diaryEntries, from, to).map((row) => (
+          {rows.map((row) => (
             <div className="diary-row" key={row.date}>
               <strong>{row.date}</strong>
               {row.slots.map(({ meal, entry: record }) => (

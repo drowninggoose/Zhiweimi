@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
-import { cleanup, render, screen, within } from '@testing-library/react';
+import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { App } from '../app/App';
 import { db } from '../db/database';
@@ -19,25 +19,40 @@ afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
 });
-test('阶段7界面：三周期生成保存，单餐替换、重生成与重新打开读取', async () => {
+test('阶段7界面：按天数生成保存、跳转挑菜替换、重生成与重新打开读取', async () => {
   window.history.replaceState({}, '', '/planner');
   render(<App />);
   const user = userEvent.setup();
   await screen.findByRole('heading', { name: '把三餐安排得从容一点' });
-  for (const period of ['today', 'week', 'month']) {
-    await user.selectOptions(screen.getByLabelText('计划周期'), period);
+  // 需求 13：周期改为自由天数（这里验证 1 天与 3 天）
+  for (const days of [1, 3]) {
+    await user.clear(screen.getByLabelText('计划天数（1-30）'));
+    await user.type(screen.getByLabelText('计划天数（1-30）'), String(days));
     await user.click(screen.getByRole('button', { name: '生成演示计划' }));
     await user.click(screen.getByRole('button', { name: '保存计划' }));
     await screen.findByText('计划已保存');
-    expect((await db.mealPlans.toArray()).some((p) => p.period === period)).toBe(true);
+    await waitFor(async () => {
+      expect((await db.mealPlans.toArray()).some((p) => p.dayCount === days)).toBe(true);
+    });
   }
-  expect(await db.mealPlans.count()).toBe(3);
-  await user.click(screen.getByRole('button', { name: '替换早餐' }));
-  await user.click(screen.getByRole('button', { name: '保存计划' }));
+  expect(await db.mealPlans.count()).toBe(2);
+
+  // 需求 15：替换菜品会跳到「全部菜品」，选完再回来替换
+  const before = (await db.mealPlans.toArray()).find((p) => p.dayCount === 3)!;
+  await user.click(screen.getAllByRole('button', { name: '替换早餐' })[0]);
+  await screen.findAllByRole('button', { name: '选它' });
+  const pickTarget = (await db.recipes.toArray()).find((r) => r.mealTypes.includes('breakfast'));
+  expect(pickTarget).toBeTruthy();
+  await user.click(screen.getAllByRole('button', { name: '选它' })[0]);
+  await screen.findByRole('heading', { name: '把三餐安排得从容一点' });
+  // 草稿带回来了，计划还在
+  expect(screen.getAllByRole('heading', { level: 2 }).length).toBeGreaterThan(0);
+  expect(before.dayCount).toBe(3);
+
   cleanup();
   render(<App />);
   await screen.findAllByRole('button', { name: '查看计划' });
-  expect(screen.getAllByRole('button', { name: '查看计划' })).toHaveLength(3);
+  expect(screen.getAllByRole('button', { name: '查看计划' })).toHaveLength(2);
 });
 test('阶段7界面：家庭食材维护，默认过滤用完记录', async () => {
   window.history.replaceState({}, '', '/planner/pantry');

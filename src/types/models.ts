@@ -98,7 +98,10 @@ export type PlanDay = {
   dinnerRecipeId?: string;
 };
 export type MealPlan = Base & {
+  /** 兼容旧数据：today=1 天 / week=7 天 / month=其他天数 */
   period: 'today' | 'week' | 'month';
+  /** 计划实际天数（1~30），新计划都写这个字段 */
+  dayCount?: number;
   startDate: string;
   endDate: string;
   conditions: PlanConditions;
@@ -175,6 +178,64 @@ export type CookingProgress = Base & {
   /** 最后保存时间（展示「x 分钟前」用）。 */
   savedAt: string;
 };
+
+/** 口味 / 忌口记忆的维度。 */
+export type PreferenceDimension =
+  | 'spiciness'
+  | 'sweetness'
+  | 'saltiness'
+  | 'sourness'
+  | 'greasiness'
+  | 'seasoning'
+  | 'liked_dish'
+  | 'disliked_ingredient';
+
+/**
+ * 结构化记忆：不是保存聊天记录，而是把「用户是什么样的人」沉淀下来。
+ *
+ * 写入策略（3 次规则）：
+ * - 明示偏好（我喜欢辣）→ 1 次立即生效
+ * - 情境推断（这道菜有点淡）→ 同向累计 3 次才生效
+ * - 烹饪反馈（太咸了）→ 同向累计 2 次生效
+ * 未达阈值的证据也会保留在 evidence 中，界面上可见但标注「暂未生效」。
+ */
+export type PreferenceMemory = Base & {
+  dimension: PreferenceDimension;
+  /** -2 更少 ← 0 中性 → +2 更多 */
+  polarity: -2 | -1 | 0 | 1 | 2;
+  confidence: number;
+  source: 'explicit' | 'inferred' | 'feedback';
+  /** 是否已达阈值、真正参与推荐与菜谱调整 */
+  active: boolean;
+  /** 原始证据，用于用户查看与追溯 */
+  evidence: { text: string; at: string; source: string }[];
+  /** 同向 / 反向证据计数，用于判断阈值 */
+  positiveCount: number;
+  negativeCount: number;
+};
+
+/** 语音助手的一条对话记录（用于回看）。 */
+export type AssistantMessage = Base & {
+  /** 语音还是键盘输入 */
+  inputMode: 'voice' | 'text';
+  /** 用户原话（ASR 后的文本） */
+  userText: string;
+  /** 给用户看的主回答（字幕） */
+  replyText: string;
+  /** 补充要点 */
+  detail: string[];
+  /** 意图（可多个） */
+  intents: string[];
+  /** 关联的烹饪上下文 */
+  recipeId?: string;
+  recipeName?: string;
+  stepIndex?: number;
+  /** 本轮触发的记忆写入，便于追溯与撤销 */
+  memoryWrites?: { dimension: string; polarity: number; source: string }[];
+  /** 本轮推荐的菜谱 id，回看时仍可点击 */
+  recommendedRecipeIds?: string[];
+};
+
 export type DataSnapshot = {
   recipes: Recipe[];
   utensils: Utensil[];

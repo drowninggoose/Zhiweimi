@@ -1,6 +1,10 @@
 /**
- * 推荐相关界面：时间段头、推荐中心、卡片流、卡片 / 列表两种浏览方式。
- * 推荐能力现在完整地放在首页（RecommendationCenter），不再有独立的推荐页。
+ * 推荐相关界面：推荐中心、卡片流、单张菜卡。
+ *
+ * 按产品要求做过减法：
+ * - 不按时段推荐（随机挑 6 道，只受口味偏好影响）；
+ * - 没有「演示推荐」标识、没有「卡片流 / 按类型看」切换、没有「先看看这一批」折叠区；
+ * - 只保留「换一批」。
  */
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -10,11 +14,9 @@ import { useRecommendationFeed } from '../hooks/useRecommendation';
 import { Image } from './common';
 import {
   DIFFICULTY_LABELS,
-  formatCountdown,
   formatIngredients,
   type RecommendedDish,
 } from '../services/recommendationService';
-import { meals, mealLabels, type MealType } from '../types/models';
 
 const SLOT_ICONS: Record<string, string> = {
   main: '🍚',
@@ -24,67 +26,6 @@ const SLOT_ICONS: Record<string, string> = {
   western: '🍝',
   breakfast: '🥣',
 };
-
-/** 时间段头部：现在该吃哪一餐 + 距离换时段还有多久 + 手动切换餐次 + 换一批。 */
-export function MealWindowBar({
-  mealLabel,
-  windowLabel,
-  windowRange,
-  countdownMs,
-  manual,
-  loading,
-  onSelect,
-  onRefresh,
-  batchInfo,
-}: {
-  mealLabel: string;
-  windowLabel: string;
-  windowRange: string;
-  countdownMs: number;
-  manual: boolean;
-  loading: boolean;
-  onSelect: (meal?: MealType) => void;
-  onRefresh: () => void;
-  batchInfo: string;
-}) {
-  return (
-    <section className="card rec-head">
-      <div className="row between">
-        <div>
-          <span className="tag">{manual ? '手动选择餐次' : windowLabel}</span>
-          <h2 className="rec-title">现在推荐 · {mealLabel}</h2>
-          <p className="muted">
-            时段 {windowRange} · 距离换时段还有 {formatCountdown(countdownMs)} · {batchInfo}
-          </p>
-        </div>
-        <button type="button" className="rec-refresh" onClick={onRefresh} disabled={loading}>
-          {loading ? '正在刷新…' : '🔄 换一批'}
-        </button>
-      </div>
-      <div className="row rec-meals">
-        <span className="muted">想吃别的？</span>
-        <button
-          type="button"
-          className={manual ? 'secondary' : ''}
-          onClick={() => onSelect(undefined)}
-        >
-          跟随时间
-        </button>
-        {meals.map((m) => (
-          <button
-            key={m}
-            type="button"
-            className={manual && mealLabel === mealLabels[m] ? '' : 'secondary'}
-            aria-pressed={manual && mealLabel === mealLabels[m]}
-            onClick={() => onSelect(m)}
-          >
-            {mealLabels[m]}
-          </button>
-        ))}
-      </div>
-    </section>
-  );
-}
 
 /** 单张推荐卡片：图片 + 为什么推它 + 一眼看完的食材 + 收藏 / 开始烹饪。 */
 export function RecommendationDishCard({ dish }: { dish: RecommendedDish }) {
@@ -210,63 +151,36 @@ export function RecommendationCardDeck({ dishes }: { dishes: RecommendedDish[] }
   );
 }
 
-/**
- * 推荐中心：首页的推荐主体。
- *
- * 原本这是一个独立的「今日推荐」页面，为了不再和首页重复，已合并到这里。
- * 能力一个不少：按时间自动选餐次、手动切餐次、换一批（避开刚看过的菜）、
- * 卡片流（一屏一道左右翻）与按类型看（主菜 / 汤 / 甜品分组）。
- */
+/** 推荐中心：首页的推荐主体。随机挑 6 道，随时可以换一批。 */
 export function RecommendationCenter() {
   const feed = useRecommendationFeed();
-  const [mode, setMode] = useState<'deck' | 'list'>('deck');
   if (feed.loading || !feed.batch) {
     return (
       <section className="card">
-        <p className="muted">正在按当前时间为你挑菜…</p>
+        <p className="muted">正在挑选推荐…</p>
       </section>
     );
   }
   const { batch } = feed;
-  const batchInfo = `${batch.mealLabel}候选 ${batch.candidateCount} 道 · 本批 ${batch.dishes.length} 道 · 已换 ${feed.refreshCount} 批`;
   return (
     <>
-      <MealWindowBar
-        mealLabel={batch.mealLabel}
-        windowLabel={feed.info.windowLabel}
-        windowRange={feed.info.windowRange}
-        countdownMs={feed.info.countdownMs}
-        manual={feed.manual}
-        loading={feed.refreshing}
-        onSelect={feed.setMeal}
-        onRefresh={feed.refresh}
-        batchInfo={batchInfo}
-      />
+      <div className="row between rec-toolbar">
+        <span className="muted">本批 {batch.dishes.length} 道 · 已换 {feed.refreshCount} 批</span>
+        <button
+          type="button"
+          className="rec-refresh"
+          onClick={feed.refresh}
+          disabled={feed.refreshing}
+        >
+          {feed.refreshing ? '正在刷新…' : '🔄 换一批'}
+        </button>
+      </div>
       {feed.error ? (
         <p role="alert" className="error">
           刷新推荐失败：{feed.error}
         </p>
       ) : null}
-      <p className="rec-disclaimer">
-        <span className="tag">演示推荐</span> 按本地规则与你的口味偏好挑菜，不是真实 AI 生成。
-      </p>
       {batch.note ? <p className="notice-line">ℹ️ {batch.note}</p> : null}
-      <div className="row rec-view">
-        <button
-          type="button"
-          className={mode === 'deck' ? '' : 'secondary'}
-          onClick={() => setMode('deck')}
-        >
-          卡片流
-        </button>
-        <button
-          type="button"
-          className={mode === 'list' ? '' : 'secondary'}
-          onClick={() => setMode('list')}
-        >
-          按类型看
-        </button>
-      </div>
       {batch.dishes.length === 0 ? (
         <>
           <section className="card empty">
@@ -274,66 +188,9 @@ export function RecommendationCenter() {
           </section>
           <RecipeQuickLinks />
         </>
-      ) : mode === 'deck' ? (
+      ) : (
         <RecommendationCardDeck dishes={batch.dishes} />
-      ) : (
-        <RecommendationFeed groups={batch.groups} />
       )}
-      {batch.dishes.length && mode === 'deck' ? (
-        <details className="card rec-peek">
-          <summary>先看看这一批都有什么（{batch.dishes.length} 道）</summary>
-          <div className="grid">
-            {batch.dishes.map((dish) => (
-              <RecommendationDishCard key={`peek-${dish.recipe.id}`} dish={dish} />
-            ))}
-          </div>
-        </details>
-      ) : null}
-    </>
-  );
-}
-
-/** 推荐卡片流：处理「再看一些」的增量展示。 */
-export function RecommendationFeed({
-  groups,
-  fallback,
-}: {
-  groups: { slot: string; label: string; dishes: RecommendedDish[] }[];
-  fallback?: string;
-}) {
-  const [visible, setVisible] = useState(4);
-  const total = groups.reduce((sum, g) => sum + g.dishes.length, 0);
-  const shown: { slot: string; label: string; dishes: RecommendedDish[] }[] = [];
-  let budget = visible;
-  for (const group of groups) {
-    if (budget <= 0) break;
-    const take = Math.min(budget, group.dishes.length);
-    budget -= take;
-    if (take > 0)
-      shown.push({ slot: group.slot, label: group.label, dishes: group.dishes.slice(0, take) });
-  }
-  const remaining = Math.max(0, total - visible);
-  return (
-    <>
-      {shown.length ? (
-        shown.map((group) => (
-          <section className="rec-group" key={group.slot + group.label}>
-            <h3 className="rec-group-title">{group.label}</h3>
-            <div className="grid">
-              {group.dishes.map((dish) => (
-                <RecommendationDishCard key={dish.recipe.id} dish={dish} />
-              ))}
-            </div>
-          </section>
-        ))
-      ) : (
-        <p className="muted">{fallback ?? '暂时没有可以推荐的菜谱。'}</p>
-      )}
-      {remaining > 0 ? (
-        <button type="button" onClick={() => setVisible(total)}>
-          再看一些（还有 {remaining} 道）
-        </button>
-      ) : null}
     </>
   );
 }

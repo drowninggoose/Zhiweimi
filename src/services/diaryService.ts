@@ -1,9 +1,13 @@
 import type { DiaryEntry } from '../types/models';
 import { meals } from '../types/models';
-export function diaryRows(entries: DiaryEntry[], from: string, to: string) {
-  const dates = new Set(entries.filter((e) => e.date >= from && e.date <= to).map((e) => e.date));
-  dates.add(to);
-  dates.add(from);
+export function diaryRows(entries: DiaryEntry[], from?: string, to?: string) {
+  const dates = new Set(
+    entries
+      .filter((e) => (!from || e.date >= from) && (!to || e.date <= to))
+      .map((e) => e.date),
+  );
+  if (to) dates.add(to);
+  if (from) dates.add(from);
   return [...dates]
     .sort()
     .reverse()

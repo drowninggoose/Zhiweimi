@@ -50,7 +50,14 @@ function isDifficulty(value: unknown): value is NonNullable<Recipe['difficulty']
 /** 从 /recipes-library.json 导入菜谱库；已导入过则跳过（幂等）。返回新导入数量。 */
 export async function importLibrary(database: Database): Promise<number> {
   const existing = await database.recipes.where('sourceType').equals('library').toArray();
-  if (existing.length > 0 && existing.every((recipe) => recipe.dataStandard === 'structured-v4'))
+  if (
+    existing.length > 0 &&
+    existing.every(
+      (recipe) =>
+        recipe.dataStandard === 'structured-v4' &&
+        (!recipe.coverUrl || recipe.coverUrl.startsWith('/recipe-images/')),
+    )
+  )
     return 0;
 
   const res = await fetch('/recipes-library.json');
@@ -59,6 +66,7 @@ export async function importLibrary(database: Database): Promise<number> {
   const list: LibraryRecipe[] = data?.recipes ?? [];
 
   const now = new Date().toISOString();
+  const existingById = new Map(existing.map((recipe) => [recipe.id, recipe]));
   const toAdd: Recipe[] = [];
   for (const raw of list) {
     if (!raw.name || !raw.steps?.length) continue;
@@ -106,7 +114,7 @@ export async function importLibrary(database: Database): Promise<number> {
       sourceUrl: raw.sourceUrl,
       sourceType: 'library',
       status: 'published',
-      favorite: false,
+      favorite: existingById.get(raw.id)?.favorite ?? false,
       dataStandard: raw.dataStandard,
       createdAt: now,
       updatedAt: now,

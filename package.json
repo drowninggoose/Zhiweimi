@@ -12,6 +12,7 @@
     "test:e2e": "playwright test",
     "test:all": "npm test && npm run test:e2e",
     "clean:recipes": "node tools/clean-recipes.mjs",
+    "localize:recipe-images": "node tools/localize-recipe-images.mjs",
     "lint": "eslint .",
     "format": "prettier --check ."
   },

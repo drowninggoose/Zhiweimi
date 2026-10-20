@@ -84,6 +84,40 @@
   width: 180px;
   height: 190px;
 }
+.animated-mascot {
+  overflow: visible;
+  transform-origin: 50% 90%;
+  animation: mascot-float 3.2s ease-in-out infinite;
+  filter: drop-shadow(0 10px 12px #7e573522);
+}
+.mascot-eyes {
+  transform-origin: center;
+  animation: mascot-blink 4.8s infinite;
+}
+.mascot-tail {
+  transform-origin: 132px 152px;
+  animation: mascot-tail-wag 1.8s ease-in-out infinite;
+}
+.mascot-spoon {
+  transform-origin: 150px 154px;
+  animation: mascot-spoon-wave 2.4s ease-in-out infinite;
+}
+@keyframes mascot-float {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  50% { transform: translateY(-7px) rotate(1.5deg); }
+}
+@keyframes mascot-blink {
+  0%, 44%, 48%, 100% { transform: scaleY(1); }
+  46% { transform: scaleY(0.12); }
+}
+@keyframes mascot-tail-wag {
+  0%, 100% { transform: rotate(-7deg); }
+  50% { transform: rotate(10deg); }
+}
+@keyframes mascot-spoon-wave {
+  0%, 100% { transform: rotate(-4deg); }
+  50% { transform: rotate(8deg); }
+}
 .brand-cat {
   width: 82px;
   height: 86px;
@@ -94,6 +128,29 @@
 }
 .home-sections {
   margin-top: 26px;
+}
+.home-sections .card,
+.rec-home {
+  position: relative;
+  isolation: isolate;
+}
+.home-sections .card::after,
+.rec-home::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: 12px;
+  right: 14px;
+  width: 54px;
+  height: 58px;
+  background: url('/app-icon.svg') center / contain no-repeat;
+  opacity: 0.13;
+  pointer-events: none;
+  animation: section-cat-peek 4s ease-in-out infinite;
+}
+@keyframes section-cat-peek {
+  0%, 100% { transform: translateY(4px) rotate(-3deg); }
+  50% { transform: translateY(-2px) rotate(3deg); }
 }
 .diary-summary {
   display: flex;
@@ -183,10 +240,22 @@ button,
   cursor: pointer;
   text-decoration: none;
   display: inline-block;
+  position: relative;
+  overflow: hidden;
+  transform: translateY(0) scale(1);
+  box-shadow: 0 3px 0 #9f351f33;
+  transition: transform 160ms ease, box-shadow 160ms ease, filter 160ms ease;
 }
 button:hover,
 .button:hover {
   filter: brightness(0.94);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 7px 16px #57341b24;
+}
+button:active,
+.button:active {
+  transform: translateY(1px) scale(0.97);
+  box-shadow: 0 1px 3px #57341b28;
 }
 button:disabled {
   opacity: 0.5;
@@ -278,6 +347,15 @@ header {
 header h1 {
   font-size: 23px;
   margin: 0;
+}
+.page-title-with-mascot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.page-mascot {
+  width: 48px;
+  height: 52px;
 }
 header form {
   display: flex;
@@ -636,6 +714,30 @@ dialog::backdrop {
 .rec-strip-arrow-right {
   right: 16px;
 }
+.rec-strip-dots {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  bottom: 18px;
+  display: flex;
+  gap: 7px;
+  transform: translateX(-50%);
+}
+.rec-strip-dots button {
+  width: 9px;
+  height: 9px;
+  min-width: 0;
+  padding: 0;
+  border: 1px solid #fff;
+  border-radius: 999px;
+  background: #ffffff99;
+  box-shadow: 0 2px 6px #0003;
+  transition: width 180ms ease, background 180ms ease, transform 180ms ease;
+}
+.rec-strip-dots button.active {
+  width: 26px;
+  background: white;
+}
 .rec-refresh {
   font-size: 17px;
   padding: 13px 24px;
@@ -986,9 +1088,11 @@ dialog::backdrop {
   margin-bottom: 14px;
 }
 .tile-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr);
   align-items: flex-start;
   gap: 10px;
+  min-height: 42px;
 }
 .tile-row .index-label {
   flex: 0 0 auto;
@@ -1013,6 +1117,17 @@ dialog::backdrop {
   background: var(--orange);
   border-color: var(--orange);
   color: white;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }
 .rec-toolbar {
   margin-bottom: 10px;

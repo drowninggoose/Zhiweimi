@@ -6,9 +6,17 @@
   "recipes": [
     {
       "name": "千张结烧肉",
-      "cuisines": ["热菜", "家常菜"],
-      "mealTypes": ["lunch", "dinner"],
-      "flavorTags": ["酱香"],
+      "cuisines": [
+        "热菜",
+        "家常菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "酱香"
+      ],
       "difficulty": "normal",
       "estimatedMinutes": null,
       "description": "",
@@ -177,7 +185,7 @@
         }
       ],
       "tips": "",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2026/09/18/2026091817897363639493432304656.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-3.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-667848.html",
       "sourceType": "library",
@@ -188,9 +196,17 @@
     },
     {
       "name": "花椒排骨",
-      "cuisines": ["热菜", "家常菜"],
-      "mealTypes": ["lunch", "dinner"],
-      "flavorTags": ["咸鲜"],
+      "cuisines": [
+        "热菜",
+        "家常菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "咸鲜"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": 60,
       "description": "",
@@ -278,7 +294,7 @@
         }
       ],
       "tips": "20粒左右花椒粒刚好去腥味，切勿放太多夺走鲜味",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2026/09/13/20260913178926907647959610294523.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-7.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-667798.html",
       "sourceType": "library",
@@ -289,9 +305,17 @@
     },
     {
       "name": "蒸三文鱼",
-      "cuisines": ["热菜", "家常菜"],
-      "mealTypes": ["lunch", "dinner"],
-      "flavorTags": ["微辣"],
+      "cuisines": [
+        "热菜",
+        "家常菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "微辣"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": 10,
       "description": "",
@@ -377,7 +401,7 @@
         }
       ],
       "tips": "",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2026/07/27/2026072717851342738476348334261.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-24.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-667526.html",
       "sourceType": "library",
@@ -388,9 +412,17 @@
     },
     {
       "name": "缤纷炒时蔬",
-      "cuisines": ["热菜", "家常菜"],
-      "mealTypes": ["lunch", "dinner"],
-      "flavorTags": ["原味"],
+      "cuisines": [
+        "热菜",
+        "家常菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "原味"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": 10,
       "description": "",
@@ -506,7 +538,7 @@
         }
       ],
       "tips": "",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2026/07/23/2026072317847734065134348334261.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-28.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-667500.html",
       "sourceType": "library",
@@ -517,9 +549,18 @@
     },
     {
       "name": "凉拌苦瓜",
-      "cuisines": ["凉菜", "家常菜"],
-      "mealTypes": ["lunch", "dinner"],
-      "flavorTags": ["微辣", "原味"],
+      "cuisines": [
+        "凉菜",
+        "家常菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "微辣",
+        "原味"
+      ],
       "difficulty": "normal",
       "estimatedMinutes": 10,
       "description": "",
@@ -621,7 +662,7 @@
         }
       ],
       "tips": "焯水要适当，时间不可长",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2026/07/27/2026072717851123381418838334261.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-42.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-667525.html",
       "sourceType": "library",
@@ -632,9 +673,16 @@
     },
     {
       "name": "青鲳仔煲冬瓜汤",
-      "cuisines": ["汤羹", "粤菜"],
-      "mealTypes": ["dinner"],
-      "flavorTags": ["鱼香"],
+      "cuisines": [
+        "汤羹",
+        "粤菜"
+      ],
+      "mealTypes": [
+        "dinner"
+      ],
+      "flavorTags": [
+        "鱼香"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": null,
       "description": "",
@@ -728,7 +776,7 @@
         }
       ],
       "tips": "1.这小鱼很容易熟的，所以开锅两分钟就可以了，不用煮的太久，不然就不鲜美了；2.这鱼汤有点腥要多放点姜进去；3.香菜最后关火后再放，不然味道也不好了",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/201106/201106291233284.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-58.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-28635.html",
       "sourceType": "library",
@@ -739,8 +787,13 @@
     },
     {
       "name": "番茄土豆牛肉汤",
-      "cuisines": ["家常菜", "汤羹"],
-      "mealTypes": ["lunch"],
+      "cuisines": [
+        "家常菜",
+        "汤羹"
+      ],
+      "mealTypes": [
+        "lunch"
+      ],
       "flavorTags": [],
       "difficulty": "easy",
       "estimatedMinutes": 30,
@@ -841,7 +894,7 @@
         }
       ],
       "tips": "1、牛肉要选择有点雪花的，牛柳比较嫩，很适合做这个牛肉汤2、洋葱对这个汤的味道至关重要一定不能少",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2020/01/08/2020010815784527771515079722439.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-75.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-505839.html",
       "sourceType": "library",
@@ -852,9 +905,17 @@
     },
     {
       "name": "虾皮萝卜豆腐汤",
-      "cuisines": ["家常菜", "汤羹"],
-      "mealTypes": ["lunch", "dinner"],
-      "flavorTags": ["清淡"],
+      "cuisines": [
+        "家常菜",
+        "汤羹"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "清淡"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": 10,
       "description": "",
@@ -989,7 +1050,7 @@
         }
       ],
       "tips": "",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2020/01/07/20200107157836035808495210637844.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-84.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-504911.html",
       "sourceType": "library",
@@ -1000,9 +1061,16 @@
     },
     {
       "name": "桂花蜜奶冻",
-      "cuisines": ["小吃"],
-      "mealTypes": ["lunch", "dinner"],
-      "flavorTags": ["奶香"],
+      "cuisines": [
+        "小吃"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "奶香"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": null,
       "description": "",
@@ -1065,7 +1133,7 @@
         }
       ],
       "tips": "",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2026/07/09/2026070917835643737122981820812.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-127.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-667400.html",
       "sourceType": "library",
@@ -1076,9 +1144,16 @@
     },
     {
       "name": "圣诞树土豆泥",
-      "cuisines": ["小吃", "西餐"],
-      "mealTypes": ["dinner"],
-      "flavorTags": ["奶香"],
+      "cuisines": [
+        "小吃",
+        "西餐"
+      ],
+      "mealTypes": [
+        "dinner"
+      ],
+      "flavorTags": [
+        "奶香"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": null,
       "description": "",
@@ -1147,7 +1222,7 @@
         }
       ],
       "tips": "案板一定要抹些油，模具也要抹些油；这样才好把坯移开",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2022/09/03/20220903166219648385954181027.jpeg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-149.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-22225.html",
       "sourceType": "library",
@@ -1158,9 +1233,16 @@
     },
     {
       "name": "罗宋汤",
-      "cuisines": ["西餐"],
-      "mealTypes": ["lunch", "dinner"],
-      "flavorTags": ["酸咸"],
+      "cuisines": [
+        "西餐"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "酸咸"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": null,
       "description": "",
@@ -1314,7 +1396,7 @@
         }
       ],
       "tips": "炒好的面粉加水调成较稀的面糊，再倒入牛肉汤锅中",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2022/01/26/2022012616431938862985996968441.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-155.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-620320.html",
       "sourceType": "library",
@@ -1325,9 +1407,17 @@
     },
     {
       "name": "鸡蛋香肠炒意面",
-      "cuisines": ["主食", "西餐"],
-      "mealTypes": ["lunch", "dinner"],
-      "flavorTags": ["咸香"],
+      "cuisines": [
+        "主食",
+        "西餐"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "咸香"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": 30,
       "description": "",
@@ -1450,7 +1540,7 @@
         }
       ],
       "tips": "",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2021/12/05/20211205163870780811320511488988.JPG?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-163.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-615429.html",
       "sourceType": "library",
@@ -1461,9 +1551,13 @@
     },
     {
       "name": "简易版桃酥",
-      "cuisines": ["烘焙"],
+      "cuisines": [
+        "烘焙"
+      ],
       "mealTypes": [],
-      "flavorTags": ["甜味"],
+      "flavorTags": [
+        "甜味"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": null,
       "description": "",
@@ -1557,7 +1651,7 @@
         }
       ],
       "tips": "▪️面团松散即可，揉太光滑成品不酥脆▪️出炉一定要彻底放凉，凉透才会酥到掉渣▪️不爱吃甜可以减糖到50g，咸甜口感更温润",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2026/09/29/20260929179068589196830713223404.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-182.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-667913.html",
       "sourceType": "library",
@@ -1568,9 +1662,17 @@
     },
     {
       "name": "木耳拌百合",
-      "cuisines": ["热菜", "家常菜"],
-      "mealTypes": ["lunch", "dinner"],
-      "flavorTags": ["清淡"],
+      "cuisines": [
+        "热菜",
+        "家常菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "清淡"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": 10,
       "description": "",
@@ -1653,7 +1755,7 @@
         }
       ],
       "tips": "夏日凉拌，爽口开胃",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2026/10/07/20261007179134591567427513148460.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-208.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-667944.html",
       "sourceType": "library",
@@ -1664,9 +1766,17 @@
     },
     {
       "name": "香煎黄花魚",
-      "cuisines": ["热菜", "家常菜"],
-      "mealTypes": ["lunch", "dinner"],
-      "flavorTags": ["原味"],
+      "cuisines": [
+        "热菜",
+        "家常菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "原味"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": 10,
       "description": "",
@@ -1757,7 +1867,7 @@
         }
       ],
       "tips": "",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2026/09/13/2026091317892835826437928334261.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-209.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-667800.html",
       "sourceType": "library",
@@ -1768,9 +1878,17 @@
     },
     {
       "name": "绿茄子炒彩椒",
-      "cuisines": ["热菜", "家常菜"],
-      "mealTypes": ["lunch", "dinner"],
-      "flavorTags": ["原味"],
+      "cuisines": [
+        "热菜",
+        "家常菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "原味"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": 10,
       "description": "",
@@ -1864,7 +1982,7 @@
         }
       ],
       "tips": "",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2026/07/16/2026071617841720759083108334261.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-231.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-667445.html",
       "sourceType": "library",
@@ -1875,9 +1993,17 @@
     },
     {
       "name": "火爆腰花",
-      "cuisines": ["热菜", "川菜"],
-      "mealTypes": ["lunch", "dinner"],
-      "flavorTags": ["微辣"],
+      "cuisines": [
+        "热菜",
+        "川菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "微辣"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": null,
       "description": "",
@@ -1993,7 +2119,7 @@
         }
       ],
       "tips": "1.猪腰一定要去除腰臊，就是里面白色的东西，不然整盘菜都毁了2.炒菜一定用大火，快火急炒，切忌小火，否则成菜老硬无脆嫩之感",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2017/02/17/20170217148733376578110071065.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-244.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-314382.html",
       "sourceType": "library",
@@ -2004,9 +2130,17 @@
     },
     {
       "name": "子姜鸭",
-      "cuisines": ["热菜", "川菜"],
-      "mealTypes": ["lunch", "dinner"],
-      "flavorTags": ["中辣"],
+      "cuisines": [
+        "热菜",
+        "川菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "中辣"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": 30,
       "description": "",
@@ -2195,7 +2329,7 @@
         }
       ],
       "tips": "",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2021/10/22/20211022163489053188562612729364.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-258.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-611192.html",
       "sourceType": "library",
@@ -2206,9 +2340,17 @@
     },
     {
       "name": "坛子肉",
-      "cuisines": ["热菜", "鲁菜"],
-      "mealTypes": ["lunch", "dinner"],
-      "flavorTags": ["酱香"],
+      "cuisines": [
+        "热菜",
+        "鲁菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "酱香"
+      ],
       "difficulty": "advanced",
       "estimatedMinutes": null,
       "description": "",
@@ -2291,7 +2433,7 @@
         }
       ],
       "tips": "1.入瓷坛子前的方块肉要用沸水焯去血污；2.煨炖时要用小火，坛口要盖严",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2021/02/26/20210226161431274513085912634901.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-295.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-583047.html",
       "sourceType": "library",
@@ -2302,9 +2444,17 @@
     },
     {
       "name": "四喜丸子",
-      "cuisines": ["热菜", "鲁菜"],
-      "mealTypes": ["lunch", "dinner"],
-      "flavorTags": ["咸香"],
+      "cuisines": [
+        "热菜",
+        "鲁菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "咸香"
+      ],
       "difficulty": "normal",
       "estimatedMinutes": 60,
       "description": "",
@@ -2491,7 +2641,7 @@
         }
       ],
       "tips": "",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2021/02/02/2021020216122625666359751323250.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-296.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-579704.html",
       "sourceType": "library",
@@ -2502,9 +2652,17 @@
     },
     {
       "name": "糖醋鱼",
-      "cuisines": ["热菜", "鲁菜"],
-      "mealTypes": ["lunch", "dinner"],
-      "flavorTags": ["酸甜"],
+      "cuisines": [
+        "热菜",
+        "鲁菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "酸甜"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": 3,
       "description": "",
@@ -2633,7 +2791,7 @@
         }
       ],
       "tips": "",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2020/10/21/20201021160325171043212110906267.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-303.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-565876.html",
       "sourceType": "library",
@@ -2644,9 +2802,17 @@
     },
     {
       "name": "桂花糖芋艿",
-      "cuisines": ["家常菜", "苏菜"],
-      "mealTypes": ["lunch", "dinner"],
-      "flavorTags": ["甜香"],
+      "cuisines": [
+        "家常菜",
+        "苏菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "甜香"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": 3,
       "description": "",
@@ -2785,7 +2951,7 @@
         }
       ],
       "tips": "如果煮好的糖水甜度不够，可以再加入少许糖桂花酱，再撒上少许干桂花；如果够甜了，就直接撒干桂花；个人觉得一定要撒干桂花，因为它的香味比糖桂花酱香多了；如果家里没有藕粉，那只能用淀粉来勾芡了，不过颜色没这么好看有光泽",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2019/09/29/2019092915697238729676508041796.jpeg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-306.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-484216.html",
       "sourceType": "library",
@@ -2796,9 +2962,18 @@
     },
     {
       "name": "五香虎皮鸡蛋",
-      "cuisines": ["热菜", "家常菜", "苏菜"],
-      "mealTypes": ["lunch", "dinner"],
-      "flavorTags": ["咸鲜"],
+      "cuisines": [
+        "热菜",
+        "家常菜",
+        "苏菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "咸鲜"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": null,
       "description": "",
@@ -2948,7 +3123,7 @@
         }
       ],
       "tips": "鸡蛋先用生抽、老抽腌制是为了煎出好看的虎皮色，因为浸泡的酱油水没有把鸡蛋浸没，所以中途最好能帮鸡蛋翻翻面；剩下的卤水可以继续使用，卤牛肉、熏鱼、豆干都可以",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2019/01/14/2019011415474545639915678041796.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-307.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-436479.html",
       "sourceType": "library",
@@ -2959,9 +3134,17 @@
     },
     {
       "name": "糖醋排骨",
-      "cuisines": ["热菜", "鲁菜", "苏菜"],
-      "mealTypes": ["lunch"],
-      "flavorTags": ["酸甜"],
+      "cuisines": [
+        "热菜",
+        "鲁菜",
+        "苏菜"
+      ],
+      "mealTypes": [
+        "lunch"
+      ],
+      "flavorTags": [
+        "酸甜"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": 3,
       "description": "",
@@ -3083,7 +3266,7 @@
         }
       ],
       "tips": "备注——窍门三个：1，如何外酥里嫩——煮30分钟，这样再大火热油炸到外面焦黄，就外酥里嫩了；如果用生排骨直接炸，容易老2，为啥要腌渍，因为热锅热油迅速封住了肉外表，做糖醋汁的时候不容易吸收进去，排骨里面有肉腥味3，怎么炸排骨；——大火猛催，反正已经煮了三十分钟，早熟了，所以只要保证外面脆就可以了",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/201009/201009081533069.JPG?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-317.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-9227.html",
       "sourceType": "library",
@@ -3094,9 +3277,18 @@
     },
     {
       "name": "清炖狮子头",
-      "cuisines": ["热菜", "家常菜", "苏菜"],
-      "mealTypes": ["lunch", "dinner"],
-      "flavorTags": ["咸鲜"],
+      "cuisines": [
+        "热菜",
+        "家常菜",
+        "苏菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "咸鲜"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": null,
       "description": "",
@@ -3231,7 +3423,7 @@
         }
       ],
       "tips": "1.肉丸子一般都不是全肉的，通常会加些辅料如莲藕、荸荠、冬笋，为了吃起来不油腻又鲜嫩；2.用小火慢炖，汤汁才会清澈；3.一定要用高汤，最好是鸡汤",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2018/01/10/2018011015155621585839997912.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-325.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-370225.html",
       "sourceType": "library",
@@ -3242,9 +3434,16 @@
     },
     {
       "name": "野生水芹炒肉丝",
-      "cuisines": ["热菜", "浙菜"],
-      "mealTypes": ["lunch"],
-      "flavorTags": ["清淡"],
+      "cuisines": [
+        "热菜",
+        "浙菜"
+      ],
+      "mealTypes": [
+        "lunch"
+      ],
+      "flavorTags": [
+        "清淡"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": null,
       "description": "",
@@ -3341,7 +3540,7 @@
         }
       ],
       "tips": "野芹菜有毒；野生水芹菜与野芹菜从外貌上但较难区分不熟悉者切勿食用",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2022/09/03/202209031662215482869648191676.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-335.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-22295.html",
       "sourceType": "library",
@@ -3352,9 +3551,18 @@
     },
     {
       "name": "银耳红薯花色年糕",
-      "cuisines": ["主食", "小吃", "浙菜"],
-      "mealTypes": ["lunch", "dinner"],
-      "flavorTags": ["甜味"],
+      "cuisines": [
+        "主食",
+        "小吃",
+        "浙菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "甜味"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": 30,
       "description": "",
@@ -3438,7 +3646,7 @@
         }
       ],
       "tips": "",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2020/12/21/202012211608510103463395404188.JPG?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-350.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-573919.html",
       "sourceType": "library",
@@ -3449,9 +3657,18 @@
     },
     {
       "name": "桂花年糕",
-      "cuisines": ["小吃", "家常菜", "浙菜"],
-      "mealTypes": ["lunch", "dinner"],
-      "flavorTags": ["甜味"],
+      "cuisines": [
+        "小吃",
+        "家常菜",
+        "浙菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "甜味"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": 10,
       "description": "",
@@ -3520,7 +3737,7 @@
         }
       ],
       "tips": "",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2020/12/16/2020121616081272305318409788818.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-352.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-573491.html",
       "sourceType": "library",
@@ -3531,9 +3748,17 @@
     },
     {
       "name": "姜丝烤秋刀鱼",
-      "cuisines": ["烧烤", "浙菜"],
-      "mealTypes": ["lunch", "dinner"],
-      "flavorTags": ["咸鲜"],
+      "cuisines": [
+        "烧烤",
+        "浙菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "咸鲜"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": 30,
       "description": "",
@@ -3689,7 +3914,7 @@
         }
       ],
       "tips": "",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2013/11/09/20131109193144666418020.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-354.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-149525.html",
       "sourceType": "library",
@@ -3700,9 +3925,17 @@
     },
     {
       "name": "油焖春笋",
-      "cuisines": ["热菜", "浙菜"],
-      "mealTypes": ["lunch", "dinner"],
-      "flavorTags": ["咸鲜"],
+      "cuisines": [
+        "热菜",
+        "浙菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "咸鲜"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": null,
       "description": "",
@@ -3811,7 +4044,7 @@
         }
       ],
       "tips": "1、雷笋不用焯水，入锅炒一炒后没有多大的涩味，比较鲜美，一些地区里的竹笋比较苦涩可以焯水后再炒",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2020/04/10/2020041015865118849694972208713.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-361.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-529986.html",
       "sourceType": "library",
@@ -3822,9 +4055,17 @@
     },
     {
       "name": "家庭版佛跳墙",
-      "cuisines": ["热菜", "闽菜"],
-      "mealTypes": ["lunch", "dinner"],
-      "flavorTags": ["原味"],
+      "cuisines": [
+        "热菜",
+        "闽菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "原味"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": null,
       "description": "",
@@ -3978,7 +4219,7 @@
         }
       ],
       "tips": "",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2021/12/19/2021121916398836151797737796837.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-364.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-616803.html",
       "sourceType": "library",
@@ -3989,9 +4230,17 @@
     },
     {
       "name": "虾球鸡粒炒饭",
-      "cuisines": ["主食", "家常菜", "闽菜"],
-      "mealTypes": ["lunch"],
-      "flavorTags": ["咸鲜"],
+      "cuisines": [
+        "主食",
+        "家常菜",
+        "闽菜"
+      ],
+      "mealTypes": [
+        "lunch"
+      ],
+      "flavorTags": [
+        "咸鲜"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": 10,
       "description": "",
@@ -4217,7 +4466,7 @@
         }
       ],
       "tips": "炒饭特点；颜色美观、鲜香浓郁、米饭干爽、配料鲜美；温馨提示；1、白米饭蒸的稍硬一些为好，最好使用泰国香米，吃起来比较粒粒干爽香气浓郁；2、配料也可和米饭同炒，如果宴客，把配料覆盖在米饭上显得比较斑斓和丰盛一些，感官也比较好看，一般在酒楼里都是把配料盖在上面，它不同于一般的炒饭；还有的把配料红白两色，做成太极图案，红的用番茄酱来炒，白的为清炒；大炒勺的这款闽菜厦门炒饭“虾球鸡粒炒饭”就做好了；这款米饭材料多味道好，在餐馆里比较受食客的欢迎，家庭宴客也比较美观，供大家参考",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/201107/201107060636394.JPG?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-365.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-29291.html",
       "sourceType": "library",
@@ -4228,9 +4477,17 @@
     },
     {
       "name": "沙茶牛肉片",
-      "cuisines": ["热菜", "闽菜"],
-      "mealTypes": ["lunch", "dinner"],
-      "flavorTags": ["酱香"],
+      "cuisines": [
+        "热菜",
+        "闽菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "酱香"
+      ],
       "difficulty": "normal",
       "estimatedMinutes": 30,
       "description": "",
@@ -4392,7 +4649,7 @@
         }
       ],
       "tips": "",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2021/02/20/20210220161376801855258520449.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-371.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-582090.html",
       "sourceType": "library",
@@ -4403,9 +4660,17 @@
     },
     {
       "name": "厦门海蛎煎",
-      "cuisines": ["小吃", "闽菜"],
-      "mealTypes": ["lunch", "dinner"],
-      "flavorTags": ["咸鲜"],
+      "cuisines": [
+        "小吃",
+        "闽菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "咸鲜"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": 10,
       "description": "",
@@ -4513,7 +4778,7 @@
         }
       ],
       "tips": "1、购买海蛎时最好挑选个头较小的；清洗时注意海蛎瓣，一般碎壳会藏在海蛎瓣中；2、除了清洗海蛎外，海蛎煎料理过程中不要加水",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2019/08/26/2019082615667845825007511407588.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-382.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-478322.html",
       "sourceType": "library",
@@ -4524,9 +4789,19 @@
     },
     {
       "name": "油泼金针菇",
-      "cuisines": ["凉菜", "素菜", "家常菜", "闽菜"],
-      "mealTypes": ["lunch", "dinner"],
-      "flavorTags": ["咸鲜"],
+      "cuisines": [
+        "凉菜",
+        "素菜",
+        "家常菜",
+        "闽菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "咸鲜"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": 10,
       "description": "",
@@ -4615,7 +4890,7 @@
         }
       ],
       "tips": "热多点油爆干姜，在姜成褐色的时候；把姜油泼淋在干辣椒与蒜碎上面",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2017/02/08/2017020814865159684778250929.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-387.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-312837.html",
       "sourceType": "library",
@@ -4626,9 +4901,17 @@
     },
     {
       "name": "湖南猪油拌粉",
-      "cuisines": ["小吃", "湘菜"],
-      "mealTypes": ["lunch", "dinner"],
-      "flavorTags": ["咸鲜"],
+      "cuisines": [
+        "小吃",
+        "湘菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "咸鲜"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": null,
       "description": "",
@@ -4741,7 +5024,7 @@
         }
       ],
       "tips": "油辣椒怕辣者可不放，榨菜也可不放；但花生碎建议不可少，放了会香很多",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2021/10/28/20211028163540174316914112755078.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-391.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-611729.html",
       "sourceType": "library",
@@ -4752,9 +5035,18 @@
     },
     {
       "name": "麻辣小龙虾",
-      "cuisines": ["热菜", "家常菜", "湘菜"],
-      "mealTypes": ["lunch", "dinner"],
-      "flavorTags": ["麻辣"],
+      "cuisines": [
+        "热菜",
+        "家常菜",
+        "湘菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "麻辣"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": 30,
       "description": "",
@@ -4887,7 +5179,7 @@
         }
       ],
       "tips": "number1：小龙虾的脏东西重金属基本都在虾头，记得煎掉虾头，虾黄可以吃；number2：煮小龙虾用白水也可以，啤酒最佳",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2021/04/22/20210422161905891737594412729364.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-397.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-590805.html",
       "sourceType": "library",
@@ -4898,9 +5190,17 @@
     },
     {
       "name": "蒸剁椒鱼头",
-      "cuisines": ["热菜", "湘菜"],
-      "mealTypes": ["lunch", "dinner"],
-      "flavorTags": ["中辣"],
+      "cuisines": [
+        "热菜",
+        "湘菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "中辣"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": 3,
       "description": "",
@@ -4996,7 +5296,7 @@
         }
       ],
       "tips": "1.剁辣椒很咸，必须加白糖中和提鲜；如果还咸，可调入适量清水；2.电饭煲火力偏小，可适当延长蒸制时间；3.最后的热油必不可少",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2020/09/19/202009191600491948226623126119.JPG?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-404.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-561389.html",
       "sourceType": "library",
@@ -5007,9 +5307,17 @@
     },
     {
       "name": "凤还巢",
-      "cuisines": ["热菜", "徽菜", "本帮菜"],
-      "mealTypes": ["dinner"],
-      "flavorTags": ["咸甜"],
+      "cuisines": [
+        "热菜",
+        "徽菜",
+        "本帮菜"
+      ],
+      "mealTypes": [
+        "dinner"
+      ],
+      "flavorTags": [
+        "咸甜"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": 60,
       "description": "",
@@ -5140,7 +5448,7 @@
         }
       ],
       "tips": "鸽子上麦芽糖水一定要涂抹均匀，并且一定要风干后才能入油锅炸",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2013/03/27/20130327151536836371319.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-422.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-117315.html",
       "sourceType": "library",
@@ -5151,9 +5459,17 @@
     },
     {
       "name": "麦芽豆浆",
-      "cuisines": ["饮品", "家常菜", "早餐"],
-      "mealTypes": ["breakfast"],
-      "flavorTags": ["原味"],
+      "cuisines": [
+        "饮品",
+        "家常菜",
+        "早餐"
+      ],
+      "mealTypes": [
+        "breakfast"
+      ],
+      "flavorTags": [
+        "原味"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": null,
       "description": "",
@@ -5224,7 +5540,7 @@
         }
       ],
       "tips": "小麦胚芽在超市的五谷杂粮柜台就可买到；白糖随自己口味调节",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/201108/201108291853598.JPG?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-440.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-34275.html",
       "sourceType": "library",
@@ -5235,9 +5551,13 @@
     },
     {
       "name": "榴莲奶冻",
-      "cuisines": ["甜品"],
+      "cuisines": [
+        "甜品"
+      ],
       "mealTypes": [],
-      "flavorTags": ["甜味"],
+      "flavorTags": [
+        "甜味"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": 10,
       "description": "",
@@ -5330,7 +5650,7 @@
         }
       ],
       "tips": "提前用冷开水泡软吉利丁片;可用果酱代替榴莲",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2026/06/11/202606111781171838053901343308.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-464.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-667248.html",
       "sourceType": "library",
@@ -5341,9 +5661,13 @@
     },
     {
       "name": "蜂蜜奶冻",
-      "cuisines": ["甜品"],
+      "cuisines": [
+        "甜品"
+      ],
       "mealTypes": [],
-      "flavorTags": ["甜香"],
+      "flavorTags": [
+        "甜香"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": 1,
       "description": "",
@@ -5403,7 +5727,7 @@
         }
       ],
       "tips": "",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2025/09/23/2025092317585870953072371820812.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-477.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-665715.html",
       "sourceType": "library",
@@ -5414,9 +5738,17 @@
     },
     {
       "name": "鸡胸肉玉米胡萝卜包子",
-      "cuisines": ["面食", "包子"],
-      "mealTypes": ["lunch", "dinner"],
-      "flavorTags": ["咸鲜"],
+      "cuisines": [
+        "面食",
+        "包子"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "咸鲜"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": 60,
       "description": "",
@@ -5572,7 +5904,7 @@
         }
       ],
       "tips": "白胡椒粉含有辣椒成分，不要多放，不然会掩盖玉米清甜；拌配菜不要大力搅拌，避免馅料出水泡烂包子皮",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2026/10/07/20261007179136188270561712560264.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-494.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-667954.html",
       "sourceType": "library",
@@ -5583,9 +5915,17 @@
     },
     {
       "name": "家常包子",
-      "cuisines": ["面食", "包子"],
-      "mealTypes": ["lunch", "dinner"],
-      "flavorTags": ["原味"],
+      "cuisines": [
+        "面食",
+        "包子"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "原味"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": 60,
       "description": "",
@@ -5674,7 +6014,7 @@
         }
       ],
       "tips": "1.水温不能超过40℃，高温会烫死酵母导致发不起来；​2.环境温度低发酵变慢，可以放在温水上方保温发酵；​3.二次醒发非常关键，醒发不足包子发硬，醒发过度容易塌陷；​4.一定要冷水上锅蒸，关火焖3分钟再开盖",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2026/10/07/20261007179136029775635012560264.jpg?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-495.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-667955.html",
       "sourceType": "library",
@@ -5685,9 +6025,16 @@
     },
     {
       "name": "全麦馒头",
-      "cuisines": ["面食"],
-      "mealTypes": ["lunch", "dinner"],
-      "flavorTags": ["清淡"],
+      "cuisines": [
+        "面食"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "清淡"
+      ],
       "difficulty": "easy",
       "estimatedMinutes": null,
       "description": "",
@@ -5762,7 +6109,7 @@
         }
       ],
       "tips": "•全麦粉筋度低，面团别太软，成品更挺实；•控糖人群可完全不加糖",
-      "coverUrl": "https://i3r.meishitx.com/atta/recipe/2026/06/11/2026061117811483451194549964533.JPG?x-oss-process=style/p800",
+      "coverUrl": "/recipe-images/lib-513.jpg",
       "source": "美食天下",
       "sourceUrl": "https://home.meishichina.com/recipe-667243.html",
       "sourceType": "library",

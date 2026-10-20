@@ -6,7 +6,7 @@ import { Empty, Image, ImageUpload, RecipeCard } from '../components/common';
 import { useUnsaved } from '../hooks/useUnsaved';
 import { validateRecipe } from '../services/recipeService';
 import { id, stamp, meals, mealLabels, type MealType, type Recipe } from '../types/models';
-// 品类（下钻第 1 层）
+// 品类
 const DISH_TYPES: { value: string; label: string; match: string[] }[] = [
   { value: '热菜', label: '热菜', match: ['热菜'] },
   { value: '凉菜', label: '凉菜', match: ['凉菜'] },
@@ -16,7 +16,7 @@ const DISH_TYPES: { value: string; label: string; match: string[] }[] = [
   { value: '甜品烘焙', label: '甜品烘焙', match: ['甜品', '甜点', '烘焙'] },
   { value: '西餐', label: '西餐', match: ['西餐'] },
 ];
-// 菜系（下钻第 2 层）
+// 菜系
 const CUISINE_FAMILIES = [
   '家常菜',
   '川菜',
@@ -60,6 +60,10 @@ function TileRow({
             className={value === o.value ? 'active' : ''}
             aria-pressed={value === o.value}
             onClick={() => onChange(o.value)}
+            onPointerUp={(event) => {
+              // 鼠标或触屏点击后释放焦点，避免绿色键盘焦点环被误认为第二个选中项。
+              event.currentTarget.blur();
+            }}
           >
             {o.label}
           </button>
@@ -76,15 +80,14 @@ export function RecipesPage() {
   /** 从饮食计划跳过来挑菜：每张卡片多一个「选它」按钮 */
   const pickMode = params.get('pick') === '1';
   const [source, setSource] = useState('');
-  // 三个并列维度：按餐次 / 按时间 / 按品类
+  // 四个并列维度：餐次 / 时间 / 品类 / 菜系
   const [meal, setMeal] = useState('');
   const [timeRange, setTimeRange] = useState('');
   const [dishType, setDishType] = useState('');
   const [cuisine, setCuisine] = useState('');
-  const [flavor, setFlavor] = useState('');
   if (!data) return null;
 
-  /** 品类维度：先按大类，再按菜系、口味收窄。 */
+  /** 品类和菜系是两个始终可见、同时生效的独立维度。 */
   const byDish = dishType
     ? data.recipes.filter((r) =>
         (DISH_TYPES.find((d) => d.value === dishType)?.match ?? []).some((m) =>
@@ -94,22 +97,15 @@ export function RecipesPage() {
     : data.recipes;
   const cuisineOptions = [
     { value: '', label: '全部' },
-    ...[...new Set(byDish.flatMap((r) => r.cuisines))]
+    ...[...new Set(data.recipes.flatMap((r) => r.cuisines))]
       .filter((c) => CUISINE_FAMILIES.includes(c))
       .sort()
       .map((c) => ({ value: c, label: c })),
   ];
   const byCuisine = cuisine ? byDish.filter((r) => r.cuisines.includes(cuisine)) : byDish;
-  const flavorOptions = [
-    { value: '', label: '全部' },
-    ...[...new Set(byCuisine.flatMap((r) => r.flavorTags))]
-      .sort()
-      .map((f) => ({ value: f, label: f })),
-  ];
-  const byFlavor = flavor ? byCuisine.filter((r) => r.flavorTags.includes(flavor)) : byCuisine;
 
-  /** 三个维度同时生效（AND）。 */
-  let results = byFlavor;
+  /** 四个维度同时生效（AND）。 */
+  let results = byCuisine;
   if (meal) results = results.filter((r) => r.mealTypes.includes(meal as MealType));
   if (timeRange) {
     const range = TIME_RANGES.find((t) => t.value === timeRange);
@@ -139,13 +135,12 @@ export function RecipesPage() {
     : [];
   const showSuggest = kw !== '' && (dishHits.length > 0 || ingredientHits.length > 0);
 
-  /** 清除筛选：三个维度、来源、搜索框全部回到「全部」。 */
+  /** 清除筛选：四个维度、来源、搜索框全部回到「全部」。 */
   function resetAll() {
     setMeal('');
     setTimeRange('');
     setDishType('');
     setCuisine('');
-    setFlavor('');
     setSource('');
     setQuery('');
   }
@@ -194,7 +189,7 @@ export function RecipesPage() {
         )}
       </div>
 
-      {/* 三个并列维度：一行一个维度，选项平铺，第一个永远是「全部」 */}
+      {/* 四个并列维度：一行一个维度，选项平铺，第一个永远是「全部」 */}
       <div className="tile-rows">
         <TileRow
           label="按餐次"
@@ -223,24 +218,9 @@ export function RecipesPage() {
           value={dishType}
           onChange={(v) => {
             setDishType(v);
-            setCuisine('');
-            setFlavor('');
           }}
         />
-        {dishType ? (
-          <TileRow
-            label="菜系"
-            options={cuisineOptions}
-            value={cuisine}
-            onChange={(v) => {
-              setCuisine(v);
-              setFlavor('');
-            }}
-          />
-        ) : null}
-        {cuisine ? (
-          <TileRow label="口味" options={flavorOptions} value={flavor} onChange={setFlavor} />
-        ) : null}
+        <TileRow label="按菜系" options={cuisineOptions} value={cuisine} onChange={setCuisine} />
       </div>
 
       <div className="row between" style={{ marginBottom: 14 }}>

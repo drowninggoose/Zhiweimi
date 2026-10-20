@@ -13,4 +13,8 @@ export default tseslint.config(
     plugins: { 'react-hooks': reactHooks, 'react-refresh': reactRefresh },
     rules: { ...reactHooks.configs.recommended.rules, ...reactRefresh.configs.vite.rules },
   },
+  {
+    files: ['tools/**/*.mjs'],
+    languageOptions: { ecmaVersion: 2022, globals: globals.node },
+  },
 );

@@ -20,6 +20,7 @@ import { PlannerPage } from '../pages/Planner';
 import { HomePage } from '../pages/Home';
 import { SettingsPage } from '../pages/Settings';
 import { VoiceAssistant } from '../components/VoiceAssistant';
+import { AnimatedMascot } from '../components/Mascot';
 function Shell() {
   const { data, error, notice } = useData();
   const location = useLocation();
@@ -75,7 +76,10 @@ function Shell() {
       </aside>
       <section className="workspace">
         <header>
-          <h1>{title}</h1>
+          <div className="page-title-with-mascot">
+            <AnimatedMascot className="page-mascot" label={`${title}板块的知味咪`} />
+            <h1>{title}</h1>
+          </div>
           <form
             onSubmit={(e) => {
               e.preventDefault();

@@ -177,6 +177,98 @@ export function normalizeRescue(raw: unknown): RescuePlan | null {
   };
 }
 
+/** 小猫话术的返回结构：一次要 3 句。 */
+const BANTER_SCHEMA = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['lines'],
+  properties: {
+    lines: {
+      type: 'array',
+      minItems: 1,
+      maxItems: 3,
+      items: { type: 'string' },
+    },
+  },
+} as const;
+
+const BANTER_TAG_TEXT: Record<string, string> = {
+  greet: '用户刚打开应用',
+  click: '用户点了一下你',
+  cooking: '用户正在做菜',
+  night: '现在是深夜',
+  done: '用户刚做完一餐',
+};
+
+/**
+ * 小猫卖萌话术的系统提示词。
+ *
+ * 定位是「吉祥物」，不是助手：不给烹饪建议、不做健康判断，
+ * 只负责暖场、打趣、陪伴。
+ */
+function banterPrompt(): string {
+  return [
+    '你是一只拿着锅铲的橘猫，是「知味咪」这个做饭应用的吉祥物。',
+    '说话对象是正在做饭或准备做饭的人。',
+    '',
+    '要求：',
+    '1. 每句 6~18 个汉字，口语，像真的猫在说话。',
+    '2. 一半温柔体贴，一半俏皮打趣，不要全是鸡汤。',
+    '3. 不要说教：禁止出现「建议」「应该」「必须」「一定要」。',
+    '4. 不给烹饪步骤、不谈营养热量、不做健康判断。',
+    '5. 不出现表情符号、括号说明、引号。',
+    '6. 三句之间不要重复同一个梗。',
+    '7. 输出 JSON：{"lines": ["...", "...", "..."]}',
+  ].join('\n');
+}
+
+/** 调用模型生成几句卖萌话术。 */
+async function callBanter(
+  config: VoiceGatewayConfig,
+  tag: string,
+  context: { dishName?: string; stepIndex?: number },
+): Promise<string[]> {
+  const apiKey = config.apiKey ?? process.env.VOICE_API_KEY;
+  const model = config.model ?? process.env.VOICE_MODEL ?? DEFAULT_MODEL;
+  const baseUrl = (config.baseUrl ?? process.env.VOICE_BASE_URL ?? DEFAULT_BASE_URL).replace(
+    /\/$/,
+    '',
+  );
+  if (!apiKey) throw new Error('服务端未配置 VOICE_API_KEY，请检查 .env');
+
+  const scene = BANTER_TAG_TEXT[tag] ?? '用户点了一下你';
+  const extra = context.dishName
+    ? `当前菜名：${context.dishName}${typeof context.stepIndex === 'number' ? `，第 ${context.stepIndex + 1} 步` : ''}`
+    : '';
+
+  const response = await fetch(`${baseUrl}/chat/completions`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+    signal: AbortSignal.timeout(8000),
+    body: JSON.stringify({
+      model,
+      messages: [
+        { role: 'system', content: banterPrompt() },
+        { role: 'user', content: [scene, extra].filter(Boolean).join('\n') },
+      ],
+      temperature: 0.95,
+      enable_thinking: false,
+      response_format: {
+        type: 'json_schema',
+        json_schema: { name: 'mascot_banter', strict: true, schema: BANTER_SCHEMA },
+      },
+    }),
+  });
+  const body = (await response.json()) as Json;
+  if (!response.ok) {
+    const error =
+      body.error && typeof body.error === 'object' ? (body.error as Json).message : undefined;
+    throw new Error(typeof error === 'string' ? error : `话术生成失败（${response.status}）`);
+  }
+  const parsed = parseJsonLoose(extractText(body));
+  return asStringArray(parsed.lines, 3);
+}
+
 /** 严格 JSON Schema：强制模型返回合法结构。 */
 const REPLY_SCHEMA = {
   type: 'object',
@@ -767,6 +859,16 @@ export function voiceGateway(config: VoiceGatewayConfig = {}): Connect.NextHandl
           text,
         );
         res.end(JSON.stringify(result));
+        return;
+      }
+
+      if (req.url === '/api/voice/banter') {
+        const tag = asString(body.tag, 'click');
+        const lines = await callBanter(config, tag, {
+          dishName: asString(body.dishName) || undefined,
+          stepIndex: typeof body.stepIndex === 'number' ? body.stepIndex : undefined,
+        });
+        res.end(JSON.stringify({ lines }));
         return;
       }
 

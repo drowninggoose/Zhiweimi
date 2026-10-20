@@ -1217,3 +1217,77 @@ dialog::backdrop {
   margin: 10px 0 14px;
   font-size: 14px;
 }
+
+/* ------------------------- 首页小猫与说话气泡 ------------------------- */
+.mascot {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+.mascot-button {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  border-radius: 22px;
+  cursor: pointer;
+  display: inline-flex;
+  transition: transform 0.16s ease, filter 0.16s ease;
+}
+.mascot-button:hover {
+  transform: translateY(-3px);
+  filter: drop-shadow(0 8px 14px rgba(87, 52, 27, 0.18));
+}
+.mascot-button:active {
+  transform: scale(0.97);
+}
+.mascot-bubble {
+  position: absolute;
+  bottom: calc(100% - 16px);
+  right: 84%;
+  min-width: 128px;
+  max-width: 232px;
+  padding: 11px 15px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: 0 12px 28px rgba(87, 52, 27, 0.18);
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.55;
+  text-align: left;
+  white-space: normal;
+  pointer-events: none;
+  animation: mascot-pop 0.18s ease-out;
+}
+.mascot-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -7px;
+  right: 30px;
+  width: 12px;
+  height: 12px;
+  background: white;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  transform: rotate(45deg);
+}
+@keyframes mascot-pop {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+/* 窄屏时气泡收窄，避免顶出视口 */
+@media (max-width: 720px) {
+  .mascot-bubble {
+    right: 40%;
+    max-width: 180px;
+    font-size: 14px;
+  }
+}

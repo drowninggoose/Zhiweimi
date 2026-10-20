@@ -216,7 +216,6 @@ export async function requestBanter(
     });
     if (!response.ok) return 0;
     const body = (await response.json()) as { lines?: string[] };
-    // 顺手把接话也补充一点，E 人才有话说
     const lines = body.lines ?? [];
     return storeBanter(tag, lines);
   } catch {
@@ -249,11 +248,6 @@ export function resolveTag(
   if (context.finished) return 'done';
   if (context.cooking) return 'cooking';
   return timeTagOf(now);
-}
-
-/** E 人模式的「接话」：紧接着补一句。 */
-export function pickFollowUp(avoidId?: string): MascotLine {
-  return pickLine({ tag: 'followup', avoidId, preferAi: false });
 }
 
 /** 首屏问候语：同一会话只说一次。 */

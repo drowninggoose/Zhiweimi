@@ -5,7 +5,6 @@
  * - 首屏进入时说一句问候（同一会话只说一次）；
  * - 点击必换一句（轮换制，不连续重复）；
  * - 场景按时段与烹饪状态判断：早上/中午/下午/傍晚/深夜、做菜中、刚做完；
- * - E 人模式：约一半概率会紧接着再补一句「接话」；
  * - 后台向本地网关要几句新鲜话术，拿到就存进本地池，下次优先用；
  * - 断网 / 未配置 Key 时自动退化为纯语料，功能不受影响。
  */
@@ -14,7 +13,6 @@ import { useData } from '../app/data';
 import { repositories } from '../db/repositories';
 import {
   lastLineId,
-  pickFollowUp,
   pickLine,
   requestBanter,
   resolveTag,
@@ -26,16 +24,10 @@ import {
 /** 气泡停留时间：首屏问候久一点，点击短一点。 */
 const GREET_HOLD_MS = 5200;
 const CLICK_HOLD_MS = 4200;
-/** 接话气泡停留时间。 */
-const FOLLOW_HOLD_MS = 2600;
 /** 首屏问候延迟，避免和页面渲染抢注意力。 */
 const GREET_DELAY_MS = 900;
-/** 主句说多久之后接话（E 人也不能抢话）。 */
-const CHATTER_DELAY_MS = 1500;
-/** 接话出现前，允许 AI 结果替换主句的时间窗。 */
-const AI_REPLACE_WINDOW_MS = CHATTER_DELAY_MS;
-/** E 人模式的接话概率。 */
-const CHATTER_RATE = 0.5;
+/** 点击后允许 AI 结果替换主句的时间窗（超时就不再替换）。 */
+const AI_REPLACE_WINDOW_MS = 2000;
 
 type MascotContext = {
   cooking: boolean;
@@ -49,7 +41,6 @@ export function Mascot() {
   const [text, setText] = useState('');
   const [visible, setVisible] = useState(false);
   const hideTimer = useRef<number | undefined>(undefined);
-  const chatterTimer = useRef<number | undefined>(undefined);
   /** 每次点击自增，用于丢弃过期的 AI 替换结果 */
   const turn = useRef(0);
   /** 当前烹饪上下文（异步读取，不参与渲染） */
@@ -57,9 +48,7 @@ export function Mascot() {
 
   const clearTimers = useCallback(() => {
     if (hideTimer.current !== undefined) window.clearTimeout(hideTimer.current);
-    if (chatterTimer.current !== undefined) window.clearTimeout(chatterTimer.current);
     hideTimer.current = undefined;
-    chatterTimer.current = undefined;
   }, []);
 
   const show = useCallback((value: string, holdMs: number) => {
@@ -131,15 +120,6 @@ export function Mascot() {
     const myTurn = ++turn.current;
     show(line.text, CLICK_HOLD_MS);
     const mainUntil = Date.now() + AI_REPLACE_WINDOW_MS;
-
-    // E 人模式：过一会儿再补一句
-    if (Math.random() < CHATTER_RATE) {
-      chatterTimer.current = window.setTimeout(() => {
-        if (turn.current !== myTurn) return;
-        const follow = pickFollowUp(lastLineId());
-        show(follow.text, FOLLOW_HOLD_MS);
-      }, CHATTER_DELAY_MS);
-    }
 
     // 后台补充新鲜话术：趁主句还在，直接替换成 AI 那句
     void requestBanter(tag, {

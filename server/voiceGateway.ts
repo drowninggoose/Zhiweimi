@@ -202,7 +202,6 @@ const BANTER_TAG_TEXT: Record<string, string> = {
   afternoon: '现在是下午，用户有点犯困',
   evening: '现在是傍晚，该做晚饭了',
   night: '现在是深夜',
-  followup: '用户刚听你说完一句，你想再补一句',
 };
 
 /**

@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, test } from 'vitest';
 import { linesForTag } from '../content/mascotLines';
 import {
   isAcceptableBanter,
-  pickFollowUp,
   resolveTag,
   timeTagOf,
   lastLineId,
@@ -113,13 +112,4 @@ describe('时段与场景判断', () => {
     expect(resolveTag(at(12), {})).toBe('noon');
   });
 
-  test('接话来自 followup 桶，且不会连续重复', () => {
-    let previous = '';
-    for (let i = 0; i < 10; i += 1) {
-      const line = pickFollowUp(previous || undefined);
-      expect(line.tag).toBe('followup');
-      expect(line.id).not.toBe(previous);
-      previous = line.id;
-    }
-  });
 });

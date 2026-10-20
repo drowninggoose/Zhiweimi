@@ -20,9 +20,7 @@ export type MascotTag =
   | 'noon'
   | 'afternoon'
   | 'evening'
-  | 'night'
-  /** 接话：E 人模式下的第二句 */
-  | 'followup';
+  | 'night';
 export type MascotTone = 'warm' | 'fun';
 
 export type MascotLine = {
@@ -330,6 +328,7 @@ const AFTERNOON_FUN = [
   '锅在放假，我在值班。',
   '这会儿做饭，晚饭就稳了。',
   '下午的猫，最爱晒太阳。',
+  '这会儿做饭，香得有点犯规。',
 ];
 
 /** 傍晚 5 点~10 点。 */
@@ -354,38 +353,6 @@ const EVENING_FUN = [
   '黄昏的厨房，最像家。',
 ];
 
-/** 接话：E 人模式下紧接着说的第二句。 */
-const FOLLOWUP_WARM = [
-  '你忙你的，我不吵。',
-  '需要我陪着就说一声。',
-  '别站着做，搬个凳子。',
-  '我就在这儿，随叫随到。',
-  '做累了就歇会儿。',
-  '水开了会叫你的。',
-  '慢慢来，我等你。',
-  '加油，我信你。',
-  '今天的你，很棒。',
-  '别忘了先尝味道。',
-  '小心刀，慢慢切。',
-  '我陪你到出锅。',
-];
-
-const FOLLOWUP_FUN = [
-  '你看我干嘛，看锅呀！',
-  '要不要我给你唱个歌？',
-  '我可以在旁边鼓掌。',
-  '说实话，我闻着有点馋。',
-  '这道菜有名字吗？',
-  '你猜我爱吃哪一口？',
-  '锅铲借你，别弄丢。',
-  '我数三下，一起开火。',
-  '别偷懒，我看着呢。',
-  '做好了记得叫我。',
-  '我都闻到香味了，你还说没好。',
-  '你是不是又忘了放盐？',
-  '说好了，这锅我先尝。',
-];
-
 type Group = { tag: MascotTag; tone: MascotTone; list: string[] };
 
 const GROUPS: Group[] = [
@@ -407,8 +374,6 @@ const GROUPS: Group[] = [
   { tag: 'evening', tone: 'fun', list: EVENING_FUN },
   { tag: 'night', tone: 'warm', list: NIGHT_WARM },
   { tag: 'night', tone: 'fun', list: NIGHT_FUN },
-  { tag: 'followup', tone: 'warm', list: FOLLOWUP_WARM },
-  { tag: 'followup', tone: 'fun', list: FOLLOWUP_FUN },
 ];
 
 /** 展开成扁平列表，id 用「场景-调性-序号」保证稳定。 */
@@ -437,5 +402,4 @@ export const MASCOT_TAGS: MascotTag[] = [
   'afternoon',
   'evening',
   'night',
-  'followup',
 ];

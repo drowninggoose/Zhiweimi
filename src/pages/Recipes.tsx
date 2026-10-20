@@ -60,6 +60,10 @@ function TileRow({
             className={value === o.value ? 'active' : ''}
             aria-pressed={value === o.value}
             onClick={() => onChange(o.value)}
+            onPointerUp={(event) => {
+              // 鼠标或触屏点击后释放焦点，避免绿色键盘焦点环被误认为第二个选中项。
+              event.currentTarget.blur();
+            }}
           >
             {o.label}
           </button>

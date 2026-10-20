@@ -420,7 +420,7 @@ const report = {
 await mkdir(dirname(reportPath), { recursive: true });
 await writeFile(inputPath, `${JSON.stringify(output, null, 2)}\n`, 'utf8');
 await writeFile(reportPath, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
-console.log(
+globalThis.console.log(
   JSON.stringify(
     { before: report.before, after: report.after, removed: report.removed, reasons },
     null,

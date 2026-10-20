@@ -211,6 +211,12 @@ textarea {
 }
 a {
   color: #bd472b;
+  text-decoration: none;
+}
+/* 正文里的链接：不用常驻下划线，悬停再给反馈 */
+a:not(.button):hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 .app-shell {
   display: flex;
@@ -1134,4 +1140,80 @@ dialog::backdrop {
   margin-top: 4px;
   color: var(--muted);
   font-size: 12px;
+}
+
+/* ------------------------- 文字链接与「更多」链接 ------------------------- */
+/* 句子里的行内链接：跟正文同样大小，颜色区分，不再常驻下划线 */
+.text-link {
+  color: var(--orange);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.text-link:hover {
+  border-bottom-color: currentColor;
+  text-decoration: none;
+}
+.text-link::after {
+  content: '›';
+  margin-left: 2px;
+  opacity: 0.7;
+}
+
+/* 卡片右上角的「查看全部」这类次级入口：做成轻量胶囊按钮 */
+.link-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: white;
+  color: var(--ink);
+  font-size: 14px;
+  text-decoration: none;
+  transition: border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+.link-more::after {
+  content: '›';
+  color: var(--muted);
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+.link-more:hover {
+  border-color: var(--orange);
+  color: var(--orange);
+  text-decoration: none;
+}
+.link-more:hover::after {
+  color: var(--orange);
+  transform: translateX(2px);
+}
+
+/* 计划卡片里的菜名入口 */
+.plan-dish {
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px dashed var(--line);
+}
+.plan-dish:hover {
+  color: var(--orange);
+  border-bottom-color: var(--orange);
+  text-decoration: none;
+}
+
+/* 空状态提示句里跟一个链接时的间距 */
+.empty-hint {
+  color: var(--muted);
+  line-height: 1.9;
+}
+.empty-hint .text-link {
+  margin-left: 4px;
+}
+
+/* 首页三张卡片里的次要入口行 */
+.home-link-row {
+  margin: 10px 0 14px;
+  font-size: 14px;
 }

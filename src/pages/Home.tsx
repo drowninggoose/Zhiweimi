@@ -71,21 +71,27 @@ export function HomePage() {
               </optgroup>
             </select>
           </label>
-          <p>
-            <Link to="/cook">选择其他</Link>
+          <p className="home-link-row">
+            <Link className="text-link" to="/cook">
+              选择其他菜谱
+            </Link>
           </p>
           {chosen ? (
             <Link className="button" to={`/cook/${chosen}`}>
               开始烹饪
             </Link>
           ) : (
-            <Link to="/recipes/new">创建菜谱</Link>
+            <Link className="text-link" to="/recipes/new">
+              创建菜谱
+            </Link>
           )}
         </section>
         <section className="card">
           <div className="row between">
             <h2>最近的美食日记</h2>
-            <Link to="/diary">查看全部</Link>
+            <Link className="link-more" to="/diary">
+              查看全部
+            </Link>
           </div>
           {entries.length ? (
             entries.map((entry) => (
@@ -100,8 +106,11 @@ export function HomePage() {
               </Link>
             ))
           ) : (
-            <p>
-              记下你今天的味道。<Link to="/diary">添加记录</Link>
+            <p className="empty-hint">
+              记下你今天的味道。
+              <Link className="text-link" to="/diary">
+                添加记录
+              </Link>
             </p>
           )}
         </section>
@@ -112,13 +121,19 @@ export function HomePage() {
               const recipe = data.recipes.find((r) => r.id === currentDay[`${meal}RecipeId`]);
               return (
                 <p key={meal}>
-                  {mealLabels[meal]} · <Link to="/planner">{recipe?.name ?? '菜谱已移除'}</Link>
+                  {mealLabels[meal]} ·{' '}
+                  <Link className="plan-dish" to="/planner">
+                    {recipe?.name ?? '菜谱已移除'}
+                  </Link>
                 </p>
               );
             })
           ) : (
-            <p>
-              还没有今日计划。<Link to="/planner">生成今日计划</Link>
+            <p className="empty-hint">
+              还没有今日计划。
+              <Link className="text-link" to="/planner">
+                去生成今日计划
+              </Link>
             </p>
           )}
         </section>

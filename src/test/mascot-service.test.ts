@@ -2,6 +2,9 @@ import { beforeEach, describe, expect, test } from 'vitest';
 import { linesForTag } from '../content/mascotLines';
 import {
   isAcceptableBanter,
+  pickFollowUp,
+  resolveTag,
+  timeTagOf,
   lastLineId,
   pickLine,
   resetMascotState,
@@ -81,5 +84,42 @@ describe('AI 话术池', () => {
   test('只取 AI 句子时，池空返回 null 且不动用语料计数', () => {
     expect(takeAiLine('click')).toBeNull();
     expect(usedCount('click')).toBe(0);
+  });
+});
+
+describe('时段与场景判断', () => {
+  const at = (hour: number) => {
+    const date = new Date();
+    date.setHours(hour, 0, 0, 0);
+    return date;
+  };
+
+  test('按小时划分时段', () => {
+    expect(timeTagOf(at(6))).toBe('morning');
+    expect(timeTagOf(at(9))).toBe('morning');
+    expect(timeTagOf(at(10))).toBe('noon');
+    expect(timeTagOf(at(13))).toBe('noon');
+    expect(timeTagOf(at(14))).toBe('afternoon');
+    expect(timeTagOf(at(16))).toBe('afternoon');
+    expect(timeTagOf(at(17))).toBe('evening');
+    expect(timeTagOf(at(21))).toBe('evening');
+    expect(timeTagOf(at(22))).toBe('night');
+    expect(timeTagOf(at(3))).toBe('night');
+  });
+
+  test('场景优先级：刚做完 > 做菜中 > 时段', () => {
+    expect(resolveTag(at(12), { finished: true, cooking: true })).toBe('done');
+    expect(resolveTag(at(12), { cooking: true })).toBe('cooking');
+    expect(resolveTag(at(12), {})).toBe('noon');
+  });
+
+  test('接话来自 followup 桶，且不会连续重复', () => {
+    let previous = '';
+    for (let i = 0; i < 10; i += 1) {
+      const line = pickFollowUp(previous || undefined);
+      expect(line.tag).toBe('followup');
+      expect(line.id).not.toBe(previous);
+      previous = line.id;
+    }
   });
 });

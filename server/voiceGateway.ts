@@ -196,8 +196,13 @@ const BANTER_TAG_TEXT: Record<string, string> = {
   greet: '用户刚打开应用',
   click: '用户点了一下你',
   cooking: '用户正在做菜',
-  night: '现在是深夜',
   done: '用户刚做完一餐',
+  morning: '现在是早上，用户可能要准备早饭',
+  noon: '现在是中午，饭点到了',
+  afternoon: '现在是下午，用户有点犯困',
+  evening: '现在是傍晚，该做晚饭了',
+  night: '现在是深夜',
+  followup: '用户刚听你说完一句，你想再补一句',
 };
 
 /**

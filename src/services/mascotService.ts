@@ -9,6 +9,8 @@
  */
 import { linesForTag, MASCOT_TAGS, type MascotLine, type MascotTag } from '../content/mascotLines';
 
+export type { MascotLine, MascotTag } from '../content/mascotLines';
+
 const USED_KEY = 'zhiweimi:mascot-used';
 const LAST_KEY = 'zhiweimi:mascot-last';
 const POOL_KEY = 'zhiweimi:mascot-ai-pool';
@@ -89,8 +91,11 @@ function pickRandom<T>(list: T[]): T {
 }
 
 export type PickOptions = {
-  /** 当前场景 */
-  tag: MascotTag;
+  /**
+   * 场景：给多个时在这些场景的并集里抽，
+   * 例如做菜时说「烹饪中 + 通用点击」两种话，避免单调。
+   */
+  tag: MascotTag | MascotTag[];
   /** 上一句 id，保证不会连着说同一句 */
   avoidId?: string;
   /** 是否优先使用 AI 生成的话术池 */
@@ -104,14 +109,19 @@ export type PickOptions = {
  * 都会避开 `avoidId`，确保「每次必换」。
  */
 export function pickLine({ tag, avoidId, preferAi = true }: PickOptions): MascotLine {
+  const tags = Array.isArray(tag) ? tag : [tag];
   if (preferAi) {
-    const ai = takeFromPool(tag, avoidId);
-    if (ai) return ai;
+    for (const item of tags) {
+      const ai = takeFromPool(item, avoidId);
+      if (ai) return ai;
+    }
   }
 
-  const candidates = availableLines(tag).filter((line) => line.id !== avoidId);
-  // 极端情况：该场景只剩一句且正好是上一句，仍然要给它（宁可重复也不空着）
-  const pool = candidates.length ? candidates : linesForTag(tag);
+  const candidates = tags
+    .flatMap((item) => availableLines(item))
+    .filter((line) => line.id !== avoidId);
+  // 极端情况：这些场景只剩一句且正好是上一句，仍然要给它（宁可重复也不空着）
+  const pool = candidates.length ? candidates : tags.flatMap((item) => linesForTag(item));
   const chosen = pickRandom(pool);
   markUsed(chosen.tag, chosen.id);
   rememberLast(chosen.id);
@@ -206,7 +216,9 @@ export async function requestBanter(
     });
     if (!response.ok) return 0;
     const body = (await response.json()) as { lines?: string[] };
-    return storeBanter(tag, body.lines ?? []);
+    // 顺手把接话也补充一点，E 人才有话说
+    const lines = body.lines ?? [];
+    return storeBanter(tag, lines);
   } catch {
     return 0;
   }
@@ -216,17 +228,32 @@ export async function requestBanter(
  * 场景判断与首屏问候
  * ------------------------------------------------------------------ */
 
-/**
- * 推断当前该用哪个场景。
- * - 深夜（23 点后 / 5 点前）
- * - 有进行中的烹饪 → cooking
- * - 其余按点击处理
- */
-export function resolveTag(now = new Date(), cooking = false): MascotTag {
+/** 按小时给出时段场景，比笼统的「点击」更贴当时的语境。 */
+export function timeTagOf(now = new Date()): MascotTag {
   const hour = now.getHours();
-  if (hour >= 23 || hour < 5) return 'night';
-  if (cooking) return 'cooking';
-  return 'click';
+  if (hour >= 5 && hour < 10) return 'morning';
+  if (hour >= 10 && hour < 14) return 'noon';
+  if (hour >= 14 && hour < 17) return 'afternoon';
+  if (hour >= 17 && hour < 22) return 'evening';
+  return 'night';
+}
+
+/**
+ * 推断当前该说哪一类话，优先级从高到低：
+ * 刚做完一餐 → 做菜中 → 当前时段。
+ */
+export function resolveTag(
+  now = new Date(),
+  context: { cooking?: boolean; finished?: boolean } = {},
+): MascotTag {
+  if (context.finished) return 'done';
+  if (context.cooking) return 'cooking';
+  return timeTagOf(now);
+}
+
+/** E 人模式的「接话」：紧接着补一句。 */
+export function pickFollowUp(avoidId?: string): MascotLine {
+  return pickLine({ tag: 'followup', avoidId, preferAi: false });
 }
 
 /** 首屏问候语：同一会话只说一次。 */

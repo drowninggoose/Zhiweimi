@@ -11,8 +11,13 @@ const EXPECTED: Record<MascotTag, number> = {
   greet: 25,
   click: 80,
   cooking: 45,
-  night: 25,
   done: 25,
+  morning: 15,
+  noon: 15,
+  afternoon: 14,
+  evening: 15,
+  night: 25,
+  followup: 25,
 };
 
 /** 说教腔与敏感话题，语料里不该出现。 */
@@ -20,7 +25,7 @@ const BANNED = [/建议/, /应该/, /必须/, /一定要/, /热量/, /卡路里/
 
 describe('小猫语料库', () => {
   test('总量约 200 条', () => {
-    expect(MASCOT_LINES.length).toBe(200);
+    expect(MASCOT_LINES.length).toBe(284);
   });
 
   test('每个场景条数符合规划', () => {
@@ -32,8 +37,8 @@ describe('小猫语料库', () => {
   test('温暖与俏皮五五开', () => {
     const warm = MASCOT_LINES.filter((line) => line.tone === 'warm').length;
     const fun = MASCOT_LINES.filter((line) => line.tone === 'fun').length;
-    expect(warm).toBe(100);
-    expect(fun).toBe(100);
+    expect(warm).toBe(142);
+    expect(fun).toBe(142);
   });
 
   test('id 唯一', () => {

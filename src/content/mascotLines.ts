@@ -10,7 +10,19 @@
  * 不涉及食品安全判断（不鼓励吃夹生或焦糊食物）。
  */
 
-export type MascotTag = 'greet' | 'click' | 'cooking' | 'night' | 'done';
+export type MascotTag =
+  | 'greet'
+  | 'click'
+  | 'cooking'
+  | 'done'
+  /** 时段：用当前时间判断，比笼统的「点击」更贴场景 */
+  | 'morning'
+  | 'noon'
+  | 'afternoon'
+  | 'evening'
+  | 'night'
+  /** 接话：E 人模式下的第二句 */
+  | 'followup';
 export type MascotTone = 'warm' | 'fun';
 
 export type MascotLine = {
@@ -255,6 +267,125 @@ const DONE_FUN = [
   '吃饱喝足，人间值得。',
 ];
 
+/** 早上 5~10 点。 */
+const MORNING_WARM = [
+  '早上好呀，今天也要吃早饭。',
+  '一杯热的，一天就顺了。',
+  '早饭吃好，上午不慌。',
+  '慢慢来，时间还够。',
+  '清早的厨房，最安静。',
+  '先垫两口，再忙别的。',
+  '今天的第一餐，别省。',
+  '阳光进来了，饭也该做了。',
+];
+
+const MORNING_FUN = [
+  '早起的猫，有鱼吃。',
+  '早饭吃什么？我投鸡蛋一票。',
+  '这个点，锅还没热吧。',
+  '你和被窝，谁赢了？',
+  '早上的你，看起来很能打。',
+  '别急着喝咖啡，先吃点东西。',
+  '清晨第一问：今天吃啥？',
+];
+
+/** 上午 10 点~下午 2 点。 */
+const NOON_WARM = [
+  '中午了，先吃饭吧。',
+  '忙到现在，该歇一会儿了。',
+  '午饭别凑合，身体记着。',
+  '吃饱了下午才有劲。',
+  '热乎的一口，胜过很多话。',
+  '慢慢吃，别噎着。',
+  '中午的厨房，最有人气。',
+];
+
+const NOON_FUN = [
+  '这个点还不吃饭，胃要抗议了。',
+  '午饭吃啥？别又是外卖。',
+  '中午的锅，比早上忙。',
+  '你是饿了，还是馋了？',
+  '十二点的厨房，最能治困。',
+  '先把饭吃了，再谈理想。',
+  '我闻到隔壁的香味了。',
+  '午饭别省，省了下午更亏。',
+];
+
+/** 下午 2 点~5 点。 */
+const AFTERNOON_WARM = [
+  '下午了，来点热的吧。',
+  '有点困吧？先喝口水。',
+  '下午的光，适合慢慢做饭。',
+  '不着急，晚饭还早。',
+  '歇一会儿，再动手也不迟。',
+  '今天想吃点甜的？',
+  '下午的厨房，暖洋洋的。',
+];
+
+const AFTERNOON_FUN = [
+  '下午三点，馋虫准时上班。',
+  '这个点做饭，是提前备战吗？',
+  '下午茶算不算一餐？我算了。',
+  '你又在刷菜谱了吧。',
+  '锅在放假，我在值班。',
+  '这会儿做饭，晚饭就稳了。',
+  '下午的猫，最爱晒太阳。',
+];
+
+/** 傍晚 5 点~10 点。 */
+const EVENING_WARM = [
+  '傍晚了，今天辛苦啦。',
+  '晚饭做点想吃的吧。',
+  '天黑得早，饭要趁热。',
+  '一家人吃饭，最踏实。',
+  '今天也好好吃晚饭。',
+  '灯亮起来，就该开火了。',
+  '慢一点，晚饭不用赶。',
+  '热汤配热饭，日子就有了。',
+];
+
+const EVENING_FUN = [
+  '晚饭吃什么？我给你出主意。',
+  '这个点，全楼的抽油烟机都开了。',
+  '晚上做饭，香味传得远。',
+  '你闻，隔壁也在炒菜。',
+  '晚饭别拖太晚，胃会记仇。',
+  '下班的你，终于自由了。',
+  '黄昏的厨房，最像家。',
+];
+
+/** 接话：E 人模式下紧接着说的第二句。 */
+const FOLLOWUP_WARM = [
+  '你忙你的，我不吵。',
+  '需要我陪着就说一声。',
+  '别站着做，搬个凳子。',
+  '我就在这儿，随叫随到。',
+  '做累了就歇会儿。',
+  '水开了会叫你的。',
+  '慢慢来，我等你。',
+  '加油，我信你。',
+  '今天的你，很棒。',
+  '别忘了先尝味道。',
+  '小心刀，慢慢切。',
+  '我陪你到出锅。',
+];
+
+const FOLLOWUP_FUN = [
+  '你看我干嘛，看锅呀！',
+  '要不要我给你唱个歌？',
+  '我可以在旁边鼓掌。',
+  '说实话，我闻着有点馋。',
+  '这道菜有名字吗？',
+  '你猜我爱吃哪一口？',
+  '锅铲借你，别弄丢。',
+  '我数三下，一起开火。',
+  '别偷懒，我看着呢。',
+  '做好了记得叫我。',
+  '我都闻到香味了，你还说没好。',
+  '你是不是又忘了放盐？',
+  '说好了，这锅我先尝。',
+];
+
 type Group = { tag: MascotTag; tone: MascotTone; list: string[] };
 
 const GROUPS: Group[] = [
@@ -264,10 +395,20 @@ const GROUPS: Group[] = [
   { tag: 'click', tone: 'fun', list: CLICK_FUN },
   { tag: 'cooking', tone: 'warm', list: COOKING_WARM },
   { tag: 'cooking', tone: 'fun', list: COOKING_FUN },
-  { tag: 'night', tone: 'warm', list: NIGHT_WARM },
-  { tag: 'night', tone: 'fun', list: NIGHT_FUN },
   { tag: 'done', tone: 'warm', list: DONE_WARM },
   { tag: 'done', tone: 'fun', list: DONE_FUN },
+  { tag: 'morning', tone: 'warm', list: MORNING_WARM },
+  { tag: 'morning', tone: 'fun', list: MORNING_FUN },
+  { tag: 'noon', tone: 'warm', list: NOON_WARM },
+  { tag: 'noon', tone: 'fun', list: NOON_FUN },
+  { tag: 'afternoon', tone: 'warm', list: AFTERNOON_WARM },
+  { tag: 'afternoon', tone: 'fun', list: AFTERNOON_FUN },
+  { tag: 'evening', tone: 'warm', list: EVENING_WARM },
+  { tag: 'evening', tone: 'fun', list: EVENING_FUN },
+  { tag: 'night', tone: 'warm', list: NIGHT_WARM },
+  { tag: 'night', tone: 'fun', list: NIGHT_FUN },
+  { tag: 'followup', tone: 'warm', list: FOLLOWUP_WARM },
+  { tag: 'followup', tone: 'fun', list: FOLLOWUP_FUN },
 ];
 
 /** 展开成扁平列表，id 用「场景-调性-序号」保证稳定。 */
@@ -286,4 +427,15 @@ export function linesForTag(tag: MascotTag): MascotLine[] {
 }
 
 /** 全部场景标签，供测试与统计使用。 */
-export const MASCOT_TAGS: MascotTag[] = ['greet', 'click', 'cooking', 'night', 'done'];
+export const MASCOT_TAGS: MascotTag[] = [
+  'greet',
+  'click',
+  'cooking',
+  'done',
+  'morning',
+  'noon',
+  'afternoon',
+  'evening',
+  'night',
+  'followup',
+];

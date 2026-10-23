@@ -33,3 +33,7 @@ docs/design/screens/
 
 # 比赛文档生成脚本（本地工具）
 _build_docs/
+
+# GitHub Pages 构建产物与工作树（本地生成）
+_pages/
+.pages-wt/

@@ -217,7 +217,10 @@ function BootGate({ children }: { children: ReactNode }) {
 
 function EnteredApp({ onShowPortal }: { onShowPortal: () => void }) {
   const [router] = useState(() =>
-    createBrowserRouter([{ path: '*', element: <Shell onShowPortal={onShowPortal} /> }]),
+    createBrowserRouter([{ path: '*', element: <Shell onShowPortal={onShowPortal} /> }], {
+      // 部署在子路径（如 GitHub Pages 的 /Zhiweimi/）时也能正确路由
+      basename: import.meta.env.BASE_URL.replace(/\/$/, '') || '/',
+    }),
   );
   return (
     <DataProvider>

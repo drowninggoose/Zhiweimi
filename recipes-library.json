@@ -1,0 +1,6122 @@
+{
+  "schemaVersion": 2,
+  "cleaningStandard": "structured-v4",
+  "generatedAt": "2026-10-19T14:55:58.015Z",
+  "template": "将【食材及用量】进行【预处理】，放入【器具】；加入【配料及用量】，使用【大火/中火/小火】进行【烹饪动作】【明确时长】，直至【客观完成状态】；【可选的个人口味调整】。",
+  "recipes": [
+    {
+      "name": "千张结烧肉",
+      "cuisines": [
+        "热菜",
+        "家常菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "酱香"
+      ],
+      "difficulty": "normal",
+      "estimatedMinutes": null,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "红烧肉",
+          "amount": "2斤左右",
+          "normalizedAmount": 1000,
+          "normalizedUnit": "g",
+          "normalizationNote": "原始用量：2斤左右",
+          "group": "主料"
+        },
+        {
+          "name": "千张",
+          "amount": "3张",
+          "normalizedAmount": 3,
+          "normalizedUnit": "张",
+          "group": "主料"
+        },
+        {
+          "name": "生姜",
+          "amount": "4-6片",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：4-6片",
+          "group": "辅料"
+        },
+        {
+          "name": "八角",
+          "amount": "1-2颗",
+          "normalizedAmount": 2,
+          "normalizedUnit": "颗",
+          "normalizationNote": "原始用量：1-2颗",
+          "group": "辅料"
+        },
+        {
+          "name": "香叶",
+          "amount": "1片",
+          "normalizedAmount": 1,
+          "normalizedUnit": "片",
+          "group": "辅料"
+        },
+        {
+          "name": "山楂干",
+          "amount": "5片",
+          "normalizedAmount": 5,
+          "normalizedUnit": "片",
+          "group": "辅料"
+        },
+        {
+          "name": "色拉油",
+          "amount": "1大勺",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1大勺",
+          "group": "调料"
+        },
+        {
+          "name": "冰糖",
+          "amount": "半铲",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：半铲",
+          "group": "调料"
+        },
+        {
+          "name": "生抽",
+          "amount": "3大勺",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：3大勺",
+          "group": "调料"
+        },
+        {
+          "name": "老抽",
+          "amount": "1勺",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1勺",
+          "group": "调料"
+        },
+        {
+          "name": "精盐",
+          "amount": "半匙",
+          "normalizedAmount": 2,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：半匙",
+          "group": "调料"
+        },
+        {
+          "name": "清水",
+          "amount": "大半锅",
+          "normalizedAmount": 100,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：大半锅",
+          "group": "调料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "五花肉切块，放入锅内，用中火干煸出油。",
+          "action": "切",
+          "heat": "中火",
+          "check": "出油"
+        },
+        {
+          "order": 2,
+          "instruction": "待肉表面开始变微焦后，撒入5克生姜丝。",
+          "action": "撒",
+          "check": "肉表面开始变微焦后"
+        },
+        {
+          "order": 3,
+          "instruction": "继续干煸，接着加入八角；如果五花肉本身煸出的油不够多，可以再补加10克色拉油。",
+          "action": "加入"
+        },
+        {
+          "order": 4,
+          "instruction": "之后加入5克冰糖，炒至所有5克冰糖熔化。",
+          "action": "炒",
+          "heat": "中火",
+          "check": "所有冰糖熔化"
+        },
+        {
+          "order": 5,
+          "instruction": "接着加入10克生抽和10克老抽。",
+          "action": "加入"
+        },
+        {
+          "order": 6,
+          "instruction": "倒入大半锅水，水位要完全没过所有的肉。",
+          "action": "倒"
+        },
+        {
+          "order": 7,
+          "instruction": "放入提前打好的千张结（也可以直接买）。",
+          "action": "打"
+        },
+        {
+          "order": 8,
+          "instruction": "再加入山楂干和香叶。",
+          "action": "加入"
+        },
+        {
+          "order": 9,
+          "instruction": "盖上锅盖，转大火烧开。",
+          "action": "烧",
+          "heat": "大火",
+          "check": "烧开"
+        },
+        {
+          "order": 10,
+          "instruction": "大火烧开后，转小火，继续盖着锅盖慢慢炖；等水位到锅内一半时，打开锅盖，用大火快速收汁。",
+          "action": "炖",
+          "heat": "大火",
+          "check": "烧开"
+        },
+        {
+          "order": 11,
+          "instruction": "小火慢炖的时间至少需要45分钟，这样才能软烂入味。",
+          "action": "炖",
+          "heat": "小火",
+          "durationSeconds": 2700,
+          "check": "少需要45分钟"
+        }
+      ],
+      "tips": "",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-3.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-667848.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-3",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "花椒排骨",
+      "cuisines": [
+        "热菜",
+        "家常菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "咸鲜"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": 60,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "排骨",
+          "amount": "1斤",
+          "normalizedAmount": 500,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "胡萝卜",
+          "amount": "一根",
+          "normalizedAmount": 1,
+          "normalizedUnit": "根",
+          "group": "辅料"
+        },
+        {
+          "name": "白萝卜",
+          "amount": "半根",
+          "normalizedAmount": 0.5,
+          "normalizedUnit": "根",
+          "group": "辅料"
+        },
+        {
+          "name": "花椒",
+          "amount": "20颗",
+          "normalizedAmount": 1,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：20颗",
+          "group": "调料"
+        },
+        {
+          "name": "八角",
+          "amount": "两朵",
+          "normalizedAmount": 1,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：两朵",
+          "group": "调料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "500克排骨洗净血水后，加清水和花椒20粒左右浸泡半小时。",
+          "action": "洗",
+          "durationSeconds": 1800
+        },
+        {
+          "order": 2,
+          "instruction": "泡好的整盆500克排骨和清水1克花椒，放入锅中煮出血沫。",
+          "action": "泡",
+          "utensil": "盆",
+          "heat": "中火"
+        },
+        {
+          "order": 3,
+          "instruction": "起锅烧油，加两朵八角，六成热放入500克排骨煸炒至出现糊边。",
+          "action": "炒",
+          "heat": "中火",
+          "check": "出现糊边"
+        },
+        {
+          "order": 4,
+          "instruction": "将煸炒好的500克排骨放入高压锅，加温水刚没过500克排骨高度最适合，上汽后小火压10分钟。",
+          "action": "炒",
+          "utensil": "高压锅",
+          "heat": "小火",
+          "durationSeconds": 600,
+          "check": "食材受热均匀"
+        },
+        {
+          "order": 5,
+          "instruction": "这是压好的程度，加些枸杞补气血。",
+          "action": "压"
+        },
+        {
+          "order": 6,
+          "instruction": "炒锅底铺上切滚刀块的白萝卜胡萝卜，将高压锅里的500克排骨和汤一并加入，小火烧十分钟即可出锅。",
+          "action": "切",
+          "utensil": "炒锅",
+          "heat": "小火",
+          "durationSeconds": 600
+        }
+      ],
+      "tips": "20粒左右花椒粒刚好去腥味，切勿放太多夺走鲜味",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-7.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-667798.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-7",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "蒸三文鱼",
+      "cuisines": [
+        "热菜",
+        "家常菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "微辣"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": 10,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "三文鱼",
+          "amount": "一块",
+          "normalizedAmount": 1,
+          "normalizedUnit": "块",
+          "group": "主料"
+        },
+        {
+          "name": "小米辣",
+          "amount": "1个",
+          "normalizedAmount": 1,
+          "normalizedUnit": "个",
+          "group": "辅料"
+        },
+        {
+          "name": "白芝麻",
+          "amount": "适量",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "辅料"
+        },
+        {
+          "name": "葱花",
+          "amount": "少许",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：少许",
+          "group": "辅料"
+        },
+        {
+          "name": "食用油",
+          "amount": "适量",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        },
+        {
+          "name": "蚝油",
+          "amount": "适量",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        },
+        {
+          "name": "辣椒芝麻油",
+          "amount": "适量",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "三纹魚去鳞洗净，加入盐及料酒腌15分钟，上锅蒸8至10分钟。",
+          "action": "洗",
+          "heat": "中火",
+          "durationSeconds": 900,
+          "check": "10分钟"
+        },
+        {
+          "order": 2,
+          "instruction": "倒出原汁，再加入料汁蒸1一2分钟。",
+          "action": "蒸",
+          "heat": "中火",
+          "durationSeconds": 120,
+          "check": "食材熟透"
+        },
+        {
+          "order": 3,
+          "instruction": "三文魚蒸好，小米辣、5克葱花、5克白芝麻点缀即可。",
+          "action": "蒸",
+          "heat": "中火",
+          "check": "食材熟透"
+        }
+      ],
+      "tips": "",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-24.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-667526.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-24",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "缤纷炒时蔬",
+      "cuisines": [
+        "热菜",
+        "家常菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "原味"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": 10,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "香菇",
+          "amount": "7朵",
+          "normalizedAmount": 7,
+          "normalizedUnit": "朵",
+          "group": "主料"
+        },
+        {
+          "name": "青椒",
+          "amount": "1个",
+          "normalizedAmount": 1,
+          "normalizedUnit": "个",
+          "group": "主料"
+        },
+        {
+          "name": "黄彩椒",
+          "amount": "1个",
+          "normalizedAmount": 1,
+          "normalizedUnit": "个",
+          "group": "主料"
+        },
+        {
+          "name": "元葱",
+          "amount": "半个",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：半个",
+          "group": "主料"
+        },
+        {
+          "name": "西红柿",
+          "amount": "2个",
+          "normalizedAmount": 2,
+          "normalizedUnit": "个",
+          "group": "辅料"
+        },
+        {
+          "name": "食用油",
+          "amount": "适量",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        },
+        {
+          "name": "料酒",
+          "amount": "适量",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        },
+        {
+          "name": "生抽",
+          "amount": "适量",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        },
+        {
+          "name": "盐",
+          "amount": "适量",
+          "normalizedAmount": 2,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        },
+        {
+          "name": "鸡精",
+          "amount": "少许",
+          "normalizedAmount": 1,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：少许",
+          "group": "调料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "将西红柿切成丁。",
+          "action": "切"
+        },
+        {
+          "order": 2,
+          "instruction": "香菇洗净切条再焯水。",
+          "action": "切",
+          "heat": "中火"
+        },
+        {
+          "order": 3,
+          "instruction": "锅中放入10克食用油烧热，下入蔬菜翻炒。",
+          "action": "炒",
+          "heat": "中火",
+          "check": "食材受热均匀"
+        },
+        {
+          "order": 4,
+          "instruction": "加入10克料酒、10克生抽、2克盐、再加入西红柿丁快速翻炒，出锅前加1克鸡精。",
+          "action": "炒",
+          "heat": "中火",
+          "check": "食材受热均匀"
+        },
+        {
+          "order": 5,
+          "instruction": "将菜品盛入盘中，五彩缤纷，营养丰富。",
+          "action": "盛",
+          "utensil": "盘"
+        }
+      ],
+      "tips": "",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-28.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-667500.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-28",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "凉拌苦瓜",
+      "cuisines": [
+        "凉菜",
+        "家常菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "微辣",
+        "原味"
+      ],
+      "difficulty": "normal",
+      "estimatedMinutes": 10,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "苦瓜",
+          "amount": "1根",
+          "normalizedAmount": 1,
+          "normalizedUnit": "根",
+          "group": "主料"
+        },
+        {
+          "name": "小米辣",
+          "amount": "1个",
+          "normalizedAmount": 1,
+          "normalizedUnit": "个",
+          "group": "辅料"
+        },
+        {
+          "name": "蒜蓉",
+          "amount": "适量",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "辅料"
+        },
+        {
+          "name": "凉拌汁:香油",
+          "amount": "适量",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        },
+        {
+          "name": "生抽",
+          "amount": "适量",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        },
+        {
+          "name": "陈醋",
+          "amount": "适量",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        },
+        {
+          "name": "盐",
+          "amount": "适量",
+          "normalizedAmount": 2,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        },
+        {
+          "name": "鸡精",
+          "amount": "适量",
+          "normalizedAmount": 1,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        },
+        {
+          "name": "芝麻辣椒油",
+          "amount": "适量",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "将苦瓜洗净去瓤，切条状。",
+          "action": "切"
+        },
+        {
+          "order": 2,
+          "instruction": "将苦瓜焯水后过凉水。",
+          "action": "焯",
+          "heat": "中火",
+          "check": "食材变色且断生"
+        },
+        {
+          "order": 3,
+          "instruction": "调制凉拌汁。",
+          "action": "拌"
+        },
+        {
+          "order": 4,
+          "instruction": "将凉拌汁倒入盆中，加入凉拌汁及2克盐、1克鸡精拌匀，装入盘中，加入小米辣及5克蒜蓉点缀。",
+          "action": "拌",
+          "utensil": "盆"
+        }
+      ],
+      "tips": "焯水要适当，时间不可长",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-42.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-667525.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-42",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "青鲳仔煲冬瓜汤",
+      "cuisines": [
+        "汤羹",
+        "粤菜"
+      ],
+      "mealTypes": [
+        "dinner"
+      ],
+      "flavorTags": [
+        "鱼香"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": null,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "青鲳仔鱼",
+          "amount": "200克",
+          "normalizedAmount": 200,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "冬瓜",
+          "amount": "200克",
+          "normalizedAmount": 200,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "瘦肉",
+          "amount": "50克",
+          "normalizedAmount": 50,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "姜片",
+          "amount": "1块",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1块",
+          "group": "辅料"
+        },
+        {
+          "name": "香菜",
+          "amount": "2颗",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：2颗",
+          "group": "辅料"
+        },
+        {
+          "name": "盐",
+          "amount": "1勺",
+          "normalizedAmount": 2,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1勺",
+          "group": "配料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "200克青鲳仔鱼清理干净，50克瘦肉一小块切丝备用。",
+          "action": "切"
+        },
+        {
+          "order": 2,
+          "instruction": "200克冬瓜去皮后切片。",
+          "action": "切"
+        },
+        {
+          "order": 3,
+          "instruction": "锅内水开后倒入200克冬瓜。",
+          "action": "倒"
+        },
+        {
+          "order": 4,
+          "instruction": "200克冬瓜煮一会后加入50克瘦肉。",
+          "action": "煮",
+          "heat": "中火",
+          "check": "食材熟透"
+        },
+        {
+          "order": 5,
+          "instruction": "加入鱼和5克姜片入锅内。",
+          "action": "加入"
+        },
+        {
+          "order": 6,
+          "instruction": "待水一煮开再开2分钟即可，关火加一勺盐。",
+          "action": "煮",
+          "heat": "中火",
+          "durationSeconds": 120,
+          "check": "水一煮开再开2分钟即可"
+        },
+        {
+          "order": 7,
+          "instruction": "放入5克香菜即可。",
+          "action": "放"
+        }
+      ],
+      "tips": "1.这小鱼很容易熟的，所以开锅两分钟就可以了，不用煮的太久，不然就不鲜美了；2.这鱼汤有点腥要多放点姜进去；3.香菜最后关火后再放，不然味道也不好了",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-58.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-28635.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-58",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "番茄土豆牛肉汤",
+      "cuisines": [
+        "家常菜",
+        "汤羹"
+      ],
+      "mealTypes": [
+        "lunch"
+      ],
+      "flavorTags": [],
+      "difficulty": "easy",
+      "estimatedMinutes": 30,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "胡萝卜",
+          "amount": "15g",
+          "normalizedAmount": 15,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "洋葱",
+          "amount": "30g",
+          "normalizedAmount": 30,
+          "normalizedUnit": "g",
+          "normalizationNote": "基准用量，可根据个人口味调整",
+          "group": "主料"
+        },
+        {
+          "name": "土豆",
+          "amount": "40g",
+          "normalizedAmount": 40,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "番茄",
+          "amount": "100g",
+          "normalizedAmount": 100,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "牛肉",
+          "amount": "50g",
+          "normalizedAmount": 50,
+          "normalizedUnit": "g",
+          "group": "辅料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "将所有的食材都准备好，每一个食材都不能缺哦。",
+          "action": "备"
+        },
+        {
+          "order": 2,
+          "instruction": "将50克牛肉切块，30克洋葱切块，15克胡萝卜滚刀块、40克土豆切块。",
+          "action": "切"
+        },
+        {
+          "order": 3,
+          "instruction": "50克牛肉加一部分30克洋葱腌渍去腥。",
+          "action": "腌"
+        },
+        {
+          "order": 4,
+          "instruction": "锅里加一点油加入15克胡萝卜跟30克洋葱翻炒，30克洋葱炒了之后是甜的而且香味浓郁一定不能少。",
+          "action": "炒",
+          "heat": "中火",
+          "check": "食材受热均匀"
+        },
+        {
+          "order": 5,
+          "instruction": "100克番茄开水烫一下去皮切成块。",
+          "action": "切"
+        },
+        {
+          "order": 6,
+          "instruction": "加入锅里一起翻炒然后加水煮。",
+          "action": "煮",
+          "heat": "中火",
+          "check": "食材熟透"
+        },
+        {
+          "order": 7,
+          "instruction": "锅里放入50克牛肉块一起煮。",
+          "action": "煮",
+          "heat": "中火",
+          "check": "食材熟透"
+        },
+        {
+          "order": 8,
+          "instruction": "小火煮15-20分钟，所有食材要煮透吃。",
+          "action": "煮",
+          "heat": "小火",
+          "durationSeconds": 1200,
+          "check": "食材熟透"
+        },
+        {
+          "order": 9,
+          "instruction": "等收汁到这个程度就是可以了，因为我切得块不大所以时间短，如果很大块时间要延长。",
+          "action": "切",
+          "heat": "中火"
+        }
+      ],
+      "tips": "1、牛肉要选择有点雪花的，牛柳比较嫩，很适合做这个牛肉汤2、洋葱对这个汤的味道至关重要一定不能少",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-75.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-505839.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-75",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "虾皮萝卜豆腐汤",
+      "cuisines": [
+        "家常菜",
+        "汤羹"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "清淡"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": 10,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "白萝卜",
+          "amount": "1/2个",
+          "normalizedAmount": 2,
+          "normalizedUnit": "个",
+          "normalizationNote": "原始用量：1/2个",
+          "group": "主料"
+        },
+        {
+          "name": "豆腐",
+          "amount": "1/2盒",
+          "normalizedAmount": 2,
+          "normalizedUnit": "盒",
+          "normalizationNote": "原始用量：1/2盒",
+          "group": "主料"
+        },
+        {
+          "name": "虾皮",
+          "amount": "1小把",
+          "normalizedAmount": 1,
+          "normalizedUnit": "小把",
+          "group": "主料"
+        },
+        {
+          "name": "姜",
+          "amount": "1块",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1块",
+          "group": "辅料"
+        },
+        {
+          "name": "香菜",
+          "amount": "适量",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "辅料"
+        },
+        {
+          "name": "面粉",
+          "amount": "1大匙",
+          "normalizedAmount": "1大匙",
+          "group": "辅料"
+        },
+        {
+          "name": "胡椒粉",
+          "amount": "适量",
+          "normalizedAmount": 1,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "辅料"
+        },
+        {
+          "name": "香油",
+          "amount": "适量",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "辅料"
+        },
+        {
+          "name": "盐",
+          "amount": "适量",
+          "normalizedAmount": 2,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "辅料"
+        },
+        {
+          "name": "油",
+          "amount": "适量",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "辅料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "白萝卜去皮切成细丝，切细一点，可以用擦板。",
+          "action": "切"
+        },
+        {
+          "order": 2,
+          "instruction": "豆腐切条，5克姜切丝，5克香菜切末。",
+          "action": "切"
+        },
+        {
+          "order": 3,
+          "instruction": "面粉加一点清水调成细细的面水备用。",
+          "action": "备"
+        },
+        {
+          "order": 4,
+          "instruction": "炒锅放10克油烧热，加入5克姜丝煸炒。",
+          "action": "炒",
+          "utensil": "炒锅",
+          "heat": "中火",
+          "check": "食材受热均匀"
+        },
+        {
+          "order": 5,
+          "instruction": "加入萝卜丝炒到萝卜丝变透明。",
+          "action": "炒",
+          "heat": "中火",
+          "check": "透明"
+        },
+        {
+          "order": 6,
+          "instruction": "加入适量开水，加上虾皮和豆腐煮开几分钟。",
+          "action": "煮",
+          "heat": "中火",
+          "check": "煮开"
+        },
+        {
+          "order": 7,
+          "instruction": "慢慢倒入面水，再次煮开，加2克盐调味，放入5克香菜末。",
+          "action": "煮",
+          "heat": "中火",
+          "check": "煮开"
+        },
+        {
+          "order": 8,
+          "instruction": "搅匀后根据自己的口味放上1克胡椒粉，加几滴10克香10克油即可。",
+          "action": "搅"
+        }
+      ],
+      "tips": "",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-84.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-504911.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-84",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "桂花蜜奶冻",
+      "cuisines": [
+        "小吃"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "奶香"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": null,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "牛奶",
+          "amount": "185g",
+          "normalizedAmount": 185,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "淡奶油",
+          "amount": "95g",
+          "normalizedAmount": 95,
+          "normalizedUnit": "g",
+          "normalizationNote": "基准用量，可根据个人口味调整",
+          "group": "主料"
+        },
+        {
+          "name": "吉利丁片",
+          "amount": "5g",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "group": "辅料"
+        },
+        {
+          "name": "桂花蜜",
+          "amount": "40g",
+          "normalizedAmount": 40,
+          "normalizedUnit": "g",
+          "normalizationNote": "基准用量，可根据个人口味调整",
+          "group": "调料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "用可食用的冰水泡软5克吉利丁片，沥干。",
+          "action": "泡"
+        },
+        {
+          "order": 2,
+          "instruction": "将主料和调料煮到边缘冒热气，筷子搅一下。",
+          "action": "煮",
+          "heat": "中火",
+          "check": "食材熟透"
+        },
+        {
+          "order": 3,
+          "instruction": "将吉利丁放入奶锅里，用筷子🥢搅到融化。",
+          "action": "搅",
+          "check": "融化"
+        },
+        {
+          "order": 4,
+          "instruction": "装杯，冷藏5小时。",
+          "action": "冷藏",
+          "durationSeconds": 18000
+        }
+      ],
+      "tips": "",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-127.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-667400.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-127",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "圣诞树土豆泥",
+      "cuisines": [
+        "小吃",
+        "西餐"
+      ],
+      "mealTypes": [
+        "dinner"
+      ],
+      "flavorTags": [
+        "奶香"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": null,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "土豆",
+          "amount": "1个",
+          "normalizedAmount": 1,
+          "normalizedUnit": "个",
+          "group": "主料"
+        },
+        {
+          "name": "面粉",
+          "amount": "3匙",
+          "normalizedAmount": 3,
+          "normalizedUnit": "匙",
+          "group": "主料"
+        },
+        {
+          "name": "芝麻",
+          "amount": "适量",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "辅料"
+        },
+        {
+          "name": "糖",
+          "amount": "10克",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "基准用量，可根据个人口味调整",
+          "group": "配料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "土豆去皮，切片，蒸熟；趁热压成泥。",
+          "action": "切",
+          "heat": "中火"
+        },
+        {
+          "order": 2,
+          "instruction": "把一小勺土豆泥，加些面粉，再加入牛奶；搅拌一下；（我分次加入土豆泥，这样好拌一些）。",
+          "action": "拌"
+        },
+        {
+          "order": 3,
+          "instruction": "加入剩下的土豆泥，和5克芝麻；拌匀，就成比较干的泥了。",
+          "action": "拌"
+        },
+        {
+          "order": 4,
+          "instruction": "在案板上抹些油，把土豆泥装入模型内，模型内壁也要抹些油；压好形状后，拿掉模型，小心移入煎锅内，小火煎至两面金黄即可。",
+          "action": "煎",
+          "heat": "小火",
+          "check": "两面金黄即可"
+        },
+        {
+          "order": 5,
+          "instruction": "做好以后的样子；不是很成形，因为煎的时候泥有点析出外面，但总体形还是在的。",
+          "action": "煎",
+          "heat": "中火",
+          "check": "食材表面颜色均匀"
+        }
+      ],
+      "tips": "案板一定要抹些油，模具也要抹些油；这样才好把坯移开",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-149.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-22225.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-149",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "罗宋汤",
+      "cuisines": [
+        "西餐"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "酸咸"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": null,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "牛肉",
+          "amount": "500克",
+          "normalizedAmount": 500,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "土豆",
+          "amount": "2个",
+          "normalizedAmount": 2,
+          "normalizedUnit": "个",
+          "group": "辅料"
+        },
+        {
+          "name": "胡萝卜",
+          "amount": "1个",
+          "normalizedAmount": 1,
+          "normalizedUnit": "个",
+          "group": "辅料"
+        },
+        {
+          "name": "洋葱",
+          "amount": "1个",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1个",
+          "group": "辅料"
+        },
+        {
+          "name": "圆白菜",
+          "amount": "4分之1个",
+          "normalizedAmount": 1,
+          "normalizedUnit": "个",
+          "normalizationNote": "原始用量：4分之1个",
+          "group": "辅料"
+        },
+        {
+          "name": "面粉",
+          "amount": "50克",
+          "normalizedAmount": 50,
+          "normalizedUnit": "g",
+          "group": "辅料"
+        },
+        {
+          "name": "番茄",
+          "amount": "2个",
+          "normalizedAmount": 2,
+          "normalizedUnit": "个",
+          "group": "辅料"
+        },
+        {
+          "name": "黄油",
+          "amount": "20-25克",
+          "normalizedAmount": 25,
+          "normalizedUnit": "g",
+          "normalizationNote": "原始用量：20-25克；基准用量，可根据个人口味调整",
+          "group": "调料"
+        },
+        {
+          "name": "番茄酱",
+          "amount": "70克",
+          "normalizedAmount": 70,
+          "normalizedUnit": "g",
+          "normalizationNote": "基准用量，可根据个人口味调整",
+          "group": "调料"
+        },
+        {
+          "name": "料酒",
+          "amount": "10克`",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "原始用量：10克`；基准用量，可根据个人口味调整",
+          "group": "调料"
+        },
+        {
+          "name": "胡椒粉",
+          "amount": "2克",
+          "normalizedAmount": 2,
+          "normalizedUnit": "g",
+          "normalizationNote": "基准用量，可根据个人口味调整",
+          "group": "调料"
+        },
+        {
+          "name": "盐",
+          "amount": "适量",
+          "normalizedAmount": 2,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "500克牛肉切成小块泡入清水再沥干水分。",
+          "action": "切"
+        },
+        {
+          "order": 2,
+          "instruction": "土豆胡萝卜切滚刀块，5克洋葱圆白菜切片，番茄切块。",
+          "action": "切"
+        },
+        {
+          "order": 3,
+          "instruction": "500克牛肉入清水炖煮，汤将开时撇去浮末，放入10克料酒小火炖煮1、5小时后放2克盐。",
+          "action": "煮",
+          "heat": "小火",
+          "durationSeconds": 18000,
+          "check": "食材熟透"
+        },
+        {
+          "order": 4,
+          "instruction": "放入番茄继续炖煮十几分钟，再放入土豆、胡萝卜、待土豆、胡萝快成熟时放入圆白菜和5克洋葱。",
+          "action": "煮",
+          "heat": "中火",
+          "check": "土豆、胡萝快成熟时放入圆白菜和洋葱"
+        },
+        {
+          "order": 5,
+          "instruction": "炒锅入油（25克黄油或者植物油），小火将70克番茄酱炒香倒入500克牛肉汤中。",
+          "action": "炒",
+          "utensil": "炒锅",
+          "heat": "小火",
+          "check": "炒香"
+        },
+        {
+          "order": 6,
+          "instruction": "另起`一锅，烧热后放入50克面粉，小火炒至微黄，再倒入500克牛肉汤锅中。",
+          "action": "炒",
+          "utensil": "汤锅",
+          "heat": "小火",
+          "check": "微黄"
+        },
+        {
+          "order": 7,
+          "instruction": "煮至500克牛肉土豆等食材成熟后，调入2克胡椒粉即可。",
+          "action": "煮",
+          "heat": "中火",
+          "check": "牛肉土豆等食材成熟后"
+        },
+        {
+          "order": 8,
+          "instruction": "盛入汤碗，点缀芹菜叶。",
+          "action": "盛",
+          "utensil": "碗"
+        }
+      ],
+      "tips": "炒好的面粉加水调成较稀的面糊，再倒入牛肉汤锅中",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-155.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-620320.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-155",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "鸡蛋香肠炒意面",
+      "cuisines": [
+        "主食",
+        "西餐"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "咸香"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": 30,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "意面",
+          "amount": "1把",
+          "normalizedAmount": 1,
+          "normalizedUnit": "把",
+          "group": "主料"
+        },
+        {
+          "name": "香肠",
+          "amount": "1根",
+          "normalizedAmount": 1,
+          "normalizedUnit": "根",
+          "group": "主料"
+        },
+        {
+          "name": "鸡蛋",
+          "amount": "1个",
+          "normalizedAmount": 1,
+          "normalizedUnit": "个",
+          "group": "主料"
+        },
+        {
+          "name": "青菜",
+          "amount": "1颗",
+          "normalizedAmount": 1,
+          "normalizedUnit": "颗",
+          "group": "主料"
+        },
+        {
+          "name": "鱼豆腐",
+          "amount": "2块",
+          "normalizedAmount": 2,
+          "normalizedUnit": "块",
+          "group": "主料"
+        },
+        {
+          "name": "香菇",
+          "amount": "2个",
+          "normalizedAmount": 2,
+          "normalizedUnit": "个",
+          "group": "主料"
+        },
+        {
+          "name": "葱",
+          "amount": "1根",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1根",
+          "group": "辅料"
+        },
+        {
+          "name": "盐",
+          "amount": "1勺2次加",
+          "normalizedAmount": 2,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1勺2次加",
+          "group": "调料"
+        },
+        {
+          "name": "蚝油",
+          "amount": "适量",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        },
+        {
+          "name": "酱油",
+          "amount": "适量",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "水开加半勺盐煮意面20分钟，在煮一下鱼豆腐。",
+          "action": "煮",
+          "heat": "中火",
+          "durationSeconds": 1200,
+          "check": "食材熟透"
+        },
+        {
+          "order": 2,
+          "instruction": "同时所有蔬菜切丝或者切丁都可以，自己方便就好。",
+          "action": "切"
+        },
+        {
+          "order": 3,
+          "instruction": "热锅热油煎个蛋，捞出，切点5克葱段。",
+          "action": "切",
+          "heat": "中火"
+        },
+        {
+          "order": 4,
+          "instruction": "把配菜翻炒好了后加意面。",
+          "action": "炒",
+          "heat": "中火",
+          "check": "食材受热均匀"
+        },
+        {
+          "order": 5,
+          "instruction": "加2克盐，10克酱油，10克蚝油，继续翻炒2分钟。",
+          "action": "炒",
+          "heat": "中火",
+          "durationSeconds": 120,
+          "check": "食材受热均匀"
+        },
+        {
+          "order": 6,
+          "instruction": "摆盘后撒点熟芝麻，不放也可以。",
+          "action": "放",
+          "utensil": "盘"
+        }
+      ],
+      "tips": "",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-163.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-615429.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-163",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "简易版桃酥",
+      "cuisines": [
+        "烘焙"
+      ],
+      "mealTypes": [],
+      "flavorTags": [
+        "甜味"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": null,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "面粉",
+          "amount": "200克",
+          "normalizedAmount": 200,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "玉米油",
+          "amount": "100克",
+          "normalizedAmount": 100,
+          "normalizedUnit": "g",
+          "normalizationNote": "基准用量，可根据个人口味调整",
+          "group": "辅料"
+        },
+        {
+          "name": "糖",
+          "amount": "60克",
+          "normalizedAmount": 60,
+          "normalizedUnit": "g",
+          "normalizationNote": "基准用量，可根据个人口味调整",
+          "group": "调料"
+        },
+        {
+          "name": "鸡蛋",
+          "amount": "1个",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1个",
+          "group": "调料"
+        },
+        {
+          "name": "泡打粉",
+          "amount": "3克",
+          "normalizedAmount": 3,
+          "normalizedUnit": "g",
+          "normalizationNote": "基准用量，可根据个人口味调整",
+          "group": "调料"
+        },
+        {
+          "name": "小苏打",
+          "amount": "1克",
+          "normalizedAmount": 1,
+          "normalizedUnit": "g",
+          "normalizationNote": "基准用量，可根据个人口味调整",
+          "group": "调料"
+        },
+        {
+          "name": "芝麻",
+          "amount": "适量",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "1.100克玉米油+白60克糖搅拌至60克糖融化，打入5克鸡蛋搅拌均匀。",
+          "action": "拌",
+          "check": "糖融化"
+        },
+        {
+          "order": 2,
+          "instruction": "2.倒入低筋200克面粉、3克泡打粉、1克小苏打，翻拌成松散面团，不要过度揉面。",
+          "action": "泡"
+        },
+        {
+          "order": 3,
+          "instruction": "3.分成40g一个小面团，搓圆按压成圆饼。",
+          "action": "压"
+        },
+        {
+          "order": 4,
+          "instruction": "4.表面刷一层蛋液，撒上5克芝麻。",
+          "action": "撒"
+        },
+        {
+          "order": 5,
+          "instruction": "5.烤箱预热170℃，烘烤18‑20分钟，烤至表面金黄。",
+          "action": "烤",
+          "utensil": "烤箱",
+          "heat": "中火",
+          "durationSeconds": 1200,
+          "check": "表面金黄"
+        }
+      ],
+      "tips": "▪️面团松散即可，揉太光滑成品不酥脆▪️出炉一定要彻底放凉，凉透才会酥到掉渣▪️不爱吃甜可以减糖到50g，咸甜口感更温润",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-182.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-667913.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-182",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "木耳拌百合",
+      "cuisines": [
+        "热菜",
+        "家常菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "清淡"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": 10,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "黑木耳",
+          "amount": "5g",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "鲜百合",
+          "amount": "1/3个",
+          "normalizedAmount": 3,
+          "normalizedUnit": "个",
+          "normalizationNote": "原始用量：1/3个",
+          "group": "主料"
+        },
+        {
+          "name": "盐",
+          "amount": "1g",
+          "normalizedAmount": 1,
+          "normalizedUnit": "g",
+          "normalizationNote": "基准用量，可根据个人口味调整",
+          "group": "调料"
+        },
+        {
+          "name": "糖",
+          "amount": "1g",
+          "normalizedAmount": 1,
+          "normalizedUnit": "g",
+          "normalizationNote": "基准用量，可根据个人口味调整",
+          "group": "调料"
+        },
+        {
+          "name": "醋",
+          "amount": "1g",
+          "normalizedAmount": 1,
+          "normalizedUnit": "g",
+          "normalizationNote": "基准用量，可根据个人口味调整",
+          "group": "调料"
+        },
+        {
+          "name": "生抽",
+          "amount": "1g",
+          "normalizedAmount": 1,
+          "normalizedUnit": "g",
+          "normalizationNote": "基准用量，可根据个人口味调整",
+          "group": "调料"
+        },
+        {
+          "name": "橄榄油",
+          "amount": "1g",
+          "normalizedAmount": 1,
+          "normalizedUnit": "g",
+          "normalizationNote": "基准用量，可根据个人口味调整",
+          "group": "调料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "5克黑木耳温水泡20分钟，去根蒂洗净，鲜百合剥开成小片，清水浸泡20分钟，沉淀泥土后洗净。",
+          "action": "洗",
+          "durationSeconds": 1200
+        },
+        {
+          "order": 2,
+          "instruction": "锅里加水煮沸，放入5克黑木耳煮3分钟，再加入百合煮30秒，关火全部捞出。",
+          "action": "煮",
+          "heat": "中火",
+          "durationSeconds": 180,
+          "check": "食材熟透"
+        },
+        {
+          "order": 3,
+          "instruction": "把调味料加入拌匀，口味可以调整成自己喜欢的，比如辣口味等。",
+          "action": "拌"
+        }
+      ],
+      "tips": "夏日凉拌，爽口开胃",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-208.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-667944.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-208",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "香煎黄花魚",
+      "cuisines": [
+        "热菜",
+        "家常菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "原味"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": 10,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "黄花魚",
+          "amount": "1条",
+          "normalizedAmount": 1,
+          "normalizedUnit": "条",
+          "group": "主料"
+        },
+        {
+          "name": "葱花",
+          "amount": "适量",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "辅料"
+        },
+        {
+          "name": "姜碎",
+          "amount": "适量",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "辅料"
+        },
+        {
+          "name": "小米辣",
+          "amount": "适量",
+          "normalizedAmount": "适量",
+          "group": "辅料"
+        },
+        {
+          "name": "香菜(点缀)",
+          "amount": "少许",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：少许",
+          "group": "辅料"
+        },
+        {
+          "name": "食用油",
+          "amount": "适量",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        },
+        {
+          "name": "料酒",
+          "amount": "适量",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        },
+        {
+          "name": "盐",
+          "amount": "适量",
+          "normalizedAmount": 2,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "将黄花魚洗净去内脏及魚鳃，从魚腹切开，魚身切斜刀花易入味，加入10克料酒、2克盐、5克葱花、姜腌制15分钟。",
+          "action": "切",
+          "durationSeconds": 900,
+          "check": "入味"
+        },
+        {
+          "order": 2,
+          "instruction": "锅中放入10克食用油烧热，将黄花魚放入锅中煎制。",
+          "action": "煎",
+          "heat": "中火",
+          "check": "食材表面颜色均匀"
+        },
+        {
+          "order": 3,
+          "instruction": "翻面煎制至颜色金黄并熟透即可(成品图无意中删掉了)。",
+          "action": "煎",
+          "heat": "中火",
+          "check": "颜色金黄并熟透即可(成品图无意中删掉了)"
+        }
+      ],
+      "tips": "",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-209.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-667800.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-209",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "绿茄子炒彩椒",
+      "cuisines": [
+        "热菜",
+        "家常菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "原味"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": 10,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "绿茄子",
+          "amount": "1个",
+          "normalizedAmount": 1,
+          "normalizedUnit": "个",
+          "group": "主料"
+        },
+        {
+          "name": "黄彩椒",
+          "amount": "1个",
+          "normalizedAmount": 1,
+          "normalizedUnit": "个",
+          "group": "主料"
+        },
+        {
+          "name": "蒜蓉",
+          "amount": "适量",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "辅料"
+        },
+        {
+          "name": "食用油",
+          "amount": "适量",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        },
+        {
+          "name": "生抽",
+          "amount": "适量",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        },
+        {
+          "name": "料酒",
+          "amount": "适量",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        },
+        {
+          "name": "盐",
+          "amount": "适量",
+          "normalizedAmount": 2,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        },
+        {
+          "name": "鸡精",
+          "amount": "适量",
+          "normalizedAmount": 1,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "绿茄子洗净先切片。",
+          "action": "切"
+        },
+        {
+          "order": 2,
+          "instruction": "再切成丝状。",
+          "action": "切"
+        },
+        {
+          "order": 3,
+          "instruction": "锅中放入10克食用油烧热，下入禄茄子，10克料酒、姜粉、10克生抽、2克盐、1克鸡精、放入黄彩椒同炒。",
+          "action": "炒",
+          "heat": "中火",
+          "check": "食材受热均匀"
+        },
+        {
+          "order": 4,
+          "instruction": "菜品盛入盘中，颜色美观，营养丰富。",
+          "action": "盛",
+          "utensil": "盘"
+        }
+      ],
+      "tips": "",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-231.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-667445.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-231",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "火爆腰花",
+      "cuisines": [
+        "热菜",
+        "川菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "微辣"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": null,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "猪腰子",
+          "amount": "2个",
+          "normalizedAmount": 2,
+          "normalizedUnit": "个",
+          "group": "主料"
+        },
+        {
+          "name": "大蒜苗",
+          "amount": "2根",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：2根",
+          "group": "辅料"
+        },
+        {
+          "name": "淀粉",
+          "amount": "适量",
+          "normalizedAmount": "适量",
+          "group": "辅料"
+        },
+        {
+          "name": "干辣椒面",
+          "amount": "适量",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "辅料"
+        },
+        {
+          "name": "郫县豆瓣",
+          "amount": "适量",
+          "normalizedAmount": "适量",
+          "group": "辅料"
+        },
+        {
+          "name": "大蒜",
+          "amount": "适量",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "辅料"
+        },
+        {
+          "name": "老姜",
+          "amount": "适量",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "辅料"
+        },
+        {
+          "name": "酱油",
+          "amount": "适量",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "辅料"
+        },
+        {
+          "name": "盐",
+          "amount": "适量",
+          "normalizedAmount": 2,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "辅料"
+        },
+        {
+          "name": "白糖",
+          "amount": "适量",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "辅料"
+        },
+        {
+          "name": "醋",
+          "amount": "适量",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "辅料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "将原料提前准备好，腰花处理干净，用刀从中间花开，去除掉腰臊(一定要去干净），冲洗干净，将切开腰子的那面先用刀切成斜纹成十字花刀，再切成方形小块备用。",
+          "action": "切"
+        },
+        {
+          "order": 2,
+          "instruction": "将切好的腰花，用料酒、湿淀粉和2克盐抓匀，同时调好辅料，辅料包括：郫县豆瓣、5克干辣椒面、2克盐、5克白糖、10克酱油、10克醋。",
+          "action": "切"
+        },
+        {
+          "order": 3,
+          "instruction": "锅内烧热油，将切好的大蒜、姜米下锅爆香后倒入准备好的腰花，快速翻炒4、5下后，马上将调好的辅料和5克大蒜苗倒入锅中，再翻炒4、5下即可出锅。",
+          "action": "切",
+          "heat": "中火"
+        },
+        {
+          "order": 4,
+          "instruction": "迅速将炒好的腰花装盘即可。",
+          "action": "炒",
+          "utensil": "盘",
+          "heat": "中火",
+          "check": "食材受热均匀"
+        }
+      ],
+      "tips": "1.猪腰一定要去除腰臊，就是里面白色的东西，不然整盘菜都毁了2.炒菜一定用大火，快火急炒，切忌小火，否则成菜老硬无脆嫩之感",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-244.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-314382.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-244",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "子姜鸭",
+      "cuisines": [
+        "热菜",
+        "川菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "中辣"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": 30,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "鸭",
+          "amount": "1只",
+          "normalizedAmount": 1,
+          "normalizedUnit": "只",
+          "group": "主料"
+        },
+        {
+          "name": "子姜",
+          "amount": "适量",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "主料"
+        },
+        {
+          "name": "青椒",
+          "amount": "适量",
+          "normalizedAmount": "适量",
+          "group": "辅料"
+        },
+        {
+          "name": "红椒",
+          "amount": "适量",
+          "normalizedAmount": "适量",
+          "group": "辅料"
+        },
+        {
+          "name": "葱",
+          "amount": "适量",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        },
+        {
+          "name": "姜",
+          "amount": "适量",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        },
+        {
+          "name": "蒜",
+          "amount": "适量",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        },
+        {
+          "name": "料酒",
+          "amount": "适量",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        },
+        {
+          "name": "豆瓣酱",
+          "amount": "1勺",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1勺",
+          "group": "调料"
+        },
+        {
+          "name": "盐",
+          "amount": "适量",
+          "normalizedAmount": 2,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        },
+        {
+          "name": "啤酒",
+          "amount": "1罐",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1罐",
+          "group": "调料"
+        },
+        {
+          "name": "泡椒",
+          "amount": "适量",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        },
+        {
+          "name": "泡姜",
+          "amount": "适量",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "准备一只鲜鸭。",
+          "action": "备"
+        },
+        {
+          "order": 2,
+          "instruction": "将其剁成小块后清洗干净。",
+          "action": "洗"
+        },
+        {
+          "order": 3,
+          "instruction": "放入锅内，加入5克葱5克姜10克料酒焯水去腥。",
+          "action": "焯",
+          "heat": "中火",
+          "check": "食材变色且断生"
+        },
+        {
+          "order": 4,
+          "instruction": "将准备好的5克泡椒和泡5克姜切好备用。",
+          "action": "切"
+        },
+        {
+          "order": 5,
+          "instruction": "锅内烧油油热，下入焯好水的鸭肉。",
+          "action": "焯",
+          "heat": "中火",
+          "check": "食材变色且断生"
+        },
+        {
+          "order": 6,
+          "instruction": "煸至两面金黄后下入准备好的5克泡椒和泡5克姜，翻炒一分钟左右。",
+          "action": "泡",
+          "heat": "中火",
+          "durationSeconds": 60,
+          "check": "两面金黄后下入准备好的泡椒和泡姜"
+        },
+        {
+          "order": 7,
+          "instruction": "下入准备好的5克葱5克姜5克蒜继续翻炒两分钟。",
+          "action": "炒",
+          "heat": "中火",
+          "durationSeconds": 120,
+          "check": "食材受热均匀"
+        },
+        {
+          "order": 8,
+          "instruction": "倒入我们事先准备好的籽5克姜片，翻炒一分钟左右。",
+          "action": "炒",
+          "heat": "中火",
+          "durationSeconds": 60,
+          "check": "食材受热均匀"
+        },
+        {
+          "order": 9,
+          "instruction": "放入一勺豆瓣酱。",
+          "action": "放"
+        },
+        {
+          "order": 10,
+          "instruction": "加入2克盐，翻炒一分钟左右。",
+          "action": "炒",
+          "heat": "中火",
+          "durationSeconds": 60,
+          "check": "食材受热均匀"
+        },
+        {
+          "order": 11,
+          "instruction": "倒入事先准备好的10克啤酒，再加入少许水，盖上锅盖煮至收汁。",
+          "action": "煮",
+          "heat": "中火",
+          "check": "收汁"
+        },
+        {
+          "order": 12,
+          "instruction": "放入准备好的青红椒圈；翻炒两分钟左右就可以出锅咯。",
+          "action": "炒",
+          "heat": "中火",
+          "durationSeconds": 120,
+          "check": "食材受热均匀"
+        }
+      ],
+      "tips": "",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-258.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-611192.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-258",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "坛子肉",
+      "cuisines": [
+        "热菜",
+        "鲁菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "酱香"
+      ],
+      "difficulty": "advanced",
+      "estimatedMinutes": null,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "猪硬肋肉",
+          "amount": "5000g",
+          "normalizedAmount": 5000,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "冰糖",
+          "amount": "15g",
+          "normalizedAmount": 15,
+          "normalizedUnit": "g",
+          "normalizationNote": "基准用量，可根据个人口味调整",
+          "group": "主料"
+        },
+        {
+          "name": "肉桂",
+          "amount": "5g",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "group": "辅料"
+        },
+        {
+          "name": "葱",
+          "amount": "10g",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "基准用量，可根据个人口味调整",
+          "group": "辅料"
+        },
+        {
+          "name": "姜",
+          "amount": "10g",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "基准用量，可根据个人口味调整",
+          "group": "辅料"
+        },
+        {
+          "name": "酱油",
+          "amount": "100g",
+          "normalizedAmount": 100,
+          "normalizedUnit": "g",
+          "normalizationNote": "基准用量，可根据个人口味调整",
+          "group": "辅料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "将5000克猪硬肋肉洗净，切成2厘米见方的块，入沸水锅中焯5分钟捞出，用清水冲洗干净。",
+          "action": "切",
+          "heat": "中火",
+          "durationSeconds": 300
+        },
+        {
+          "order": 2,
+          "instruction": "10克葱切成4厘米长的段，10克姜切成大片，用麻绳捆扎好。",
+          "action": "切"
+        },
+        {
+          "order": 3,
+          "instruction": "把肉块放入瓷坛子中，加15克冰糖、5克肉桂、10克葱、10克姜、100克酱油及清水1000克，以浸过肉块为度，用盘子盖严坛子口，置中火上烧开5分钟，改小火煨炖约3小时，至汤浓肉烂即可。",
+          "action": "炖",
+          "utensil": "盘",
+          "heat": "中火",
+          "durationSeconds": 300,
+          "check": "汤浓肉烂即可"
+        },
+        {
+          "order": 4,
+          "instruction": "晾10分钟，把肉块与汤盛入汤碗内，也可在坛底用盘子托着原坛子一块上桌。",
+          "action": "盛",
+          "utensil": "碗",
+          "durationSeconds": 600
+        }
+      ],
+      "tips": "1.入瓷坛子前的方块肉要用沸水焯去血污；2.煨炖时要用小火，坛口要盖严",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-295.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-583047.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-295",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "四喜丸子",
+      "cuisines": [
+        "热菜",
+        "鲁菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "咸香"
+      ],
+      "difficulty": "normal",
+      "estimatedMinutes": 60,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "猪肉馅",
+          "amount": "600克",
+          "normalizedAmount": 600,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "荸荠",
+          "amount": "50克",
+          "normalizedAmount": 50,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "淀粉",
+          "amount": "30克",
+          "normalizedAmount": 30,
+          "normalizedUnit": "g",
+          "group": "辅料"
+        },
+        {
+          "name": "蛋清",
+          "amount": "1个",
+          "normalizedAmount": 1,
+          "normalizedUnit": "个",
+          "group": "辅料"
+        },
+        {
+          "name": "盐",
+          "amount": "15克",
+          "normalizedAmount": 15,
+          "normalizedUnit": "g",
+          "normalizationNote": "基准用量，可根据个人口味调整",
+          "group": "调料"
+        },
+        {
+          "name": "酱油",
+          "amount": "30毫升",
+          "normalizedAmount": 30,
+          "normalizedUnit": "g",
+          "normalizationNote": "按液体近似密度换算；可根据个人口味调整；原始用量：30毫升",
+          "group": "调料"
+        },
+        {
+          "name": "十三香",
+          "amount": "1克",
+          "normalizedAmount": 1,
+          "normalizedUnit": "g",
+          "normalizationNote": "基准用量，可根据个人口味调整",
+          "group": "调料"
+        },
+        {
+          "name": "葱姜水",
+          "amount": "150毫升",
+          "normalizedAmount": 150,
+          "normalizedUnit": "g",
+          "normalizationNote": "按液体近似密度换算；可根据个人口味调整；原始用量：150毫升",
+          "group": "调料"
+        },
+        {
+          "name": "油",
+          "amount": "适量",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        },
+        {
+          "name": "生抽",
+          "amount": "20毫升",
+          "normalizedAmount": 20,
+          "normalizedUnit": "g",
+          "normalizationNote": "按液体近似密度换算；可根据个人口味调整；原始用量：20毫升",
+          "group": "调料"
+        },
+        {
+          "name": "香油",
+          "amount": "10毫升",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "按液体近似密度换算；可根据个人口味调整；原始用量：10毫升",
+          "group": "调料"
+        },
+        {
+          "name": "大料",
+          "amount": "3个",
+          "normalizedAmount": 1,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：3个",
+          "group": "调料"
+        },
+        {
+          "name": "桂皮",
+          "amount": "1个",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1个",
+          "group": "调料"
+        },
+        {
+          "name": "花椒",
+          "amount": "若干",
+          "normalizedAmount": 1,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：若干",
+          "group": "调料"
+        },
+        {
+          "name": "葱",
+          "amount": "2段",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：2段",
+          "group": "调料"
+        },
+        {
+          "name": "水量",
+          "amount": "800毫升",
+          "normalizedAmount": 800,
+          "normalizedUnit": "g",
+          "normalizationNote": "按液体近似密度换算；可根据个人口味调整；原始用量：800毫升",
+          "group": "调料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "5克葱切断，姜切片，50克荸荠压碎。",
+          "action": "切"
+        },
+        {
+          "order": 2,
+          "instruction": "把葱和姜放入锅中，倒入适量水，启动任意功能键，将150克葱姜水烧开后，倒入碗中150毫升备用。",
+          "action": "倒",
+          "utensil": "碗",
+          "heat": "中火",
+          "check": "烧开"
+        },
+        {
+          "order": 3,
+          "instruction": "肉馅放入干净容器中，加入10克盐、30克淀粉、1克十三香、10毫升香10克油、1个蛋清抓拌均匀。",
+          "action": "拌"
+        },
+        {
+          "order": 4,
+          "instruction": "再放入30克酱10克油继续抓拌，然后将150毫升葱姜水分两次加入肉馅中，摔打上劲儿。",
+          "action": "拌"
+        },
+        {
+          "order": 5,
+          "instruction": "加入50克荸荠碎，抓拌均匀，然后团成大小均匀的肉丸。",
+          "action": "拌"
+        },
+        {
+          "order": 6,
+          "instruction": "锅内倒入10克油，油热后放入肉丸，炸至金黄捞出。",
+          "action": "炸",
+          "heat": "中火",
+          "check": "金黄捞出"
+        },
+        {
+          "order": 7,
+          "instruction": "剩余的150克葱姜水，直接放入1克花椒、5克桂皮、葱段、1克大料，炸好的丸子和水。",
+          "action": "炸",
+          "heat": "中火",
+          "check": "食材表面颜色均匀"
+        },
+        {
+          "order": 8,
+          "instruction": "盖好锅盖，启动【炖排骨】功能。",
+          "action": "炖",
+          "heat": "中火",
+          "check": "食材熟透"
+        },
+        {
+          "order": 9,
+          "instruction": "烹饪结束盛出即可。",
+          "action": "盛"
+        }
+      ],
+      "tips": "",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-296.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-579704.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-296",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "糖醋鱼",
+      "cuisines": [
+        "热菜",
+        "鲁菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "酸甜"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": 3,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "鳊鱼",
+          "amount": "1条",
+          "normalizedAmount": 1,
+          "normalizedUnit": "条",
+          "group": "主料"
+        },
+        {
+          "name": "料酒",
+          "amount": "适量",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "辅料"
+        },
+        {
+          "name": "番茄酱",
+          "amount": "适量",
+          "normalizedAmount": "适量",
+          "group": "辅料"
+        },
+        {
+          "name": "白砂糖",
+          "amount": "适量",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "辅料"
+        },
+        {
+          "name": "鸡精",
+          "amount": "适量",
+          "normalizedAmount": 1,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "辅料"
+        },
+        {
+          "name": "水淀粉",
+          "amount": "适量",
+          "normalizedAmount": "适量",
+          "group": "辅料"
+        },
+        {
+          "name": "葱姜蒜",
+          "amount": "适量",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "辅料"
+        },
+        {
+          "name": "食用油",
+          "amount": "适量",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        },
+        {
+          "name": "盐",
+          "amount": "适量",
+          "normalizedAmount": 2,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "鱼清理干净，先用10克料酒2克盐姜丝腌制15分钟。",
+          "action": "腌",
+          "durationSeconds": 900
+        },
+        {
+          "order": 2,
+          "instruction": "锅中油预热，鱼两边煎至微黄，捞出备用。",
+          "action": "煎",
+          "heat": "中火",
+          "check": "微黄"
+        },
+        {
+          "order": 3,
+          "instruction": "锅中油预热，放入姜蒜炒香。",
+          "action": "炒",
+          "heat": "中火",
+          "check": "炒香"
+        },
+        {
+          "order": 4,
+          "instruction": "放入番茄酱翻炒。",
+          "action": "炒",
+          "heat": "中火",
+          "check": "食材受热均匀"
+        },
+        {
+          "order": 5,
+          "instruction": "放入一勺白砂糖翻炒，倒入适量清水。",
+          "action": "炒",
+          "heat": "中火",
+          "check": "食材受热均匀"
+        },
+        {
+          "order": 6,
+          "instruction": "放入一勺盐。",
+          "action": "放"
+        },
+        {
+          "order": 7,
+          "instruction": "放入一勺鸡精，水淀粉煮开。",
+          "action": "煮",
+          "heat": "中火",
+          "check": "煮开"
+        },
+        {
+          "order": 8,
+          "instruction": "煮好的汤汁依次浇在鱼身上即可。",
+          "action": "煮",
+          "heat": "中火",
+          "check": "食材熟透"
+        }
+      ],
+      "tips": "",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-303.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-565876.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-303",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "桂花糖芋艿",
+      "cuisines": [
+        "家常菜",
+        "苏菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "甜香"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": 3,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "芋艿",
+          "amount": "500克",
+          "normalizedAmount": 500,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "红糖",
+          "amount": "4小块",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：4小块",
+          "group": "辅料"
+        },
+        {
+          "name": "冰糖",
+          "amount": "1块",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1块",
+          "group": "辅料"
+        },
+        {
+          "name": "藕粉",
+          "amount": "25克",
+          "normalizedAmount": 25,
+          "normalizedUnit": "g",
+          "group": "辅料"
+        },
+        {
+          "name": "食用碱面",
+          "amount": "少许",
+          "normalizedAmount": "少许",
+          "group": "辅料"
+        },
+        {
+          "name": "干桂花",
+          "amount": "少许",
+          "normalizedAmount": "少许",
+          "group": "辅料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "菜场买回的500克芋艿用清水清洗干净，我用的牙刷来刷的。",
+          "action": "洗"
+        },
+        {
+          "order": 2,
+          "instruction": "在臻米脱糖电饭煲的食品级304不锈钢材质内胆中加入600ML清水，放入配套的大滤网。",
+          "action": "放",
+          "utensil": "电饭煲"
+        },
+        {
+          "order": 3,
+          "instruction": "把洗干净的500克芋艿放在大滤网上。",
+          "action": "洗"
+        },
+        {
+          "order": 4,
+          "instruction": "按下“蒸菜”键，常规是25分钟，可以通过“+、-”键来调整时间，我把时间减到15分钟。",
+          "action": "蒸",
+          "heat": "中火",
+          "durationSeconds": 1500,
+          "check": "食材熟透"
+        },
+        {
+          "order": 5,
+          "instruction": "时间到，这是蒸好的500克芋艿，因为还要炖煮，所以没有彻底蒸软。",
+          "action": "煮",
+          "heat": "中火",
+          "check": "食材熟透"
+        },
+        {
+          "order": 6,
+          "instruction": "把500克芋艿的外皮剥掉，冲洗一下，友情提醒最好戴上手套。",
+          "action": "洗"
+        },
+        {
+          "order": 7,
+          "instruction": "把剥了皮的500克芋艿切成滚刀块，大小要均匀。",
+          "action": "切"
+        },
+        {
+          "order": 8,
+          "instruction": "臻米脱糖电饭煲的不锈钢内胆中重新加入适量清水、5克冰糖、5克红糖和少许食用碱面搅匀。",
+          "action": "搅",
+          "utensil": "电饭煲"
+        },
+        {
+          "order": 9,
+          "instruction": "接着加入切小的500克芋艿块。",
+          "action": "切"
+        },
+        {
+          "order": 10,
+          "instruction": "选择“汤粥”键，开始炖煮，我炖了20分钟左右，用筷子试了一下能轻松穿过即可。",
+          "action": "煮",
+          "heat": "中火",
+          "durationSeconds": 1200,
+          "check": "食材熟透"
+        },
+        {
+          "order": 11,
+          "instruction": "取一小碗，倒入25克藕粉。",
+          "action": "倒",
+          "utensil": "碗"
+        },
+        {
+          "order": 12,
+          "instruction": "加入少许冷开水，先把25克藕粉化开。",
+          "action": "加入"
+        },
+        {
+          "order": 13,
+          "instruction": "接着把化开的25克藕粉倒入糖水500克芋艿中。",
+          "action": "倒"
+        },
+        {
+          "order": 14,
+          "instruction": "用勺子轻轻搅拌均匀，看到5克红糖水开始变浓稠有光泽，即可关掉电源。",
+          "action": "拌",
+          "check": "浓稠"
+        },
+        {
+          "order": 15,
+          "instruction": "出锅装碗，可以加点糖桂花酱，再撒上少许干桂花即可享用了。",
+          "action": "撒",
+          "utensil": "碗"
+        }
+      ],
+      "tips": "如果煮好的糖水甜度不够，可以再加入少许糖桂花酱，再撒上少许干桂花；如果够甜了，就直接撒干桂花；个人觉得一定要撒干桂花，因为它的香味比糖桂花酱香多了；如果家里没有藕粉，那只能用淀粉来勾芡了，不过颜色没这么好看有光泽",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-306.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-484216.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-306",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "五香虎皮鸡蛋",
+      "cuisines": [
+        "热菜",
+        "家常菜",
+        "苏菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "咸鲜"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": null,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "鸡蛋",
+          "amount": "7个",
+          "normalizedAmount": 7,
+          "normalizedUnit": "个",
+          "group": "主料"
+        },
+        {
+          "name": "菜籽油",
+          "amount": "适量",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "辅料"
+        },
+        {
+          "name": "高汤",
+          "amount": "1碗",
+          "normalizedAmount": 1,
+          "normalizedUnit": "碗",
+          "group": "辅料"
+        },
+        {
+          "name": "生抽",
+          "amount": "2勺",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：2勺",
+          "group": "辅料"
+        },
+        {
+          "name": "老抽",
+          "amount": "2勺",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：2勺",
+          "group": "辅料"
+        },
+        {
+          "name": "料酒",
+          "amount": "1勺",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1勺",
+          "group": "辅料"
+        },
+        {
+          "name": "冰糖",
+          "amount": "1块",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1块",
+          "group": "辅料"
+        },
+        {
+          "name": "料包",
+          "amount": "1个",
+          "normalizedAmount": 1,
+          "normalizedUnit": "个",
+          "group": "辅料"
+        },
+        {
+          "name": "姜片",
+          "amount": "3片",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：3片",
+          "group": "辅料"
+        },
+        {
+          "name": "盐",
+          "amount": "少许",
+          "normalizedAmount": 2,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：少许",
+          "group": "辅料"
+        },
+        {
+          "name": "葱",
+          "amount": "1棵",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1棵",
+          "group": "辅料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "鸡蛋放入水中煮熟，剥去外壳。",
+          "action": "煮",
+          "heat": "中火",
+          "check": "食材熟透"
+        },
+        {
+          "order": 2,
+          "instruction": "把剥好的鸡蛋放入容器中加点10克生抽、10克老抽和水腌制1小时，最后中途能翻面。",
+          "action": "腌",
+          "durationSeconds": 3600
+        },
+        {
+          "order": 3,
+          "instruction": "这是我腌了2小时后的鸡蛋，取出沥干水分。",
+          "action": "腌",
+          "durationSeconds": 7200
+        },
+        {
+          "order": 4,
+          "instruction": "锅中加入高汤、10克生抽、10克老抽、5克葱姜、5克冰糖、2克盐和料包（八角、桂皮、香叶、花椒）煮沸。",
+          "action": "煮",
+          "heat": "中火",
+          "check": "食材熟透"
+        },
+        {
+          "order": 5,
+          "instruction": "倒入碗中晾凉成卤汁。",
+          "action": "倒",
+          "utensil": "碗"
+        },
+        {
+          "order": 6,
+          "instruction": "锅中加热10克菜籽油，放入沥干水分的鸡蛋。",
+          "action": "放",
+          "heat": "中火"
+        },
+        {
+          "order": 7,
+          "instruction": "煎至外皮虎皮色即可。",
+          "action": "煎",
+          "heat": "中火",
+          "check": "外皮虎皮色即可"
+        },
+        {
+          "order": 8,
+          "instruction": "捞出马上放入卤汁中浸泡半小时。",
+          "action": "泡",
+          "durationSeconds": 1800
+        },
+        {
+          "order": 9,
+          "instruction": "捞出即可食用。",
+          "action": "捞"
+        }
+      ],
+      "tips": "鸡蛋先用生抽、老抽腌制是为了煎出好看的虎皮色，因为浸泡的酱油水没有把鸡蛋浸没，所以中途最好能帮鸡蛋翻翻面；剩下的卤水可以继续使用，卤牛肉、熏鱼、豆干都可以",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-307.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-436479.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-307",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "糖醋排骨",
+      "cuisines": [
+        "热菜",
+        "鲁菜",
+        "苏菜"
+      ],
+      "mealTypes": [
+        "lunch"
+      ],
+      "flavorTags": [
+        "酸甜"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": 3,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "小排",
+          "amount": "500克",
+          "normalizedAmount": 500,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "料酒",
+          "amount": "一汤匙",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：一汤匙",
+          "group": "辅料"
+        },
+        {
+          "name": "生抽",
+          "amount": "一汤匙",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：一汤匙",
+          "group": "辅料"
+        },
+        {
+          "name": "老抽",
+          "amount": "半汤匙",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：半汤匙",
+          "group": "辅料"
+        },
+        {
+          "name": "香醋",
+          "amount": "三汤匙分两次放",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：三汤匙分两次放",
+          "group": "辅料"
+        },
+        {
+          "name": "糖",
+          "amount": "三汤匙",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：三汤匙",
+          "group": "辅料"
+        },
+        {
+          "name": "盐",
+          "amount": "半茶匙",
+          "normalizedAmount": 2,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：半茶匙",
+          "group": "辅料"
+        },
+        {
+          "name": "味精",
+          "amount": "半茶匙",
+          "normalizedAmount": 1,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：半茶匙",
+          "group": "辅料"
+        },
+        {
+          "name": "芝麻",
+          "amount": "半茶匙",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：半茶匙",
+          "group": "辅料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "小排500克焯水后，煮三十分钟，肉汤可以煮面条，别倒掉了。",
+          "action": "焯",
+          "heat": "中火",
+          "durationSeconds": 600,
+          "check": "食材变色且断生"
+        },
+        {
+          "order": 2,
+          "instruction": "用一汤匙10克料酒，一汤匙10克生抽，半汤匙10克老抽，二汤匙10克香醋（不是白醋）腌渍20分钟。",
+          "action": "腌",
+          "durationSeconds": 1200
+        },
+        {
+          "order": 3,
+          "instruction": "捞出洗净控水备用，炸制金黄，油别放多，可以省油，只要翻身的勤就好了。",
+          "action": "洗",
+          "heat": "中火",
+          "check": "金黄"
+        },
+        {
+          "order": 4,
+          "instruction": "锅内放排骨，腌排骨的水，三汤勺白5克糖（大胆的放5克糖吧，三汤匙，别怕多）；半碗肉汤大火烧开，调入半茶匙2克盐提味。",
+          "action": "腌",
+          "utensil": "碗",
+          "heat": "大火",
+          "check": "烧开"
+        },
+        {
+          "order": 5,
+          "instruction": "小火焖十分钟大火收汁，收汁的时候最后加一汤匙10克香醋，那个酸甜口就出来了。",
+          "action": "收汁",
+          "heat": "小火",
+          "durationSeconds": 600,
+          "check": "汤汁浓稠"
+        },
+        {
+          "order": 6,
+          "instruction": "临出锅撒葱花5克芝麻，1克味精。",
+          "action": "撒"
+        }
+      ],
+      "tips": "备注——窍门三个：1，如何外酥里嫩——煮30分钟，这样再大火热油炸到外面焦黄，就外酥里嫩了；如果用生排骨直接炸，容易老2，为啥要腌渍，因为热锅热油迅速封住了肉外表，做糖醋汁的时候不容易吸收进去，排骨里面有肉腥味3，怎么炸排骨；——大火猛催，反正已经煮了三十分钟，早熟了，所以只要保证外面脆就可以了",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-317.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-9227.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-317",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "清炖狮子头",
+      "cuisines": [
+        "热菜",
+        "家常菜",
+        "苏菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "咸鲜"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": null,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "五花肉",
+          "amount": "200g",
+          "normalizedAmount": 200,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "荸荠",
+          "amount": "50g",
+          "normalizedAmount": 50,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "猪骨",
+          "amount": "250g",
+          "normalizedAmount": 250,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "大白菜",
+          "amount": "4块",
+          "normalizedAmount": 4,
+          "normalizedUnit": "块",
+          "group": "主料"
+        },
+        {
+          "name": "上海青",
+          "amount": "2颗",
+          "normalizedAmount": 2,
+          "normalizedUnit": "颗",
+          "group": "主料"
+        },
+        {
+          "name": "盐",
+          "amount": "5g",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "基准用量，可根据个人口味调整",
+          "group": "辅料"
+        },
+        {
+          "name": "淀粉",
+          "amount": "3g",
+          "normalizedAmount": 3,
+          "normalizedUnit": "g",
+          "group": "辅料"
+        },
+        {
+          "name": "糖",
+          "amount": "3g",
+          "normalizedAmount": 3,
+          "normalizedUnit": "g",
+          "normalizationNote": "基准用量，可根据个人口味调整",
+          "group": "辅料"
+        },
+        {
+          "name": "胡椒粉",
+          "amount": "3g",
+          "normalizedAmount": 3,
+          "normalizedUnit": "g",
+          "normalizationNote": "基准用量，可根据个人口味调整",
+          "group": "辅料"
+        },
+        {
+          "name": "料酒",
+          "amount": "3ml",
+          "normalizedAmount": 3,
+          "normalizedUnit": "g",
+          "normalizationNote": "按液体近似密度换算；可根据个人口味调整；原始用量：3ml",
+          "group": "辅料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "骨头洗净焯水，再骨头重新放入锅内炖煮1.5小时。",
+          "action": "洗",
+          "heat": "中火",
+          "durationSeconds": 5400
+        },
+        {
+          "order": 2,
+          "instruction": "先将肉切片，再切条，最后切成细小的肉丁。",
+          "action": "切"
+        },
+        {
+          "order": 3,
+          "instruction": "然后再随意剁上几刀，增加肉的粘性。",
+          "action": "剁"
+        },
+        {
+          "order": 4,
+          "instruction": "肉丁里加入5克盐、3克糖、3克料酒、白胡椒搅拌均匀到发粘，向同一方向搅拌。",
+          "action": "拌"
+        },
+        {
+          "order": 5,
+          "instruction": "加入3克淀粉和切碎的50克荸荠拌均匀，狮子头馅就拌好了。",
+          "action": "切"
+        },
+        {
+          "order": 6,
+          "instruction": "骨头捞出留一半清汤。",
+          "action": "捞"
+        },
+        {
+          "order": 7,
+          "instruction": "把大白菜帮垫在锅底，然后取一坨狮子头馅，在两手之间摔打几次，团成大肉丸，放在菜帮上，再将菜叶覆盖在狮子头上。",
+          "action": "打"
+        },
+        {
+          "order": 8,
+          "instruction": "加汤基本没过狮子头，大火煮开，转小火炖1.5小时。",
+          "action": "煮",
+          "heat": "大火",
+          "durationSeconds": 5400,
+          "check": "煮开"
+        },
+        {
+          "order": 9,
+          "instruction": "最后烫上上海青，捞出煮烂的白菜叶，加5克盐和白胡椒调味，盛出上桌。",
+          "action": "煮",
+          "heat": "中火",
+          "check": "食材熟透"
+        }
+      ],
+      "tips": "1.肉丸子一般都不是全肉的，通常会加些辅料如莲藕、荸荠、冬笋，为了吃起来不油腻又鲜嫩；2.用小火慢炖，汤汁才会清澈；3.一定要用高汤，最好是鸡汤",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-325.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-370225.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-325",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "野生水芹炒肉丝",
+      "cuisines": [
+        "热菜",
+        "浙菜"
+      ],
+      "mealTypes": [
+        "lunch"
+      ],
+      "flavorTags": [
+        "清淡"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": null,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "水芹菜",
+          "amount": "1把",
+          "normalizedAmount": 1,
+          "normalizedUnit": "把",
+          "group": "主料"
+        },
+        {
+          "name": "猪肉",
+          "amount": "100克",
+          "normalizedAmount": 100,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "油",
+          "amount": "2茶匙",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：2茶匙",
+          "group": "辅料"
+        },
+        {
+          "name": "盐",
+          "amount": "适量",
+          "normalizedAmount": 2,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "辅料"
+        },
+        {
+          "name": "淀粉",
+          "amount": "少许",
+          "normalizedAmount": "少许",
+          "group": "辅料"
+        },
+        {
+          "name": "剁椒",
+          "amount": "少许",
+          "normalizedAmount": "少许",
+          "group": "辅料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "准备好野生水芹菜。",
+          "action": "备"
+        },
+        {
+          "order": 2,
+          "instruction": "水芹洗净、切小段。",
+          "action": "切"
+        },
+        {
+          "order": 3,
+          "instruction": "切好的水芹入开水中焯一会；捞起，沥干水分备用。",
+          "action": "切",
+          "heat": "中火"
+        },
+        {
+          "order": 4,
+          "instruction": "100克猪肉切丝，加入生抽、淀粉拌匀。",
+          "action": "切"
+        },
+        {
+          "order": 5,
+          "instruction": "锅中10克油热，滑散肉丝；盛起备用。",
+          "action": "备"
+        },
+        {
+          "order": 6,
+          "instruction": "锅中余10克油，下水芹，加入2克盐，炒匀。",
+          "action": "炒",
+          "heat": "中火",
+          "check": "食材受热均匀"
+        },
+        {
+          "order": 7,
+          "instruction": "倒入100克猪肉丝炒匀。",
+          "action": "炒",
+          "heat": "中火",
+          "check": "食材受热均匀"
+        },
+        {
+          "order": 8,
+          "instruction": "加入适量剁椒，调好味盛入盘中。",
+          "action": "加入",
+          "utensil": "盘"
+        }
+      ],
+      "tips": "野芹菜有毒；野生水芹菜与野芹菜从外貌上但较难区分不熟悉者切勿食用",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-335.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-22295.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-335",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "银耳红薯花色年糕",
+      "cuisines": [
+        "主食",
+        "小吃",
+        "浙菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "甜味"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": 30,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "花色年糕",
+          "amount": "400克",
+          "normalizedAmount": 400,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "银耳",
+          "amount": "15克",
+          "normalizedAmount": 15,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "红薯",
+          "amount": "640克",
+          "normalizedAmount": 640,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "白糖",
+          "amount": "4勺",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：4勺",
+          "group": "调料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "食材：400克花色年糕、15克银耳（已泡发清洗）、640克红薯。",
+          "action": "洗"
+        },
+        {
+          "order": 2,
+          "instruction": "将400克花色年糕拆开包装掰开待用。",
+          "action": "包"
+        },
+        {
+          "order": 3,
+          "instruction": "将640克红薯洗净、去皮。",
+          "action": "洗"
+        },
+        {
+          "order": 4,
+          "instruction": "放在案板上切成小块。",
+          "action": "切"
+        },
+        {
+          "order": 5,
+          "instruction": "接着，将15克银耳和切好的640克红薯下入清水锅中煮开、煮上5——6分钟。",
+          "action": "切",
+          "heat": "中火",
+          "durationSeconds": 360,
+          "check": "煮开"
+        },
+        {
+          "order": 6,
+          "instruction": "然后，合入400克花色年糕搅动一下煮开、煮上2——3分钟。",
+          "action": "煮",
+          "heat": "中火",
+          "durationSeconds": 180,
+          "check": "煮开"
+        },
+        {
+          "order": 7,
+          "instruction": "最后，加入4勺白糖。",
+          "action": "加入"
+        },
+        {
+          "order": 8,
+          "instruction": "调味搅匀即成。",
+          "action": "搅"
+        }
+      ],
+      "tips": "",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-350.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-573919.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-350",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "桂花年糕",
+      "cuisines": [
+        "小吃",
+        "家常菜",
+        "浙菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "甜味"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": 10,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "年糕",
+          "amount": "1盒",
+          "normalizedAmount": 1,
+          "normalizedUnit": "盒",
+          "group": "主料"
+        },
+        {
+          "name": "桂花蜜",
+          "amount": "适量",
+          "normalizedAmount": "适量",
+          "group": "辅料"
+        },
+        {
+          "name": "油",
+          "amount": "少许",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：少许",
+          "group": "辅料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "准备一些这样的年糕，我买的这种是饭店里常用的，口感弹糯，又容易熟。",
+          "action": "备"
+        },
+        {
+          "order": 2,
+          "instruction": "锅中加入适量的清水，大火烧开，水开后下入年糕，用锅铲稍微推开，防止粘锅，这种年糕是新鲜的，大概两三分钟就可以了。",
+          "action": "加入",
+          "heat": "大火",
+          "durationSeconds": 180,
+          "check": "烧开"
+        },
+        {
+          "order": 3,
+          "instruction": "煮好的年糕捞出来，用凉水多冲洗，有冰水的话用冰水冲，年糕的口感会更弹。",
+          "action": "洗",
+          "heat": "中火"
+        },
+        {
+          "order": 4,
+          "instruction": "准备一口干净的锅，锅里加一点点10克油，两勺糖桂花，一点点清水，小火炒匀。",
+          "action": "炒",
+          "heat": "小火",
+          "check": "食材受热均匀"
+        },
+        {
+          "order": 5,
+          "instruction": "等糖浆完全融合了，就把冲洗干净的年糕放进来，快速翻炒，将年糕上均匀地裹上糖桂花即可。",
+          "action": "洗",
+          "heat": "中火"
+        },
+        {
+          "order": 6,
+          "instruction": "简单做下来不过几分钟的时间，也没有什么10克油烟，饿了随时都能给自己煮上一份，香甜可口。",
+          "action": "煮",
+          "heat": "中火",
+          "check": "食材熟透"
+        }
+      ],
+      "tips": "",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-352.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-573491.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-352",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "姜丝烤秋刀鱼",
+      "cuisines": [
+        "烧烤",
+        "浙菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "咸鲜"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": 30,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "秋刀鱼",
+          "amount": "3条",
+          "normalizedAmount": 3,
+          "normalizedUnit": "条",
+          "group": "主料"
+        },
+        {
+          "name": "姜",
+          "amount": "1小块",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1小块",
+          "group": "辅料"
+        },
+        {
+          "name": "青柠檬",
+          "amount": "1个",
+          "normalizedAmount": 1,
+          "normalizedUnit": "个",
+          "group": "辅料"
+        },
+        {
+          "name": "小葱",
+          "amount": "1根",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1根",
+          "group": "辅料"
+        },
+        {
+          "name": "料酒",
+          "amount": "1茶匙",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1茶匙",
+          "group": "配料"
+        },
+        {
+          "name": "烧烤汁",
+          "amount": "1汤匙",
+          "normalizedAmount": "1汤匙",
+          "group": "配料"
+        },
+        {
+          "name": "蒸鱼豉油",
+          "amount": "1汤匙",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1汤匙",
+          "group": "配料"
+        },
+        {
+          "name": "柠檬汁",
+          "amount": "少许",
+          "normalizedAmount": "少许",
+          "group": "配料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "准备所需材料。",
+          "action": "备"
+        },
+        {
+          "order": 2,
+          "instruction": "秋刀鱼洗净去内脏，冲洗干净。",
+          "action": "洗"
+        },
+        {
+          "order": 3,
+          "instruction": "在鱼身上斜切上三刀；（让鱼更好的入味）。",
+          "action": "切",
+          "check": "入味"
+        },
+        {
+          "order": 4,
+          "instruction": "10克料酒、烧烤汁、10克蒸鱼豉油一起放入小碗里，再挤上少许柠檬汁调匀。",
+          "action": "蒸",
+          "utensil": "碗",
+          "heat": "中火",
+          "check": "食材熟透"
+        },
+        {
+          "order": 5,
+          "instruction": "然后将烧烤汁刷在秋刀鱼身上。",
+          "action": "烤",
+          "heat": "中火",
+          "check": "食材表面颜色均匀"
+        },
+        {
+          "order": 6,
+          "instruction": "两面都均匀的刷上烧烤汁腌制半小时。",
+          "action": "腌",
+          "heat": "中火",
+          "durationSeconds": 1800
+        },
+        {
+          "order": 7,
+          "instruction": "将5克姜切成丝，然后将5克姜丝撒在鱼肚里和鱼身上。",
+          "action": "切"
+        },
+        {
+          "order": 8,
+          "instruction": "预热电热烧烤炉3分钟，在烤盘上刷上一层油。",
+          "action": "烤",
+          "utensil": "盘",
+          "heat": "中火",
+          "durationSeconds": 180,
+          "check": "食材表面颜色均匀"
+        },
+        {
+          "order": 9,
+          "instruction": "然后把秋刀鱼放烤盘上烤，烤至一面金黄再反面，直至两面金黄色即可；（。",
+          "action": "烤",
+          "utensil": "盘",
+          "heat": "中火",
+          "check": "一面金黄再反面"
+        },
+        {
+          "order": 10,
+          "instruction": "青柠檬用盐洗净，切成片，放烤盘内煎烤。",
+          "action": "切",
+          "utensil": "盘",
+          "heat": "中火"
+        },
+        {
+          "order": 11,
+          "instruction": "烤至一面微黄上色，反面再烤另一面。",
+          "action": "烤",
+          "heat": "中火",
+          "check": "一面微黄上色"
+        },
+        {
+          "order": 12,
+          "instruction": "将烤好的柠檬摆在盘上。",
+          "action": "烤",
+          "utensil": "盘",
+          "heat": "中火",
+          "check": "食材表面颜色均匀"
+        },
+        {
+          "order": 13,
+          "instruction": "再把烤好的秋刀鱼放上柠檬上，撒上葱花卷即可。",
+          "action": "烤",
+          "heat": "中火",
+          "check": "食材表面颜色均匀"
+        }
+      ],
+      "tips": "",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-354.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-149525.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-354",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "油焖春笋",
+      "cuisines": [
+        "热菜",
+        "浙菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "咸鲜"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": null,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "雷笋",
+          "amount": "500克",
+          "normalizedAmount": 500,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "蒜瓣",
+          "amount": "适量",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "辅料"
+        },
+        {
+          "name": "生抽酱油",
+          "amount": "4汤匙",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：4汤匙",
+          "group": "调料"
+        },
+        {
+          "name": "冰糖",
+          "amount": "15克",
+          "normalizedAmount": 15,
+          "normalizedUnit": "g",
+          "normalizationNote": "基准用量，可根据个人口味调整",
+          "group": "调料"
+        },
+        {
+          "name": "清水",
+          "amount": "1碗",
+          "normalizedAmount": 100,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1碗",
+          "group": "调料"
+        },
+        {
+          "name": "猪油",
+          "amount": "1大匙",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1大匙",
+          "group": "调料"
+        },
+        {
+          "name": "玉米油",
+          "amount": "2大匙",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：2大匙",
+          "group": "调料"
+        },
+        {
+          "name": "芝麻油",
+          "amount": "适量",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "春笋去壳后，去老皮，如图，带有青色的就是被老化了，所以出土后，要即时去壳，可以稍微焯水后保存，或者用100克清水泡一泡后炒食；如果立即炒食，就不用焯水了。",
+          "action": "泡",
+          "heat": "中火"
+        },
+        {
+          "order": 2,
+          "instruction": "500克雷笋切开两半，可以拍一拍后切段，或者切细条后切段，不是滚刀块哦。",
+          "action": "切"
+        },
+        {
+          "order": 3,
+          "instruction": "锅中加入10克猪油、10克玉米油，加入500克雷笋炒一炒，炒去它的水分，变软；小编觉得加入10克猪油会更香，而笋是粗纤维食物，刮油清脂，加点10克猪油可以提香，增鲜，没有可不放。",
+          "action": "炒",
+          "heat": "中火",
+          "check": "食材受热均匀"
+        },
+        {
+          "order": 4,
+          "instruction": "炒过之后，加入酱油、15克冰糖、100克清水烧开，加盖焖一焖，大约七八分钟；第5步：最后，大火收汁，也不用淋水淀粉，可以加入少量的10克芝麻油就可出锅了。",
+          "action": "炒",
+          "heat": "大火",
+          "durationSeconds": 480,
+          "check": "烧开"
+        },
+        {
+          "order": 5,
+          "instruction": "最后，大火收汁，也不用淋水淀粉，可以加入少量的10克芝麻油就可出锅了。",
+          "action": "加入",
+          "heat": "大火"
+        },
+        {
+          "order": 6,
+          "instruction": "也可以加入一些蒜泥，而定。",
+          "action": "加入"
+        }
+      ],
+      "tips": "1、雷笋不用焯水，入锅炒一炒后没有多大的涩味，比较鲜美，一些地区里的竹笋比较苦涩可以焯水后再炒",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-361.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-529986.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-361",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "家庭版佛跳墙",
+      "cuisines": [
+        "热菜",
+        "闽菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "原味"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": null,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "土鸡",
+          "amount": "1只",
+          "normalizedAmount": 1,
+          "normalizedUnit": "只",
+          "group": "主料"
+        },
+        {
+          "name": "鲍鱼",
+          "amount": "6个",
+          "normalizedAmount": 6,
+          "normalizedUnit": "个",
+          "group": "主料"
+        },
+        {
+          "name": "海参",
+          "amount": "1条",
+          "normalizedAmount": 1,
+          "normalizedUnit": "条",
+          "group": "主料"
+        },
+        {
+          "name": "大虾",
+          "amount": "300g",
+          "normalizedAmount": 300,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "南瓜",
+          "amount": "一截",
+          "normalizedAmount": "一截",
+          "group": "辅料"
+        },
+        {
+          "name": "杏鲍菇",
+          "amount": "1个",
+          "normalizedAmount": 1,
+          "normalizedUnit": "个",
+          "group": "辅料"
+        },
+        {
+          "name": "干贝",
+          "amount": "30g",
+          "normalizedAmount": 30,
+          "normalizedUnit": "g",
+          "group": "辅料"
+        },
+        {
+          "name": "鹌鹑蛋",
+          "amount": "10个",
+          "normalizedAmount": 10,
+          "normalizedUnit": "个",
+          "group": "辅料"
+        },
+        {
+          "name": "姜片",
+          "amount": "适量",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "辅料"
+        },
+        {
+          "name": "枸杞子",
+          "amount": "20g",
+          "normalizedAmount": 20,
+          "normalizedUnit": "g",
+          "group": "辅料"
+        },
+        {
+          "name": "油",
+          "amount": "适量",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        },
+        {
+          "name": "盐",
+          "amount": "适量",
+          "normalizedAmount": 2,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        },
+        {
+          "name": "鸡精",
+          "amount": "少许",
+          "normalizedAmount": 1,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：少许",
+          "group": "调料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "把所有食材准备好。",
+          "action": "备"
+        },
+        {
+          "order": 2,
+          "instruction": "鸡用了半只，虾只保留虾身部分，鲍鱼切十字花刀，鹌鹑蛋煮熟后剥壳，其他食材按图切好。",
+          "action": "切",
+          "heat": "中火"
+        },
+        {
+          "order": 3,
+          "instruction": "先把海参、鲍鱼、300克大虾、鸡肉焯水备用。",
+          "action": "焯",
+          "heat": "中火",
+          "check": "食材变色且断生"
+        },
+        {
+          "order": 4,
+          "instruction": "杏鲍菇煎至两面金黄，熬出的汤汁才香浓。",
+          "action": "煎",
+          "heat": "中火",
+          "check": "两面金黄"
+        },
+        {
+          "order": 5,
+          "instruction": "鹌鹑蛋淋上酱10克油，在10克油锅中炒出虎皮状。",
+          "action": "炒",
+          "heat": "中火",
+          "check": "食材受热均匀"
+        },
+        {
+          "order": 6,
+          "instruction": "准备一口砂锅，按图所示，依次放入食材。",
+          "action": "放",
+          "utensil": "砂锅"
+        },
+        {
+          "order": 7,
+          "instruction": "加入适量的水，大火煮开后，盖盖转小火炖1个小时。",
+          "action": "煮",
+          "heat": "大火",
+          "check": "煮开"
+        },
+        {
+          "order": 8,
+          "instruction": "南瓜是熬出金汤的关键，接着放入300克大虾和鹌鹑蛋，家中有枸杞也可以放入一些，继续小火熬半个小时，出锅前尝一下汤汁，再放2克盐和1克鸡精调味即可。",
+          "action": "放",
+          "heat": "小火"
+        }
+      ],
+      "tips": "",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-364.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-616803.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-364",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "虾球鸡粒炒饭",
+      "cuisines": [
+        "主食",
+        "家常菜",
+        "闽菜"
+      ],
+      "mealTypes": [
+        "lunch"
+      ],
+      "flavorTags": [
+        "咸鲜"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": 10,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "白米饭",
+          "amount": "500克",
+          "normalizedAmount": 500,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "虾肉",
+          "amount": "100克",
+          "normalizedAmount": 100,
+          "normalizedUnit": "g",
+          "group": "辅料"
+        },
+        {
+          "name": "鸡肉粒",
+          "amount": "100克",
+          "normalizedAmount": 100,
+          "normalizedUnit": "g",
+          "group": "辅料"
+        },
+        {
+          "name": "香菇粒",
+          "amount": "30克",
+          "normalizedAmount": 30,
+          "normalizedUnit": "g",
+          "group": "辅料"
+        },
+        {
+          "name": "冬笋粒",
+          "amount": "30克",
+          "normalizedAmount": 30,
+          "normalizedUnit": "g",
+          "group": "辅料"
+        },
+        {
+          "name": "胡萝卜粒",
+          "amount": "30克",
+          "normalizedAmount": 30,
+          "normalizedUnit": "g",
+          "group": "辅料"
+        },
+        {
+          "name": "榨菜粒",
+          "amount": "20克",
+          "normalizedAmount": 20,
+          "normalizedUnit": "g",
+          "group": "辅料"
+        },
+        {
+          "name": "洋葱粒",
+          "amount": "30克",
+          "normalizedAmount": 30,
+          "normalizedUnit": "g",
+          "normalizationNote": "基准用量，可根据个人口味调整",
+          "group": "辅料"
+        },
+        {
+          "name": "青豌豆",
+          "amount": "30克",
+          "normalizedAmount": 30,
+          "normalizedUnit": "g",
+          "group": "辅料"
+        },
+        {
+          "name": "鸡蛋",
+          "amount": "2枚",
+          "normalizedAmount": 2,
+          "normalizedUnit": "枚",
+          "group": "辅料"
+        },
+        {
+          "name": "盐",
+          "amount": "2克",
+          "normalizedAmount": 2,
+          "normalizedUnit": "g",
+          "normalizationNote": "基准用量，可根据个人口味调整",
+          "group": "配料"
+        },
+        {
+          "name": "鸡粉",
+          "amount": "2克",
+          "normalizedAmount": 2,
+          "normalizedUnit": "g",
+          "group": "配料"
+        },
+        {
+          "name": "白胡椒粉",
+          "amount": "少许",
+          "normalizedAmount": 1,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：少许",
+          "group": "配料"
+        },
+        {
+          "name": "绍酒",
+          "amount": "15克",
+          "normalizedAmount": 15,
+          "normalizedUnit": "g",
+          "group": "配料"
+        },
+        {
+          "name": "烹调油",
+          "amount": "适量",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "配料"
+        },
+        {
+          "name": "淀粉",
+          "amount": "适量",
+          "normalizedAmount": "适量",
+          "group": "配料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "浆制虾球和100克鸡肉粒，里面放入2克盐、2克鸡粉、胡椒粉和15克绍酒。",
+          "action": "放"
+        },
+        {
+          "order": 2,
+          "instruction": "放好调料用手抓匀，然后放入适量的玉米淀粉。",
+          "action": "放"
+        },
+        {
+          "order": 3,
+          "instruction": "放入淀粉后再次反复抓匀，抓匀后浆制10分钟备用。",
+          "action": "放",
+          "durationSeconds": 600
+        },
+        {
+          "order": 4,
+          "instruction": "炒勺上火烧热，注入10克烹调油，油温三成热时下入虾球和100克鸡肉粒滑炒。",
+          "action": "炒",
+          "heat": "中火",
+          "check": "食材受热均匀"
+        },
+        {
+          "order": 5,
+          "instruction": "把虾和鸡肉滑熟后盛出备用。",
+          "action": "备"
+        },
+        {
+          "order": 6,
+          "instruction": "锅中留底油，把各种配料炒熟盛出备用。",
+          "action": "炒",
+          "heat": "中火",
+          "check": "食材受热均匀"
+        },
+        {
+          "order": 7,
+          "instruction": "锅中倒入蛋液。",
+          "action": "倒"
+        },
+        {
+          "order": 8,
+          "instruction": "蛋液下锅后倒入500克白米饭翻炒。",
+          "action": "炒",
+          "heat": "中火",
+          "check": "食材受热均匀"
+        },
+        {
+          "order": 9,
+          "instruction": "把米饭炒散后撒入2克盐。",
+          "action": "炒",
+          "heat": "中火",
+          "check": "食材受热均匀"
+        },
+        {
+          "order": 10,
+          "instruction": "再撒入2克鸡粉炒匀炒透。",
+          "action": "炒",
+          "heat": "中火",
+          "check": "食材受热均匀"
+        },
+        {
+          "order": 11,
+          "instruction": "把炒好的米饭倒入盘中。",
+          "action": "炒",
+          "utensil": "盘",
+          "heat": "中火",
+          "check": "食材受热均匀"
+        },
+        {
+          "order": 12,
+          "instruction": "锅中倒入所有配料翻炒，炒熟炒透后进行调味，先撒入2克盐。",
+          "action": "炒",
+          "heat": "中火",
+          "check": "食材受热均匀"
+        },
+        {
+          "order": 13,
+          "instruction": "再撒入少许胡椒粉。",
+          "action": "撒"
+        },
+        {
+          "order": 14,
+          "instruction": "然后撒入2克鸡粉炒匀。",
+          "action": "炒",
+          "heat": "中火",
+          "check": "食材受热均匀"
+        },
+        {
+          "order": 15,
+          "instruction": "烹入15克绍酒炒匀。",
+          "action": "炒",
+          "heat": "中火",
+          "check": "食材受热均匀"
+        },
+        {
+          "order": 16,
+          "instruction": "把炒好的配料倒在炒饭上便可上桌享用。",
+          "action": "炒",
+          "heat": "中火",
+          "check": "食材受热均匀"
+        }
+      ],
+      "tips": "炒饭特点；颜色美观、鲜香浓郁、米饭干爽、配料鲜美；温馨提示；1、白米饭蒸的稍硬一些为好，最好使用泰国香米，吃起来比较粒粒干爽香气浓郁；2、配料也可和米饭同炒，如果宴客，把配料覆盖在米饭上显得比较斑斓和丰盛一些，感官也比较好看，一般在酒楼里都是把配料盖在上面，它不同于一般的炒饭；还有的把配料红白两色，做成太极图案，红的用番茄酱来炒，白的为清炒；大炒勺的这款闽菜厦门炒饭“虾球鸡粒炒饭”就做好了；这款米饭材料多味道好，在餐馆里比较受食客的欢迎，家庭宴客也比较美观，供大家参考",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-365.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-29291.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-365",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "沙茶牛肉片",
+      "cuisines": [
+        "热菜",
+        "闽菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "酱香"
+      ],
+      "difficulty": "normal",
+      "estimatedMinutes": 30,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "牛肉",
+          "amount": "约150克",
+          "normalizedAmount": 150,
+          "normalizedUnit": "g",
+          "normalizationNote": "原始用量：约150克",
+          "group": "主料"
+        },
+        {
+          "name": "蛋白",
+          "amount": "1/4只量",
+          "normalizedAmount": 4,
+          "normalizedUnit": "只",
+          "normalizationNote": "原始用量：1/4只量",
+          "group": "主料"
+        },
+        {
+          "name": "大白菜",
+          "amount": "约1/2棵",
+          "normalizedAmount": "约1/2棵",
+          "group": "配菜"
+        },
+        {
+          "name": "蒜头",
+          "amount": "2瓣",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：2瓣",
+          "group": "配菜"
+        },
+        {
+          "name": "生姜",
+          "amount": "约2指节",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：约2指节",
+          "group": "配菜"
+        },
+        {
+          "name": "食盐",
+          "amount": "1/3小勺",
+          "normalizedAmount": 2,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1/3小勺",
+          "group": "配菜"
+        },
+        {
+          "name": "沙茶酱",
+          "amount": "1大勺",
+          "normalizedAmount": "1大勺",
+          "group": "锅汁"
+        },
+        {
+          "name": "蚝油",
+          "amount": "1大勺",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1大勺",
+          "group": "锅汁"
+        },
+        {
+          "name": "生抽",
+          "amount": "1+1/2大勺",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1+1/2大勺",
+          "group": "锅汁"
+        },
+        {
+          "name": "味啉",
+          "amount": "1/2大勺",
+          "normalizedAmount": "1/2大勺",
+          "group": "锅汁"
+        },
+        {
+          "name": "胡椒粉",
+          "amount": "1/3小勺",
+          "normalizedAmount": 1,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1/3小勺",
+          "group": "锅汁"
+        },
+        {
+          "name": "生粉",
+          "amount": "1/2大勺",
+          "normalizedAmount": "1/2大勺",
+          "group": "锅汁"
+        },
+        {
+          "name": "芝麻油",
+          "amount": "1/2大勺",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1/2大勺",
+          "group": "锅汁"
+        },
+        {
+          "name": "清水",
+          "amount": "1/2杯",
+          "normalizedAmount": 2,
+          "normalizedUnit": "杯",
+          "normalizationNote": "原始用量：1/2杯",
+          "group": "锅汁"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "把5克蒜头和5克生姜切片，大白菜切段。",
+          "action": "切"
+        },
+        {
+          "order": 2,
+          "instruction": "起锅升大火，锅热加入蒜片和姜片，爆香。",
+          "action": "加入",
+          "heat": "大火"
+        },
+        {
+          "order": 3,
+          "instruction": "倒入大白菜，点入2克食盐1/3小勺，炒至断生。",
+          "action": "炒",
+          "heat": "中火",
+          "check": "断生"
+        },
+        {
+          "order": 4,
+          "instruction": "把菜夹入碟，锅里剩余的水倒去。",
+          "action": "倒"
+        },
+        {
+          "order": 5,
+          "instruction": "先准备好碗汁，置一碗放沙茶酱1大勺、10克蚝油1大勺、10克生抽1+1/2大勺、味啉1/2大勺、1克胡椒粉1/3小勺、生粉1/2大勺、10克芝麻油1/2大勺、清水1/2杯，搅拌均匀。",
+          "action": "拌",
+          "utensil": "碗"
+        },
+        {
+          "order": 6,
+          "instruction": "150克牛肉切片，加入蛋白约1/4只量，用手抓均匀，锅置炉上，中火，锅热加底油，改中火倒入150克牛肉片，炒至六至七成熟。",
+          "action": "切",
+          "heat": "中火",
+          "check": "六至七成熟"
+        },
+        {
+          "order": 7,
+          "instruction": "倒入碗汁，不断拌炒至起大泡，收火。",
+          "action": "泡",
+          "utensil": "碗",
+          "heat": "中火",
+          "check": "起大泡"
+        },
+        {
+          "order": 8,
+          "instruction": "把肉铺在装了菜的碟子上，均匀地淋上汁，OK；Enjoy。",
+          "action": "淋"
+        }
+      ],
+      "tips": "",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-371.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-582090.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-371",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "厦门海蛎煎",
+      "cuisines": [
+        "小吃",
+        "闽菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "咸鲜"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": 10,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "海蛎",
+          "amount": "500克",
+          "normalizedAmount": 500,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "鸭蛋",
+          "amount": "2个",
+          "normalizedAmount": 2,
+          "normalizedUnit": "个",
+          "group": "主料"
+        },
+        {
+          "name": "葱",
+          "amount": "2根",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：2根",
+          "group": "辅料"
+        },
+        {
+          "name": "蒜苗",
+          "amount": "2根",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：2根",
+          "group": "辅料"
+        },
+        {
+          "name": "地瓜粉",
+          "amount": "5勺",
+          "normalizedAmount": 5,
+          "normalizedUnit": "勺",
+          "group": "辅料"
+        },
+        {
+          "name": "生抽",
+          "amount": "适量",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "辅料"
+        },
+        {
+          "name": "油",
+          "amount": "适量",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "辅料"
+        },
+        {
+          "name": "盐",
+          "amount": "适量",
+          "normalizedAmount": 2,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "辅料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "清水冲洗500克海蛎，将残留的500克海蛎壳取出，避免影响口感。",
+          "action": "洗"
+        },
+        {
+          "order": 2,
+          "instruction": "取锅倒水煮沸，将清洗干净的500克海蛎倒入，稍微焯水后取出沥干，放凉备用。",
+          "action": "洗",
+          "heat": "中火"
+        },
+        {
+          "order": 3,
+          "instruction": "另准备一大碗，倒入地瓜粉、10克生抽、10克油、2克盐后搅拌均匀。",
+          "action": "拌",
+          "utensil": "碗"
+        },
+        {
+          "order": 4,
+          "instruction": "再往里依次放入鸭蛋，切碎的5克葱、5克蒜苗和刚焯好的500克海蛎，每放一种材料就搅拌均匀一下。",
+          "action": "切",
+          "heat": "中火"
+        },
+        {
+          "order": 5,
+          "instruction": "架平底锅开小火，倒10克油加热后将500克海蛎均匀地铺满锅面，轻微摇晃平底锅令500克海蛎煎成形，也便于让10克油均匀分布防止粘锅。",
+          "action": "煎",
+          "utensil": "平底锅",
+          "heat": "小火",
+          "check": "食材表面颜色均匀"
+        },
+        {
+          "order": 6,
+          "instruction": "等到500克海蛎煎边角呈现金黄色即可借助锅铲辅助翻面，待到双面煎至金黄后即可出锅。",
+          "action": "煎",
+          "heat": "中火",
+          "check": "到双面煎至金黄后即可出锅"
+        }
+      ],
+      "tips": "1、购买海蛎时最好挑选个头较小的；清洗时注意海蛎瓣，一般碎壳会藏在海蛎瓣中；2、除了清洗海蛎外，海蛎煎料理过程中不要加水",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-382.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-478322.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-382",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "油泼金针菇",
+      "cuisines": [
+        "凉菜",
+        "素菜",
+        "家常菜",
+        "闽菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "咸鲜"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": 10,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "金针菇",
+          "amount": "1把",
+          "normalizedAmount": 1,
+          "normalizedUnit": "把",
+          "group": "主料"
+        },
+        {
+          "name": "姜",
+          "amount": "3片",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：3片",
+          "group": "主料"
+        },
+        {
+          "name": "干辣椒",
+          "amount": "4个",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：4个",
+          "group": "主料"
+        },
+        {
+          "name": "蒜头",
+          "amount": "3个",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：3个",
+          "group": "主料"
+        },
+        {
+          "name": "生抽",
+          "amount": "2匙",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：2匙",
+          "group": "辅料"
+        },
+        {
+          "name": "鸡粉",
+          "amount": "1茶匙",
+          "normalizedAmount": "1茶匙",
+          "group": "辅料"
+        },
+        {
+          "name": "盐",
+          "amount": "少许",
+          "normalizedAmount": 2,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：少许",
+          "group": "辅料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "金针菇切去尾部洗洗干净，用剪刀从中剪一下；省的用切的散成一堆。",
+          "action": "切"
+        },
+        {
+          "order": 2,
+          "instruction": "锅下点水烧开加点2克盐，把金针菇穿烫捞出；挤出水分备用。",
+          "action": "烧",
+          "heat": "中火",
+          "check": "烧开"
+        },
+        {
+          "order": 3,
+          "instruction": "把5克蒜头、5克干辣椒切碎放在金针菇上面。",
+          "action": "切"
+        },
+        {
+          "order": 4,
+          "instruction": "热多点油爆干5克姜，在5克姜成褐色的时候；把5克姜油泼淋在5克干辣椒与蒜碎上面。",
+          "action": "淋"
+        },
+        {
+          "order": 5,
+          "instruction": "再勺入鸡粉与10克生抽搅拌搅拌即可上菜，希望今天的菜能对您的胃口。",
+          "action": "拌"
+        }
+      ],
+      "tips": "热多点油爆干姜，在姜成褐色的时候；把姜油泼淋在干辣椒与蒜碎上面",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-387.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-312837.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-387",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "湖南猪油拌粉",
+      "cuisines": [
+        "小吃",
+        "湘菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "咸鲜"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": null,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "干米粉",
+          "amount": "80——100g",
+          "normalizedAmount": 100,
+          "normalizedUnit": "g",
+          "normalizationNote": "原始用量：80——100g",
+          "group": "主料"
+        },
+        {
+          "name": "花生仁",
+          "amount": "少许",
+          "normalizedAmount": "少许",
+          "group": "辅料"
+        },
+        {
+          "name": "榨菜",
+          "amount": "少许",
+          "normalizedAmount": "少许",
+          "group": "辅料"
+        },
+        {
+          "name": "生抽",
+          "amount": "3勺",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：3勺",
+          "group": "调料"
+        },
+        {
+          "name": "老抽",
+          "amount": "1勺",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1勺",
+          "group": "调料"
+        },
+        {
+          "name": "油辣椒",
+          "amount": "1勺",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1勺",
+          "group": "调料"
+        },
+        {
+          "name": "猪油",
+          "amount": "2勺",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：2勺",
+          "group": "调料"
+        },
+        {
+          "name": "大蒜",
+          "amount": "1瓣",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1瓣",
+          "group": "调料"
+        },
+        {
+          "name": "葱",
+          "amount": "2根",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：2根",
+          "group": "调料"
+        },
+        {
+          "name": "鸡精",
+          "amount": "少许",
+          "normalizedAmount": 1,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：少许",
+          "group": "调料"
+        },
+        {
+          "name": "盐",
+          "amount": "少许",
+          "normalizedAmount": 2,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：少许",
+          "group": "调料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "花生仁小火炒香，搓去外衣，放入保鲜袋中，用擀面杖压碎；5克大蒜去皮用压蒜器压成泥（或切末），5克葱切成5克葱花。",
+          "action": "切",
+          "heat": "小火",
+          "check": "炒香"
+        },
+        {
+          "order": 2,
+          "instruction": "锅中放足量水烧开（水要多一些），下入100克干米粉，小火煮至米粉无硬芯，能用筷子夹断的状态；捞出趁热放入调料碗中，拌匀。",
+          "action": "煮",
+          "utensil": "碗",
+          "heat": "小火",
+          "check": "米粉无硬芯"
+        },
+        {
+          "order": 3,
+          "instruction": "再放入花生碎与榨菜即可。",
+          "action": "放"
+        }
+      ],
+      "tips": "油辣椒怕辣者可不放，榨菜也可不放；但花生碎建议不可少，放了会香很多",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-391.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-611729.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-391",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "麻辣小龙虾",
+      "cuisines": [
+        "热菜",
+        "家常菜",
+        "湘菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "麻辣"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": 30,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "小龙虾",
+          "amount": "1.5斤",
+          "normalizedAmount": 750,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "莴笋",
+          "amount": "1根",
+          "normalizedAmount": 1,
+          "normalizedUnit": "根",
+          "group": "辅料"
+        },
+        {
+          "name": "葱",
+          "amount": "2段",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：2段",
+          "group": "调料"
+        },
+        {
+          "name": "姜",
+          "amount": "适量",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "调料"
+        },
+        {
+          "name": "蒜",
+          "amount": "5个",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：5个",
+          "group": "调料"
+        },
+        {
+          "name": "干辣椒",
+          "amount": "一把",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：一把",
+          "group": "调料"
+        },
+        {
+          "name": "花椒",
+          "amount": "99粒",
+          "normalizedAmount": 1,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：99粒",
+          "group": "调料"
+        },
+        {
+          "name": "洋葱",
+          "amount": "半个",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：半个",
+          "group": "调料"
+        },
+        {
+          "name": "啤酒",
+          "amount": "1大罐",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1大罐",
+          "group": "调料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "750克小龙虾洗净，减去头和内脏，虾黄不要扔可以吃。",
+          "action": "洗"
+        },
+        {
+          "order": 2,
+          "instruction": "准备剥好的5克蒜瓣、火锅底料切碎、一罐10克啤酒、半个洋5克葱、一些5克姜片、一根莴笋切好备用、辣椒切小段、99粒花椒。",
+          "action": "切"
+        },
+        {
+          "order": 3,
+          "instruction": "锅内烧油，油热下入一勺豆瓣酱，炒香之后放入洋5克葱和5克姜，翻炒几下后放入5克蒜瓣、火锅底料，继续翻炒。",
+          "action": "炒",
+          "heat": "中火",
+          "check": "炒香"
+        },
+        {
+          "order": 4,
+          "instruction": "火锅底料炒化后，加入辣椒和1克花椒，继续翻炒至闻到辣椒的香味儿。",
+          "action": "炒",
+          "heat": "中火",
+          "check": "闻到辣椒的香味儿"
+        },
+        {
+          "order": 5,
+          "instruction": "放入750克小龙虾，加入适量的盐。",
+          "action": "放"
+        },
+        {
+          "order": 6,
+          "instruction": "750克小龙虾炒至变色后，加入切好的莴笋。",
+          "action": "切",
+          "heat": "中火",
+          "check": "变色后"
+        },
+        {
+          "order": 7,
+          "instruction": "倒入准备好的10克啤酒。",
+          "action": "倒"
+        },
+        {
+          "order": 8,
+          "instruction": "煮7—10分钟，750克小龙虾就可以出锅啦～。",
+          "action": "煮",
+          "heat": "中火",
+          "durationSeconds": 600,
+          "check": "食材熟透"
+        },
+        {
+          "order": 9,
+          "instruction": "最后撒上一些香菜点缀一下，完美～。",
+          "action": "撒"
+        }
+      ],
+      "tips": "number1：小龙虾的脏东西重金属基本都在虾头，记得煎掉虾头，虾黄可以吃；number2：煮小龙虾用白水也可以，啤酒最佳",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-397.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-590805.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-397",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "蒸剁椒鱼头",
+      "cuisines": [
+        "热菜",
+        "湘菜"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "中辣"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": 3,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "草鱼头",
+          "amount": "800克",
+          "normalizedAmount": 800,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "剁辣椒",
+          "amount": "4勺",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：4勺",
+          "group": "辅料"
+        },
+        {
+          "name": "白糖",
+          "amount": "1勺",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1勺",
+          "group": "调料"
+        },
+        {
+          "name": "生抽",
+          "amount": "3勺",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：3勺",
+          "group": "调料"
+        },
+        {
+          "name": "蚝油",
+          "amount": "2勺",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：2勺",
+          "group": "调料"
+        },
+        {
+          "name": "油",
+          "amount": "2勺",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：2勺",
+          "group": "调料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "将鱼头带约10厘米的鱼肉切下。",
+          "action": "切"
+        },
+        {
+          "order": 2,
+          "instruction": "用少许葱姜、盐、料酒腌制10分钟左右，冲洗干净，放入盘中。",
+          "action": "洗",
+          "utensil": "盘",
+          "durationSeconds": 600
+        },
+        {
+          "order": 3,
+          "instruction": "电饭煲加水，放入支架，将鱼头放入。",
+          "action": "放",
+          "utensil": "电饭煲"
+        },
+        {
+          "order": 4,
+          "instruction": "取一小碗，放入5克剁辣椒、10克生抽、10克蚝10克油、5克白糖和10克油，搅拌均匀。",
+          "action": "拌",
+          "utensil": "碗"
+        },
+        {
+          "order": 5,
+          "instruction": "将调好味的5克剁辣椒均匀的摊放在鱼头上，加盖上气蒸15分钟左右。",
+          "action": "蒸",
+          "heat": "中火",
+          "durationSeconds": 900,
+          "check": "食材熟透"
+        },
+        {
+          "order": 6,
+          "instruction": "蒸好的鱼头，洒上葱花；用微波炉打少许热10克油淋在葱花上即可。",
+          "action": "蒸",
+          "utensil": "微波炉",
+          "heat": "中火",
+          "check": "食材熟透"
+        }
+      ],
+      "tips": "1.剁辣椒很咸，必须加白糖中和提鲜；如果还咸，可调入适量清水；2.电饭煲火力偏小，可适当延长蒸制时间；3.最后的热油必不可少",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-404.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-561389.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-404",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "凤还巢",
+      "cuisines": [
+        "热菜",
+        "徽菜",
+        "本帮菜"
+      ],
+      "mealTypes": [
+        "dinner"
+      ],
+      "flavorTags": [
+        "咸甜"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": 60,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "鸽子",
+          "amount": "一只",
+          "normalizedAmount": 1,
+          "normalizedUnit": "只",
+          "group": "主料"
+        },
+        {
+          "name": "黄瓜",
+          "amount": "少许（用作装饰）",
+          "normalizedAmount": "少许（用作装饰）",
+          "group": "辅料"
+        },
+        {
+          "name": "生菜",
+          "amount": "少许（用作装饰）",
+          "normalizedAmount": "少许（用作装饰）",
+          "group": "辅料"
+        },
+        {
+          "name": "细面",
+          "amount": "一小把",
+          "normalizedAmount": 1,
+          "normalizedUnit": "小把",
+          "group": "辅料"
+        },
+        {
+          "name": "粉丝",
+          "amount": "少许",
+          "normalizedAmount": "少许",
+          "group": "辅料"
+        },
+        {
+          "name": "料酒",
+          "amount": "少许",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：少许",
+          "group": "配料"
+        },
+        {
+          "name": "盐",
+          "amount": "少许",
+          "normalizedAmount": 2,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：少许",
+          "group": "配料"
+        },
+        {
+          "name": "生抽",
+          "amount": "两汤匙",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：两汤匙",
+          "group": "配料"
+        },
+        {
+          "name": "葱",
+          "amount": "一根切片",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：一根切片",
+          "group": "配料"
+        },
+        {
+          "name": "姜",
+          "amount": "五片切丝",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：五片切丝",
+          "group": "配料"
+        },
+        {
+          "name": "香叶",
+          "amount": "少许",
+          "normalizedAmount": "少许",
+          "group": "配料"
+        },
+        {
+          "name": "桂皮",
+          "amount": "一根",
+          "normalizedAmount": 1,
+          "normalizedUnit": "根",
+          "group": "配料"
+        },
+        {
+          "name": "八角",
+          "amount": "两朵剪碎",
+          "normalizedAmount": 2,
+          "normalizedUnit": "朵",
+          "normalizationNote": "原始用量：两朵剪碎",
+          "group": "配料"
+        },
+        {
+          "name": "麦芽糖水",
+          "amount": "一小碗",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：一小碗",
+          "group": "配料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "1、将鸽子掏空洗净，鸽肚内放入5克葱5克姜丝；用2克盐、10克料酒、10克生抽、5克葱5克姜、八角、桂皮、香叶进行腌制，腌制时间不少于三十分钟。",
+          "action": "洗",
+          "durationSeconds": 600
+        },
+        {
+          "order": 2,
+          "instruction": "2、将麦芽糖稍加稀释成5克麦芽糖水，然后使用5克麦芽糖水将鸽子涂抹均匀，待风干后入油锅烹制；鸽子风干后入油锅炸制金黄色捞出待用。",
+          "action": "炸",
+          "heat": "中火",
+          "check": "风干后入油锅烹制"
+        },
+        {
+          "order": 3,
+          "instruction": "3、细面放入贴筛摆成巢状入油锅炸制成型后捞出；粉丝切断炸制膨胀捞出，垫入巢中；将鸽子摆入巢中，切生菜丝垫于巢底，盘中再点缀少许黄瓜片即可。",
+          "action": "切",
+          "utensil": "盘",
+          "heat": "中火",
+          "check": "膨胀"
+        }
+      ],
+      "tips": "鸽子上麦芽糖水一定要涂抹均匀，并且一定要风干后才能入油锅炸",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-422.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-117315.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-422",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "麦芽豆浆",
+      "cuisines": [
+        "饮品",
+        "家常菜",
+        "早餐"
+      ],
+      "mealTypes": [
+        "breakfast"
+      ],
+      "flavorTags": [
+        "原味"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": null,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "黄豆",
+          "amount": "50克",
+          "normalizedAmount": 50,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "花生米",
+          "amount": "10粒",
+          "normalizedAmount": 10,
+          "normalizedUnit": "粒",
+          "group": "主料"
+        },
+        {
+          "name": "小麦胚芽",
+          "amount": "20克",
+          "normalizedAmount": 20,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "白糖",
+          "amount": "适量",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：适量",
+          "group": "辅料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "准备好所有的食材。",
+          "action": "备"
+        },
+        {
+          "order": 2,
+          "instruction": "50克黄豆和花生用清水浸泡10分钟。",
+          "action": "泡",
+          "durationSeconds": 600
+        },
+        {
+          "order": 3,
+          "instruction": "把20克小麦胚芽倒入豆浆机中。",
+          "action": "倒"
+        },
+        {
+          "order": 4,
+          "instruction": "再倒入泡过的50克黄豆和花生米。",
+          "action": "泡"
+        },
+        {
+          "order": 5,
+          "instruction": "加盖插入电源按下五谷豆浆键。",
+          "action": "盖"
+        },
+        {
+          "order": 6,
+          "instruction": "煮好后把豆浆过滤一下，喝的时候加入5克白糖即好。",
+          "action": "煮",
+          "heat": "中火",
+          "check": "食材熟透"
+        }
+      ],
+      "tips": "小麦胚芽在超市的五谷杂粮柜台就可买到；白糖随自己口味调节",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-440.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-34275.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-440",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "榴莲奶冻",
+      "cuisines": [
+        "甜品"
+      ],
+      "mealTypes": [],
+      "flavorTags": [
+        "甜味"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": 10,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "吉利丁",
+          "amount": "5g",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "细砂糖",
+          "amount": "25g",
+          "normalizedAmount": 25,
+          "normalizedUnit": "g",
+          "normalizationNote": "基准用量，可根据个人口味调整",
+          "group": "主料"
+        },
+        {
+          "name": "淡奶油",
+          "amount": "125g",
+          "normalizedAmount": 125,
+          "normalizedUnit": "g",
+          "normalizationNote": "基准用量，可根据个人口味调整",
+          "group": "主料"
+        },
+        {
+          "name": "鲜牛奶",
+          "amount": "200g",
+          "normalizedAmount": 200,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "榴莲",
+          "amount": "1大块",
+          "normalizedAmount": "1大块",
+          "group": "辅料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "提前用冷开水泡软5克吉利丁片5克。",
+          "action": "泡"
+        },
+        {
+          "order": 2,
+          "instruction": "200克鲜牛奶加糖，加热煮融，不煮开（摸锅有点烫）。",
+          "action": "煮",
+          "heat": "中火",
+          "check": "煮开"
+        },
+        {
+          "order": 3,
+          "instruction": "锅移开，加125克淡奶油搅拌，再煮几秒（因要放5克吉利丁）停火。",
+          "action": "煮",
+          "heat": "中火",
+          "check": "食材熟透"
+        },
+        {
+          "order": 4,
+          "instruction": "泡软的5克吉利丁片放入，搅拌至融化，放置冷却。",
+          "action": "泡",
+          "check": "融化"
+        },
+        {
+          "order": 5,
+          "instruction": "榴莲压烂成泥。",
+          "action": "压"
+        },
+        {
+          "order": 6,
+          "instruction": "将榴莲平均放在4个碗中。",
+          "action": "放",
+          "utensil": "碗"
+        },
+        {
+          "order": 7,
+          "instruction": "将奶液过滤倒入碗中。",
+          "action": "倒",
+          "utensil": "碗"
+        },
+        {
+          "order": 8,
+          "instruction": "加盖保鲜膜，放冰箱冷藏4小时；（成型后可在上面放蓝莓、树莓等装饰）。",
+          "action": "放",
+          "durationSeconds": 14400
+        }
+      ],
+      "tips": "提前用冷开水泡软吉利丁片;可用果酱代替榴莲",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-464.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-667248.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-464",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "蜂蜜奶冻",
+      "cuisines": [
+        "甜品"
+      ],
+      "mealTypes": [],
+      "flavorTags": [
+        "甜香"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": 1,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "牛奶",
+          "amount": "85g",
+          "normalizedAmount": 85,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "淡奶油",
+          "amount": "65g",
+          "normalizedAmount": 65,
+          "normalizedUnit": "g",
+          "normalizationNote": "基准用量，可根据个人口味调整",
+          "group": "主料"
+        },
+        {
+          "name": "蜂蜜",
+          "amount": "17g",
+          "normalizedAmount": 17,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "吉利丁片",
+          "amount": "2g",
+          "normalizedAmount": 2,
+          "normalizedUnit": "g",
+          "group": "辅料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "先用食用水用冰箱冰成冰的食用水，再把2克吉利丁片用冰的食用水泡发；把泡发的2克吉利丁片沥干。",
+          "action": "泡"
+        },
+        {
+          "order": 2,
+          "instruction": "再把主料搅拌均匀，加热到边缘冒小泡泡。",
+          "action": "泡",
+          "heat": "中火"
+        },
+        {
+          "order": 3,
+          "instruction": "加入2克吉利丁片，用筷子搅拌到没2克吉利丁片。",
+          "action": "拌"
+        },
+        {
+          "order": 4,
+          "instruction": "装杯，冷藏5小时以上。",
+          "action": "冷藏",
+          "durationSeconds": 18000
+        }
+      ],
+      "tips": "",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-477.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-665715.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-477",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "鸡胸肉玉米胡萝卜包子",
+      "cuisines": [
+        "面食",
+        "包子"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "咸鲜"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": 60,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "鸡胸肉",
+          "amount": "300g",
+          "normalizedAmount": 300,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "玉米粒",
+          "amount": "150g",
+          "normalizedAmount": 150,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "胡萝卜",
+          "amount": "1个（约120g）",
+          "normalizedAmount": 120,
+          "normalizedUnit": "g",
+          "normalizationNote": "原始用量：1个（约120g）",
+          "group": "主料"
+        },
+        {
+          "name": "葱",
+          "amount": "1段",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1段",
+          "group": "辅料"
+        },
+        {
+          "name": "姜",
+          "amount": "3-4片",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：3-4片",
+          "group": "辅料"
+        },
+        {
+          "name": "花椒",
+          "amount": "1g（依个人喜好）",
+          "normalizedAmount": 1,
+          "normalizedUnit": "g",
+          "normalizationNote": "原始用量：1g（依个人喜好）；基准用量，可根据个人口味调整",
+          "group": "辅料"
+        },
+        {
+          "name": "八角",
+          "amount": "2个（依个人喜好）",
+          "normalizedAmount": 2,
+          "normalizedUnit": "个",
+          "normalizationNote": "原始用量：2个（依个人喜好）",
+          "group": "辅料"
+        },
+        {
+          "name": "生抽",
+          "amount": "2勺",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：2勺",
+          "group": "调料"
+        },
+        {
+          "name": "蚝油",
+          "amount": "1勺",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1勺",
+          "group": "调料"
+        },
+        {
+          "name": "食盐",
+          "amount": "½勺",
+          "normalizedAmount": 2,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：½勺",
+          "group": "调料"
+        },
+        {
+          "name": "香油",
+          "amount": "1勺",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1勺",
+          "group": "调料"
+        },
+        {
+          "name": "食用油",
+          "amount": "2勺",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：2勺",
+          "group": "调料"
+        },
+        {
+          "name": "复合白胡椒粉",
+          "amount": "一小撮",
+          "normalizedAmount": 1,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：一小撮",
+          "group": "调料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "做5克葱5克姜水：5克葱段、5克姜片加入100ml温水抓揉浸泡10分钟，过滤留汁水备用。",
+          "action": "泡",
+          "durationSeconds": 600
+        },
+        {
+          "order": 2,
+          "instruction": "处理300克鸡胸肉：300克鸡胸肉剁成肉糜，分次加入2~3勺葱5克姜水，顺着同一方向搅拌至肉馅吸饱水分发黏；加入10克生抽、10克蚝油、一小撮白胡椒粉搅匀，腌制10分钟去腥；⚠️这款白胡椒含辣椒，少量放。",
+          "action": "腌",
+          "durationSeconds": 600,
+          "check": "肉馅吸饱水分发黏"
+        },
+        {
+          "order": 3,
+          "instruction": "120克胡萝卜擦细丝，放少许油小火炒1分钟断生，盛出放凉。",
+          "action": "炒",
+          "heat": "小火",
+          "durationSeconds": 60,
+          "check": "断生"
+        },
+        {
+          "order": 4,
+          "instruction": "甜150克玉米粒洗净，充分沥干水分。",
+          "action": "洗"
+        },
+        {
+          "order": 5,
+          "instruction": "拌馅：腌好的300克鸡胸肉倒入2勺食用油拌匀锁水；放入放凉120克胡萝卜丝、150克玉米粒轻轻翻拌；包包子之前再加盐、10克香油拌匀；（盐最后放，防止出水）。",
+          "action": "腌"
+        },
+        {
+          "order": 6,
+          "instruction": "包制：包好包子醒发15分钟。",
+          "action": "包",
+          "durationSeconds": 900
+        },
+        {
+          "order": 7,
+          "instruction": "蒸制:水开上锅大火蒸12分钟，关火焖3分钟再开盖。",
+          "action": "蒸",
+          "heat": "大火",
+          "durationSeconds": 720,
+          "check": "食材熟透"
+        }
+      ],
+      "tips": "白胡椒粉含有辣椒成分，不要多放，不然会掩盖玉米清甜；拌配菜不要大力搅拌，避免馅料出水泡烂包子皮",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-494.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-667954.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-494",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "家常包子",
+      "cuisines": [
+        "面食",
+        "包子"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "原味"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": 60,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "中筋面粉",
+          "amount": "500g",
+          "normalizedAmount": 500,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "温水",
+          "amount": "（30-38°）260ml",
+          "normalizedAmount": 260,
+          "normalizedUnit": "ml",
+          "normalizationNote": "原始用量：（30-38°）260ml",
+          "group": "主料"
+        },
+        {
+          "name": "干酵母",
+          "amount": "5g",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "group": "辅料"
+        },
+        {
+          "name": "白糖",
+          "amount": "10g",
+          "normalizedAmount": 10,
+          "normalizedUnit": "g",
+          "normalizationNote": "基准用量，可根据个人口味调整",
+          "group": "调料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "260毫升温水里放入10克白糖搅匀，加入5克干酵母静置5分钟，水面起细泡沫代表酵母活化成功。",
+          "action": "泡",
+          "durationSeconds": 300
+        },
+        {
+          "order": 2,
+          "instruction": "酵母水分次倒入面粉，搅拌成面絮。",
+          "action": "拌"
+        },
+        {
+          "order": 3,
+          "instruction": "下手揉成面团，揉至表面大致光滑不粘手。",
+          "action": "揉",
+          "check": "表面大致光滑不粘手"
+        },
+        {
+          "order": 4,
+          "instruction": "盖上盖子，温暖处发酵约1小时，发酵至2倍大，手指戳洞不回缩不塌陷。",
+          "action": "盖",
+          "durationSeconds": 3600,
+          "check": "2倍大"
+        },
+        {
+          "order": 5,
+          "instruction": "取出面团反复按压揉匀，排干净内部大气泡。",
+          "action": "泡"
+        },
+        {
+          "order": 6,
+          "instruction": "面团搓长条，切成均等面剂，擀成中间厚边缘薄的包子皮。",
+          "action": "切"
+        },
+        {
+          "order": 7,
+          "instruction": "包好包子放入蒸屉，盖盖二次醒发15-20分钟，生胚轻按能缓慢回弹。",
+          "action": "蒸",
+          "heat": "中火",
+          "durationSeconds": 1200,
+          "check": "食材熟透"
+        },
+        {
+          "order": 8,
+          "instruction": "冷水上锅，大火烧开转中火蒸12分钟，关火焖3分钟再开盖，防止回缩。",
+          "action": "蒸",
+          "heat": "大火",
+          "durationSeconds": 720,
+          "check": "烧开"
+        }
+      ],
+      "tips": "1.水温不能超过40℃，高温会烫死酵母导致发不起来；​2.环境温度低发酵变慢，可以放在温水上方保温发酵；​3.二次醒发非常关键，醒发不足包子发硬，醒发过度容易塌陷；​4.一定要冷水上锅蒸，关火焖3分钟再开盖",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-495.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-667955.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-495",
+      "dataStandard": "structured-v4"
+    },
+    {
+      "name": "全麦馒头",
+      "cuisines": [
+        "面食"
+      ],
+      "mealTypes": [
+        "lunch",
+        "dinner"
+      ],
+      "flavorTags": [
+        "清淡"
+      ],
+      "difficulty": "easy",
+      "estimatedMinutes": null,
+      "description": "",
+      "ingredients": [
+        {
+          "name": "全麦粉",
+          "amount": "500g",
+          "normalizedAmount": 500,
+          "normalizedUnit": "g",
+          "group": "主料"
+        },
+        {
+          "name": "水",
+          "amount": "260ml",
+          "normalizedAmount": 260,
+          "normalizedUnit": "ml",
+          "group": "辅料"
+        },
+        {
+          "name": "干酵母",
+          "amount": "5g",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "基准用量，可根据个人口味调整",
+          "group": "调料"
+        },
+        {
+          "name": "牛奶",
+          "amount": "200毫升",
+          "normalizedAmount": 200,
+          "normalizedUnit": "g",
+          "normalizationNote": "按液体近似密度换算；可根据个人口味调整；原始用量：200毫升",
+          "group": "调料"
+        },
+        {
+          "name": "玉米油",
+          "amount": "5ml",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "按液体近似密度换算；可根据个人口味调整；原始用量：5ml",
+          "group": "调料"
+        },
+        {
+          "name": "鲜鸡蛋",
+          "amount": "1个",
+          "normalizedAmount": 5,
+          "normalizedUnit": "g",
+          "normalizationNote": "家庭烹饪基准用量，可根据个人口味调整；原始用量：1个",
+          "group": "调料"
+        }
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "instruction": "500克全麦粉和以上材料混合发酵发酵好的面团反复揉匀排气，分成均等面剂，揉成馒头生坯。",
+          "action": "揉"
+        },
+        {
+          "order": 2,
+          "instruction": "生坯摆入蒸锅，二次醒发15分钟，冷260毫升水上锅，大火烧开转中火蒸20分钟。",
+          "action": "蒸",
+          "utensil": "蒸锅",
+          "heat": "大火",
+          "durationSeconds": 900,
+          "check": "烧开"
+        },
+        {
+          "order": 3,
+          "instruction": "关火后焖3分钟再开盖，防止回缩。",
+          "action": "盖",
+          "durationSeconds": 180
+        }
+      ],
+      "tips": "•全麦粉筋度低，面团别太软，成品更挺实；•控糖人群可完全不加糖",
+      "coverUrl": "/Zhiweimi/recipe-images/lib-513.jpg",
+      "source": "美食天下",
+      "sourceUrl": "https://home.meishichina.com/recipe-667243.html",
+      "sourceType": "library",
+      "status": "published",
+      "favorite": false,
+      "id": "lib-513",
+      "dataStandard": "structured-v4"
+    }
+  ]
+}

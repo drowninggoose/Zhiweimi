@@ -8,7 +8,18 @@ New-Item -ItemType Directory -Force -Path $localTemp | Out-Null
 $env:TMP=$localTemp
 $env:TEMP=$localTemp
 if(-not (Get-Command node -ErrorAction SilentlyContinue)){throw '请先安装 Node.js 24 LTS。'}
-if(-not (Test-Path -LiteralPath (Join-Path $projectDirectory 'node_modules'))){throw '请先在项目目录执行 npm install。'}
+if(-not (Get-Command npm.cmd -ErrorAction SilentlyContinue)){throw '未找到 npm，请重新安装 Node.js 24 LTS 并确认已加入 PATH。'}
+# 首次运行自动安装依赖：评委不需要懂 npm，双击即可
+if(-not (Test-Path -LiteralPath (Join-Path $projectDirectory 'node_modules'))){
+  Write-Host '首次运行，正在安装依赖（约 2-4 分钟，需要联网）……' -ForegroundColor Yellow
+  & npm.cmd ci --no-audit --no-fund
+  if($LASTEXITCODE -ne 0){
+    Write-Host 'npm ci 失败，改用 npm install 重试……' -ForegroundColor Yellow
+    & npm.cmd install --no-audit --no-fund
+    if($LASTEXITCODE -ne 0){throw '依赖安装失败：请检查网络后重试，或先在项目目录执行 npm install。'}
+  }
+  Write-Host '依赖安装完成。' -ForegroundColor Green
+}
 if(-not $SkipBuild){& npm.cmd run build;if($LASTEXITCODE -ne 0){throw '构建失败，服务未启动。'}}
 if(-not (Test-Path -LiteralPath (Join-Path $projectDirectory 'dist\index.html'))){throw '缺少生产构建，请执行 npm run build。'}
 $appAddress='http://localhost:4173'

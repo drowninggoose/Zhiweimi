@@ -22,11 +22,11 @@ test('菜谱筛选始终显示餐次、时间、品类、菜系四个维度', as
   render(<App />);
   const user = userEvent.setup();
 
-  expect(await screen.findByText('按餐次')).toBeInTheDocument();
-  expect(screen.getByText('按时间')).toBeInTheDocument();
-  expect(screen.getByText('按品类')).toBeInTheDocument();
-  expect(screen.getByText('按菜系')).toBeInTheDocument();
+  expect(await screen.findByText('餐次')).toBeInTheDocument();
+  expect(screen.getByText('时间')).toBeInTheDocument();
+  expect(screen.getByText('品类')).toBeInTheDocument();
+  expect(screen.getByText('菜系')).toBeInTheDocument();
 
   await user.click(screen.getByRole('button', { name: '凉菜' }));
-  expect(screen.getByText('按菜系')).toBeInTheDocument();
+  expect(screen.getByText('菜系')).toBeInTheDocument();
 });

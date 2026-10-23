@@ -73,7 +73,7 @@ test('完整本地闭环：图片、刷新持久化、三周期计划、备份�
   await expect(page.getByRole('button', { name: /查看浏览器测试炒蛋/ })).toBeVisible();
   await page.reload();
   await expect(page.getByRole('button', { name: /查看浏览器测试炒蛋/ })).toBeVisible();
-  await page.getByRole('navigation').getByRole('link', { name: '饮食计划助手' }).click();
+  await page.getByRole('navigation').getByRole('link', { name: '饮食计划' }).click();
   await page.getByRole('link', { name: '家庭食材', exact: true }).click();
   await page.getByRole('button', { name: '添加食材' }).click();
   await page.getByLabel('食材名称').fill('鸡蛋');

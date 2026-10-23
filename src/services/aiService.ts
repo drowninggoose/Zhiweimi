@@ -1,4 +1,20 @@
 import type { Recipe, RecipeStep, StoredImage, Utensil } from '../types/models';
+import type { DerivedMemory } from './preferenceMemoryService';
+
+export type PreferenceUnderstanding = {
+  reply: string;
+  memories: DerivedMemory[];
+  avoid: string[];
+  liked: string[];
+  removeAvoid: string[];
+};
+export function understandPreferences(
+  text: string,
+  history: { role: 'assistant' | 'user'; text: string }[],
+  currentMemories: string[],
+) {
+  return post<PreferenceUnderstanding>('/api/ai/preferences', { text, history: history.slice(-10), currentMemories });
+}
 
 export type UtensilEstimate = {
   name: string;
@@ -15,6 +31,14 @@ export type RecipeAdaptation = {
   summary: string;
   warnings: string[];
   steps: Omit<RecipeStep, 'id' | 'order' | 'image'>[];
+};
+
+export type CookingAdjustment = {
+  reply: string;
+  summary: string;
+  warnings: string[];
+  remainingSteps: Omit<RecipeStep, 'id' | 'order' | 'image'>[];
+  changes: { type: 'add' | 'remove' | 'modify'; description: string }[];
 };
 
 async function imageDataUrl(image: StoredImage) {
@@ -60,6 +84,42 @@ export async function adaptRecipe(
       })),
     },
     utensil: { name: utensil.name, type: utensil.type, capacityMl: utensil.capacity },
+    tastePreferences,
+  });
+}
+
+/** 根据当前味道反馈，仅调整尚未执行的步骤。 */
+export async function adjustCookingSteps(
+  recipe: Recipe,
+  currentSteps: RecipeStep[],
+  currentStepIndex: number,
+  feedback: string,
+  tastePreferences: string[],
+): Promise<CookingAdjustment> {
+  return post('/api/ai/adjust-cooking', {
+    recipe: {
+      name: recipe.name,
+      servings: recipe.servings,
+      ingredients: recipe.ingredients,
+      originalSteps: recipe.steps.map(({ order, instruction, heat, durationSeconds, tip, check }) => ({
+        order,
+        instruction,
+        heat,
+        durationSeconds,
+        tip,
+        check,
+      })),
+    },
+    currentSteps: currentSteps.map(({ order, instruction, heat, durationSeconds, tip, check }) => ({
+      order,
+      instruction,
+      heat,
+      durationSeconds,
+      tip,
+      check,
+    })),
+    currentStepIndex,
+    feedback,
     tastePreferences,
   });
 }

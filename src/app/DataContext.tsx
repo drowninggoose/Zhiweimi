@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { repositories } from '../db/repositories';
 import type { DataSnapshot } from '../types/models';
 import { Context } from './data';
@@ -6,6 +6,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<DataSnapshot | null>(null);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
+  const [toastId, setToastId] = useState(0);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (!data) return;
     document.documentElement.style.fontSize = { small: '14px', normal: '16px', large: '18px' }[
@@ -36,6 +38,12 @@ export function DataProvider({ children }: { children: ReactNode }) {
       active = false;
     };
   }, []);
+  useEffect(
+    () => () => {
+      if (toastTimer.current) clearTimeout(toastTimer.current);
+    },
+    [],
+  );
   const run = useCallback(
     async (task: () => Promise<unknown>, message = '已保存') => {
       try {
@@ -43,6 +51,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
         await refresh();
         setNotice(message);
         setError('');
+        if (message) {
+          if (toastTimer.current) clearTimeout(toastTimer.current);
+          setToastId((current) => current + 1);
+          toastTimer.current = setTimeout(() => setToastId(0), 2000);
+        }
         return true;
       } catch (e) {
         setError(`操作失败，原数据未主动清空：${e instanceof Error ? e.message : String(e)}`);
@@ -52,6 +65,13 @@ export function DataProvider({ children }: { children: ReactNode }) {
     [refresh],
   );
   return (
-    <Context.Provider value={{ data, error, notice, refresh, run }}>{children}</Context.Provider>
+    <Context.Provider value={{ data, error, notice, refresh, run }}>
+      {children}
+      {toastId > 0 && (
+        <div className="save-toast" role="status" aria-live="polite" key={toastId}>
+          已保存
+        </div>
+      )}
+    </Context.Provider>
   );
 }

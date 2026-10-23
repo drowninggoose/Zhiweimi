@@ -86,6 +86,8 @@ export type DiaryEntry = Base & {
   mealType: MealType;
   dishName: string;
   image?: StoredImage;
+  /** 没有上传成品照时，沿用菜谱封面地址。 */
+  imageUrl?: string;
   recipeId?: string;
   tasteRating?: string;
   notes?: string;

@@ -5,6 +5,19 @@ export function validateImage(file: File) {
   if (file.size > 10 * 1024 * 1024) throw new Error('图片不能超过10 MB');
   if (file.size === 0) throw new Error('图片为空');
 }
+/** 把菜谱封面 URL 转成日记可用的本地图片；失败时返回 undefined，由调用方保留占位图。 */
+export async function storeImageFromUrl(url: string): Promise<StoredImage | undefined> {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) return undefined;
+    const blob = await response.blob();
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(blob.type)) return undefined;
+    return await storeImage(new File([blob], 'recipe-cover', { type: blob.type }));
+  } catch {
+    return undefined;
+  }
+}
+
 export async function storeImage(file: File): Promise<StoredImage> {
   validateImage(file);
   const bitmap = await createImageBitmap(file);

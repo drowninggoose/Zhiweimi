@@ -30,7 +30,7 @@ test('阶段7界面：按天数生成保存、跳转挑菜替换、重生成与�
     await user.type(screen.getByLabelText('计划天数（1-30）'), String(days));
     await user.click(screen.getByRole('button', { name: '生成演示计划' }));
     await user.click(screen.getByRole('button', { name: '保存计划' }));
-    await screen.findByText('计划已保存');
+    await screen.findByText('已保存');
     await waitFor(async () => {
       expect((await db.mealPlans.toArray()).some((p) => p.dayCount === days)).toBe(true);
     });
@@ -51,8 +51,9 @@ test('阶段7界面：按天数生成保存、跳转挑菜替换、重生成与�
 
   cleanup();
   render(<App />);
-  await screen.findAllByRole('button', { name: '查看计划' });
-  expect(screen.getAllByRole('button', { name: '查看计划' })).toHaveLength(2);
+  await screen.findByRole('heading', { name: '把三餐安排得从容一点' });
+  expect(await screen.findByRole('button', { name: '保存计划' })).toBeInTheDocument();
+  expect(await db.mealPlans.count()).toBe(2);
 });
 test('阶段7界面：家庭食材维护，默认过滤用完记录', async () => {
   window.history.replaceState({}, '', '/planner/pantry');
@@ -84,7 +85,7 @@ test('阶段8：首页日记摘要来自本地数据', async () => {
     expect.stringContaining('/diary?entry='),
   );
   await user.click(
-    within(screen.getByRole('navigation')).getByRole('link', { name: 'DIY美食日记' }),
+    within(screen.getByRole('navigation')).getByRole('link', { name: '美食日记' }),
   );
   await screen.findByRole('heading', { name: '每一餐，都值得记住' });
 });

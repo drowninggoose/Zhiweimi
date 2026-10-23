@@ -3,6 +3,8 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { useData } from '../app/data';
 import { repositories } from '../db/repositories';
 import { Empty } from '../components/common';
+import { Icon } from '../components/Icon';
+import { SectionTitle } from '../components/SectionTitle';
 import { useUnsaved } from '../hooks/useUnsaved';
 import { validatePantry } from '../services/planningService';
 import { stamp, type PantryItem } from '../types/models';
@@ -46,8 +48,8 @@ export function PantryPage() {
   }
   return (
     <>
-      <div className="row between">
-        <h2>家里有什么，就从这里开始</h2>
+      <div className="row between page-intro-row">
+        <SectionTitle icon="fridge">家里有什么，就从这里开始</SectionTitle>
         <button onClick={() => setEditing(blank())}>添加食材</button>
       </div>
       <div className="card row">
@@ -127,8 +129,14 @@ export function PantryPage() {
                 {{ available: '现有', 'used-up': '已用完', discarded: '不要了' }[p.status]}
               </p>
               <div className="row">
-                <button className="secondary" onClick={() => setEditing(p)}>
-                  编辑
+                <button
+                  type="button"
+                  className="secondary icon-button"
+                  aria-label="编辑"
+                  title="编辑"
+                  onClick={() => setEditing(p)}
+                >
+                  <Icon name="pencil" />
                 </button>
                 {p.status === 'available' ? (
                   <>

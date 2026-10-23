@@ -14,19 +14,23 @@ beforeEach(async () => {
   await db.recipes.bulkAdd(fixtureRecipes());
 });
 afterEach(cleanup);
-test('阶段9：逐字符输入多项偏好、忌口和清空，保存后正确拆分', async () => {
+test('阶段9：用聊天告诉 AI 偏好，写入忌口与口味记忆库', async () => {
   window.history.replaceState({}, '', '/settings');
   render(<App />);
   const user = userEvent.setup();
-  await user.type(await screen.findByLabelText('默认口味（逗号分隔）'), '清淡,鲜香');
-  await user.type(screen.getByLabelText('忌口（逗号分隔）'), '虾,鱼');
-  await user.click(screen.getByRole('button', { name: '保存偏好' }));
-  await screen.findByText('偏好已保存');
-  expect((await db.preferences.get('current'))?.flavorPreferences).toEqual(['清淡', '鲜香']);
-  expect((await db.preferences.get('current'))?.avoidIngredients).toEqual(['虾', '鱼']);
-  await user.clear(screen.getByLabelText('忌口（逗号分隔）'));
-  await user.click(screen.getByRole('button', { name: '保存偏好' }));
-  expect((await db.preferences.get('current'))?.avoidIngredients).toEqual([]);
+  await user.type(await screen.findByLabelText('告诉知味咪你的偏好'), '我口味清淡，不吃虾和鱼');
+  await user.click(screen.getByRole('button', { name: '发送' }));
+  await screen.findByText('已保存');
+  await waitFor(async () => {
+    const current = await db.preferences.get('current');
+    expect(current?.avoidIngredients).toEqual(expect.arrayContaining(['虾', '鱼']));
+  });
+  const saltMemory = await db.preferenceMemory.get('memory-saltiness');
+  expect(saltMemory?.polarity).toBeLessThan(0);
+  expect(saltMemory?.active).toBe(true);
+  expect(
+    (await db.preferenceMemory.toArray()).some((item) => item.dimension === 'disliked_ingredient'),
+  ).toBe(true);
 });
 test('阶段8：查看菜谱后返回首页，最近查看立即显示新菜谱', async () => {
   window.history.replaceState({}, '', '/recipes/fixture-10');
@@ -34,5 +38,9 @@ test('阶段8：查看菜谱后返回首页，最近查看立即显示新菜谱'
   const user = userEvent.setup();
   await screen.findByRole('heading', { name: '虾仁炒饭' });
   await user.click(within(screen.getByRole('navigation')).getByRole('link', { name: '首页总览' }));
-  await waitFor(() => expect(screen.getByLabelText('首页烹饪菜谱')).toHaveValue('fixture-10'));
+  expect(screen.getByRole('link', { name: '选择一道菜，去全部菜谱' })).toHaveAttribute(
+    'href',
+    '/recipes',
+  );
+  await waitFor(() => expect(document.querySelector('a[href="/cook/fixture-10"]')).not.toBeNull());
 });

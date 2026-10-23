@@ -3,8 +3,15 @@ import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useData } from '../app/data';
 import { repositories } from '../db/repositories';
 import { Empty, Image, ImageUpload, RecipeCard } from '../components/common';
+import { FoodIcon } from '../components/FoodIcon';
+import { Icon, type IconName } from '../components/Icon';
+import { StepText } from '../components/StepText';
+import { SectionTitle } from '../components/SectionTitle';
+import { readDiaryPick, writeDiaryPick } from '../components/diaryPick';
 import { useUnsaved } from '../hooks/useUnsaved';
 import { validateRecipe } from '../services/recipeService';
+import { cleanRecipe } from '../services/ingredientCleanup';
+import { isSeasoning } from '../services/ingredientGroups';
 import { id, stamp, meals, mealLabels, type MealType, type Recipe } from '../types/models';
 // 品类
 const DISH_TYPES: { value: string; label: string; match: string[] }[] = [
@@ -40,18 +47,23 @@ const TIME_RANGES: { value: string; label: string; max: number; min?: number }[]
 /** 一行一个维度的平铺标签。 */
 function TileRow({
   label,
+  icon,
   options,
   value,
   onChange,
 }: {
   label: string;
+  icon: IconName;
   options: { value: string; label: string }[];
   value: string;
   onChange: (v: string) => void;
 }) {
   return (
     <div className="tile-row">
-      <span className="index-label">{label}</span>
+      <span className="index-label">
+        <Icon name={icon} size={17} />
+        {label}
+      </span>
       <div className="tile-scroll">
         {options.map((o) => (
           <button
@@ -76,10 +88,21 @@ export function RecipesPage() {
   const { data } = useData();
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  const [query, setQuery] = useState(params.get('q') ?? '');
-  /** 从饮食计划跳过来挑菜：每张卡片多一个「选它」按钮 */
-  const pickMode = params.get('pick') === '1';
-  const [source, setSource] = useState('');
+  const [query] = useState(params.get('q') ?? '');
+  /**
+   * 从其他页面跳过来挑菜：饮食计划用 pick=1，美食日记用 pick=diary。
+   * 每张卡片会多一个「选它」按钮。
+   */
+  const pickTarget = params.get('pick');
+  const pickForDiary = pickTarget === 'diary';
+  const pickMode = pickTarget === '1' || pickForDiary;
+  useEffect(() => {
+    if (!pickMode) return;
+    // 从日记/计划页滚到一半跳过来时，先回到顶部，让挑菜提示可见。
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, [pickMode]);
+  const [source, setSource] = useState(params.get('source') ?? '');
   // 四个并列维度：餐次 / 时间 / 品类 / 菜系
   const [meal, setMeal] = useState('');
   const [timeRange, setTimeRange] = useState('');
@@ -120,79 +143,79 @@ export function RecipesPage() {
   }
   if (source === 'mine') results = results.filter((r) => r.sourceType === 'user');
   else if (source === 'favorites') results = results.filter((r) => r.favorite);
+  else if (source === 'recent')
+    results = results.filter((r) => data.demoState.recentRecipeIds.includes(r.id));
   const kw = query.trim();
   if (kw)
     results = results.filter((r) =>
       `${r.name} ${r.ingredients.map((i) => i.name).join(' ')}`.includes(kw),
     );
 
-  // 搜索联想
-  const dishHits = kw ? data.recipes.filter((r) => r.name.includes(kw)).slice(0, 6) : [];
-  const ingredientHits = kw
-    ? [...new Set(data.recipes.flatMap((r) => r.ingredientTags))]
-        .filter((i) => i.includes(kw))
-        .slice(0, 6)
-    : [];
-  const showSuggest = kw !== '' && (dishHits.length > 0 || ingredientHits.length > 0);
-
-  /** 清除筛选：四个维度、来源、搜索框全部回到「全部」。 */
-  function resetAll() {
-    setMeal('');
-    setTimeRange('');
-    setDishType('');
-    setCuisine('');
-    setSource('');
-    setQuery('');
-  }
   return (
     <>
-      <div className="row between">
-        <h2>找到想做的那道菜</h2>
-        <Link className="button" to="/recipes/new">
-          新建菜谱
-        </Link>
+      <div className="row between recipe-head-row">
+        <SectionTitle icon="search">找到想做的那道菜</SectionTitle>
+        <div className="recipe-tools">
+          <button
+            type="button"
+            className={`recipe-tool icon-button${source === 'recent' ? ' is-active' : ''}`}
+            data-label="最近看过"
+            aria-label="最近看过"
+            aria-pressed={source === 'recent'}
+            title="最近看过"
+            onClick={() => setSource(source === 'recent' ? '' : 'recent')}
+          >
+            <Icon name="clock" size={22} />
+          </button>
+          <button
+            type="button"
+            className={`recipe-tool icon-button${source === 'mine' ? ' is-active' : ''}`}
+            data-label="我的菜谱"
+            aria-label="我的菜谱"
+            aria-pressed={source === 'mine'}
+            title="我的菜谱"
+            onClick={() => setSource(source === 'mine' ? '' : 'mine')}
+          >
+            <Icon name="book" size={22} />
+          </button>
+          <button
+            type="button"
+            className={`recipe-tool icon-button${source === 'favorites' ? ' is-active' : ''}`}
+            data-label="我的收藏"
+            aria-label="我的收藏"
+            aria-pressed={source === 'favorites'}
+            title="我的收藏"
+            onClick={() => setSource(source === 'favorites' ? '' : 'favorites')}
+          >
+            <Icon name="heart" size={22} />
+          </button>
+          <Link
+            className="button icon-button recipe-tool recipe-tool-new"
+            to="/recipes/new"
+            data-label="新建菜谱"
+            aria-label="新建菜谱"
+            title="新建菜谱"
+          >
+            <Icon name="plus" size={24} />
+          </Link>
+        </div>
       </div>
       {pickMode ? (
         <p role="status" className="notice">
-          正在为饮食计划挑菜：选中后会自动回到计划页替换。
-          <Link to="/planner">放弃选择，返回计划</Link>
+          {pickForDiary
+            ? '正在为美食日记挑菜：选中后会自动回到日记页。'
+            : '正在为饮食计划挑菜：选中后会自动回到计划页替换。'}
+          <Link to={pickForDiary ? '/diary?pickReturn=1' : '/planner'}>
+            放弃选择，返回{pickForDiary ? '日记' : '计划'}
+          </Link>
         </p>
       ) : null}
-      <div className="search-box" style={{ marginBottom: 16 }}>
-        <input
-          aria-label="菜谱搜索"
-          placeholder="菜名或食材"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
-        {showSuggest && (
-          <div className="suggest-list">
-            {dishHits.map((r) => (
-              <button
-                key={`d-${r.id}`}
-                onClick={() => {
-                  setQuery('');
-                  navigate(`/recipes/${r.id}`);
-                }}
-              >
-                {r.name}
-                <span className="suggest-kind">菜品</span>
-              </button>
-            ))}
-            {ingredientHits.map((i) => (
-              <button key={`i-${i}`} onClick={() => setQuery(i)}>
-                {i}
-                <span className="suggest-kind">食材</span>
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
 
       {/* 四个并列维度：一行一个维度，选项平铺，第一个永远是「全部」 */}
       <div className="tile-rows">
         <TileRow
-          label="按餐次"
+          label="餐次"
+          icon="bowl"
           options={[
             { value: '', label: '全部' },
             ...meals.map((m) => ({ value: m, label: mealLabels[m] })),
@@ -201,7 +224,8 @@ export function RecipesPage() {
           onChange={setMeal}
         />
         <TileRow
-          label="按时间"
+          label="时间"
+          icon="clock"
           options={[
             { value: '', label: '全部' },
             ...TIME_RANGES.map((t) => ({ value: t.value, label: t.label })),
@@ -210,7 +234,8 @@ export function RecipesPage() {
           onChange={setTimeRange}
         />
         <TileRow
-          label="按品类"
+          label="品类"
+          icon="tag"
           options={[
             { value: '', label: '全部' },
             ...DISH_TYPES.map((d) => ({ value: d.value, label: d.label })),
@@ -220,31 +245,15 @@ export function RecipesPage() {
             setDishType(v);
           }}
         />
-        <TileRow label="按菜系" options={cuisineOptions} value={cuisine} onChange={setCuisine} />
+        <TileRow
+          label="菜系"
+          icon="compass"
+          options={cuisineOptions}
+          value={cuisine}
+          onChange={setCuisine}
+        />
       </div>
 
-      <div className="row between" style={{ marginBottom: 14 }}>
-        <span className="muted">{results.length} 道菜</span>
-        <div className="row">
-          <button
-            type="button"
-            className={source === 'mine' ? '' : 'secondary'}
-            onClick={() => setSource(source === 'mine' ? '' : 'mine')}
-          >
-            我的菜谱
-          </button>
-          <button
-            type="button"
-            className={source === 'favorites' ? '' : 'secondary'}
-            onClick={() => setSource(source === 'favorites' ? '' : 'favorites')}
-          >
-            我的收藏
-          </button>
-          <button type="button" className="secondary" onClick={resetAll}>
-            清除筛选
-          </button>
-        </div>
-      </div>
       {results.length ? (
         <div className="grid">
           {results.map((r) => (
@@ -255,6 +264,12 @@ export function RecipesPage() {
                   type="button"
                   className="pick-choose"
                   onClick={() => {
+                    if (pickForDiary) {
+                      const draft = readDiaryPick();
+                      if (draft) writeDiaryPick({ ...draft, recipeId: r.id });
+                      navigate('/diary?pickReturn=1');
+                      return;
+                    }
                     try {
                       const pending = sessionStorage.getItem('zhiweimi:plan-pick');
                       sessionStorage.setItem(
@@ -293,6 +308,8 @@ export function RecipeDetail() {
         菜谱不存在。<Link to="/recipes">返回菜谱总览</Link>
       </Empty>
     );
+  const foodIngredients = recipe.ingredients.filter((i) => !isSeasoning(i));
+  const seasonings = recipe.ingredients.filter(isSeasoning);
   return (
     <>
       <section className="card detail">
@@ -312,67 +329,129 @@ export function RecipeDetail() {
           </p>
           <div className="row">
             <button
-              className="secondary"
+              type="button"
+              className={`secondary icon-button${recipe.favorite ? ' is-favorite' : ''}`}
+              aria-label={recipe.favorite ? '取消收藏' : '收藏'}
+              title={recipe.favorite ? '取消收藏' : '收藏'}
               onClick={() => void run(() => repositories.recipes.favorite(recipe), '收藏已更新')}
             >
-              {recipe.favorite ? '取消收藏' : '收藏'}
+              <Icon name={recipe.favorite ? 'heart-filled' : 'heart'} />
             </button>
             {recipe.status === 'published' && (
-              <Link className="button" to={`/cook/${recipe.id}`}>
-                开始烹饪
+              <Link
+                className="button icon-text-button"
+                to={`/cook/${recipe.id}`}
+                aria-label="开始烹饪"
+                title="开始烹饪"
+              >
+                <Icon name="flame" />
+                <span>开火</span>
               </Link>
             )}
-            <Link className="button secondary" to={`/recipes/${recipe.id}/edit`}>
-              {recipe.sourceType === 'user' ? '编辑菜谱' : '创建副本'}
+            <Link
+              className="button secondary icon-button"
+              to={`/recipes/${recipe.id}/edit`}
+              aria-label={recipe.sourceType === 'user' ? '编辑菜谱' : '创建副本'}
+              title={recipe.sourceType === 'user' ? '编辑菜谱' : '创建副本'}
+            >
+              <Icon name={recipe.sourceType === 'user' ? 'pencil' : 'copy'} />
             </Link>
             {recipe.sourceType === 'user' && (
               <button
-                className="danger"
+                type="button"
+                className="danger icon-button"
+                aria-label="删除菜谱"
+                title="删除菜谱"
                 onClick={async () => {
                   if (
                     confirm('删除菜谱？关联日记会保留，计划中的引用将移除。') &&
-                    (await run(() => repositories.recipes.delete(recipe.id), '菜谱已删除'))
+                    (await run(() => repositories.recipes.delete(recipe.id), ''))
                   )
                     navigate('/recipes');
                 }}
               >
-                删除菜谱
+                <Icon name="trash" />
               </button>
             )}
           </div>
         </div>
       </section>
-      <section className="card">
-        <h2>食材清单</h2>
-        {recipe.ingredients.map((i) => (
-          <p key={i.id}>
-            {i.name} {i.amount} {i.unit} {i.note}
-          </p>
-        ))}
+      <section className="card recipe-uses">
+        <div className="recipe-ingredients-heading">
+          <h2 className="cooking-section-title">
+            <span className="cooking-title-icon">
+              <Icon name="bowl" size={26} />
+            </span>
+            <span>食材与调味</span>
+          </h2>
+          <Link className="button secondary" to="/utensils#my-fridge">
+            <Icon name="fridge" size={22} />
+            前往冰箱
+          </Link>
+        </div>
+        <div className="ingredient-split">
+          <div className="ingredient-column">
+            <h3>食材</h3>
+            {foodIngredients.length ? (
+              foodIngredients.map((i) => (
+                <p key={i.id}>
+                  <span className="ingredient-name">
+                    <FoodIcon name={i.name} size={40} />
+                    <span>{i.name}</span>
+                  </span>
+                  <small>
+                    {`${i.amount ?? '适量'} ${i.unit ?? ''}`.trim()}
+                    {i.note ? ` · ${i.note}` : ''}
+                  </small>
+                </p>
+              ))
+            ) : (
+              <p className="muted">无</p>
+            )}
+          </div>
+          <div className="ingredient-column seasoning-column">
+            <h3>调味料</h3>
+            {seasonings.length ? (
+              seasonings.map((i) => (
+                <p key={i.id}>
+                  <span className="ingredient-name">
+                    <FoodIcon name={i.name} size={40} />
+                    <span>{i.name}</span>
+                  </span>
+                  <small>{`${i.amount ?? '适量'} ${i.unit ?? ''}`.trim()}</small>
+                </p>
+              ))
+            ) : (
+              <p className="muted">无</p>
+            )}
+          </div>
+        </div>
       </section>
-      <section className="card">
-        <h2>烹饪步骤</h2>
-        {recipe.steps.map((s, i) => (
-          <article key={s.id}>
-            <h3>
-              {i + 1}. {s.instruction}
-            </h3>
-            <p className="muted">
-              {[
-                s.action && `动作：${s.action}`,
-                s.utensil && `器具：${s.utensil}`,
-                s.heat && `火力：${s.heat}`,
-                s.durationSeconds && `时长：${Math.ceil(s.durationSeconds / 60)}分钟`,
-                s.check && `完成标准：${s.check}`,
-              ]
-                .filter(Boolean)
-                .join(' · ')}
-            </p>
-            {s.personalization && <p className="muted">{s.personalization}</p>}
-            {s.image && <Image image={s.image} alt={`步骤${i + 1}`} className="upload-preview" />}
-          </article>
-        ))}
-        <p>{recipe.notes}</p>
+      <section className="card recipe-steps">
+        <h2 className="cooking-section-title">
+          <span className="cooking-title-icon">
+            <Icon name="pot" size={26} />
+          </span>
+          <span>烹饪步骤</span>
+        </h2>
+        <ol className="step-timeline">
+          {recipe.steps.map((s, i) => (
+            <li className="timeline-step" key={s.id}>
+              <span className="timeline-number" aria-hidden="true">
+                {i + 1}
+              </span>
+              <div className="timeline-body">
+                <p>
+                  <StepText text={s.instruction} ingredients={recipe.ingredients} />
+                </p>
+                {s.image && (
+                  <Image image={s.image} alt={`步骤${i + 1}`} className="upload-preview" />
+                )}
+              </div>
+            </li>
+          ))}
+        </ol>
+        {recipe.notes && <p className="recipe-notes">{recipe.notes}</p>}
       </section>
     </>
   );
@@ -417,22 +496,24 @@ export function RecipeEditor() {
     setDirty(true);
   };
   async function save(status: Recipe['status']) {
-    const value = {
+    const value = cleanRecipe({
       ...recipe,
       status,
       cuisines: recipe.cuisines.map((s) => s.trim()).filter(Boolean),
       flavorTags: recipe.flavorTags.map((s) => s.trim()).filter(Boolean),
       ingredientTags: recipe.ingredients.map((i) => i.name).filter(Boolean),
       steps: recipe.steps.map((s, i) => ({ ...s, order: i + 1 })),
-    };
+    });
     try {
       validateRecipe(value);
       setError('');
       if (
-        await run(() =>
-          source?.sourceType === 'user'
-            ? repositories.recipes.update(value)
-            : repositories.recipes.create(value),
+        await run(
+          () =>
+            source?.sourceType === 'user'
+              ? repositories.recipes.update(value)
+              : repositories.recipes.create(value),
+          '已保存',
         )
       ) {
         permitLeave();
@@ -564,31 +645,36 @@ export function RecipeEditor() {
           />
           <button
             type="button"
-            className="secondary"
+            className="secondary icon-button"
             disabled={i === 0}
+            aria-label={`上移食材${i + 1}`}
+            title="上移食材"
             onClick={() => {
               const items = [...recipe.ingredients];
               [items[i - 1], items[i]] = [items[i], items[i - 1]];
               update({ ingredients: items });
             }}
           >
-            上移食材
+            <Icon name="up" />
           </button>
           <button
             type="button"
-            className="secondary"
+            className="secondary icon-button"
+            aria-label={`删除食材${i + 1}`}
+            title="删除食材"
             onClick={() => update({ ingredients: recipe.ingredients.filter((_, j) => j !== i) })}
           >
-            删除食材
+            <Icon name="trash" />
           </button>
         </div>
       ))}
       <button
         type="button"
-        className="secondary"
+        className="secondary icon-text-button"
         onClick={() => update({ ingredients: [...recipe.ingredients, { id: id(), name: '' }] })}
       >
-        添加食材
+        <Icon name="plus" />
+        <span>添加食材</span>
       </button>
       <h3>步骤</h3>
       {recipe.steps.map((step, i) => (
@@ -616,36 +702,41 @@ export function RecipeEditor() {
           <div className="row">
             <button
               type="button"
-              className="secondary"
+              className="secondary icon-button"
               disabled={i === 0}
+              aria-label={`上移步骤${i + 1}`}
+              title="上移步骤"
               onClick={() => {
                 const items = [...recipe.steps];
                 [items[i - 1], items[i]] = [items[i], items[i - 1]];
                 update({ steps: items });
               }}
             >
-              上移步骤
+              <Icon name="up" />
             </button>
             <button
               type="button"
-              className="secondary"
+              className="secondary icon-button"
+              aria-label={`删除步骤${i + 1}`}
+              title="删除步骤"
               onClick={() => update({ steps: recipe.steps.filter((_, j) => j !== i) })}
             >
-              删除步骤
+              <Icon name="trash" />
             </button>
           </div>
         </div>
       ))}
       <button
         type="button"
-        className="secondary"
+        className="secondary icon-text-button"
         onClick={() =>
           update({
             steps: [...recipe.steps, { id: id(), order: recipe.steps.length + 1, instruction: '' }],
           })
         }
       >
-        添加步骤
+        <Icon name="plus" />
+        <span>添加步骤</span>
       </button>
       <label>
         备注

@@ -1,19 +1,31 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useData } from '../app/data';
 import { repositories } from '../db/repositories';
 import { Empty, Image, ImageUpload, RecipeCard } from '../components/common';
+import { FoodIcon } from '../components/FoodIcon';
+import { Icon } from '../components/Icon';
+import { SectionTitle } from '../components/SectionTitle';
+import { StarRating } from '../components/StarRating';
+import { StepText } from '../components/StepText';
 import { filterRecipes } from '../services/recipeService';
-import { adaptInstructionForUtensils, remedies } from '../services/cookingService';
+import { adaptInstructionForUtensils } from '../services/cookingService';
+import { isSeasoning } from '../services/ingredientGroups';
+import { personalizeRecipe } from '../services/preferenceMemoryService';
+import { adjustCookingSteps, type CookingAdjustment } from '../services/aiService';
+import { buildVocabulary, prepareAudio, transcribe } from '../services/voiceService';
 import { formatSavedAgo, useCookingProgress, type CookingDraft } from '../hooks/useCookingProgress';
 import {
   meals,
   mealLabels,
+  id,
   stamp,
   today,
   type CookingProgress,
   type MealType,
+  type PreferenceMemory,
   type Recipe,
+  type RecipeStep,
   type StoredImage,
 } from '../types/models';
 
@@ -57,7 +69,7 @@ export function ContinueCooking() {
   return (
     <section className="card continue-cooking">
       <div className="row between">
-        <h2>继续上次的烹饪</h2>
+        <SectionTitle icon="clock">继续上次的烹饪</SectionTitle>
         <span className="tag">进度已自动保存</span>
       </div>
       <p className="muted">做到一半也可以先去忙别的，回来接着做。</p>
@@ -81,11 +93,12 @@ export function ContinueCooking() {
               </Link>
               <button
                 type="button"
-                className="secondary"
+                className="secondary icon-button"
                 aria-label={`删除${item.recipeName}的进度`}
+                title="删除进度"
                 onClick={() => void removeProgress(item.recipeId, item.recipeName)}
               >
-                删除进度
+                <Icon name="trash" />
               </button>
             </span>
           </div>
@@ -97,6 +110,7 @@ export function ContinueCooking() {
 
 export function CookingSelect() {
   const { data } = useData();
+  const navigate = useNavigate();
   const [query, setQuery] = useState('');
   const [tab, setTab] = useState('all');
   if (!data) return null;
@@ -105,30 +119,96 @@ export function CookingSelect() {
   );
   if (tab === 'recent')
     recipes = recipes.filter((r) => data.demoState.recentRecipeIds.includes(r.id));
+  const stats = [
+    {
+      label: '用户菜谱',
+      icon: 'book' as const,
+      count: data.recipes.filter((recipe) => recipe.sourceType === 'user').length,
+      to: '/recipes?source=mine',
+    },
+    { label: '美食日记', icon: 'camera' as const, count: data.diaryEntries.length, to: '/diary' },
+    { label: '饮食计划', icon: 'calendar' as const, count: data.mealPlans.length, to: '/planner' },
+    {
+      label: '家庭食材',
+      icon: 'fridge' as const,
+      count: data.pantryItems.filter((item) => item.status === 'available').length,
+      to: '/utensils',
+    },
+    {
+      label: '我的收藏',
+      icon: 'heart' as const,
+      count: data.recipes.filter((recipe) => recipe.favorite).length,
+      to: '/recipes?source=favorites',
+    },
+  ];
   return (
     <>
-      <h2>今天从哪道菜开始？</h2>
+      <div className="cook-dashboard-head">
+        <span className="section-kicker">LOCAL KITCHEN DATA</span>
+        <SectionTitle icon="chart">本地数据，一目了然</SectionTitle>
+      </div>
+      <div className="cook-stats">
+        {stats.map((item, index) => (
+          <Link
+            className="cook-stat"
+            to={item.to}
+            key={item.label}
+            aria-label={`${item.label} ${item.count}`}
+            style={{ animationDelay: `${index * -0.65}s` }}
+          >
+            <span
+              className="stat-ripple"
+              aria-hidden="true"
+              style={{ animationDelay: `${index * 0.45}s` }}
+            />
+            <span className="cook-stat-icon" aria-hidden="true">
+              <Icon name={item.icon} size={22} />
+            </span>
+            <strong>{item.count}</strong>
+            <span>{item.label}</span>
+          </Link>
+        ))}
+      </div>
+      <SectionTitle icon="flame">今天从哪道菜开始？</SectionTitle>
       <ContinueCooking />
-      <div className="card row">
+      <div className="card row cook-tabs-row">
         <input
           aria-label="烹饪菜谱搜索"
           value={query}
           placeholder="搜索菜名或食材"
           onChange={(e) => setQuery(e.target.value)}
         />
-        {[
-          ['all', '全部菜谱'],
-          ['recent', '最近查看'],
-          ['favorites', '已收藏'],
-        ].map(([value, label]) => (
+        <div className="cook-tabs">
           <button
-            key={value}
-            className={tab === value ? '' : 'secondary'}
-            onClick={() => setTab(value)}
+            type="button"
+            className={`cook-tab${tab === 'all' ? ' is-active' : ''}`}
+            onClick={() => navigate('/recipes')}
           >
-            {label}
+            全部菜谱
           </button>
-        ))}
+          <button
+            type="button"
+            className={`cook-tab cook-tab-icon${tab === 'recent' ? ' is-active' : ''}`}
+            data-label="最近查看"
+            aria-label="最近查看"
+            title="最近查看"
+            aria-pressed={tab === 'recent'}
+            onClick={() => setTab('recent')}
+          >
+            <Icon name="clock" size={21} />
+          </button>
+          <button
+            type="button"
+            className={`cook-tab cook-tab-icon${tab === 'favorites' ? ' is-active' : ''}`}
+            data-label="已收藏"
+            aria-label="已收藏"
+            title="已收藏"
+            aria-pressed={tab === 'favorites'}
+            onClick={() => setTab('favorites')}
+          >
+            <Icon name="heart" size={21} />
+          </button>
+        </div>
       </div>
       {recipes.length ? (
         <div className="grid">
@@ -142,11 +222,58 @@ export function CookingSelect() {
     </>
   );
 }
+function ingredientKey(value: string) {
+  return value.replace(/[\s（）()]/g, '').trim();
+}
+
+function fridgeHas(name: string, fridgeNames: string[]) {
+  const key = ingredientKey(name);
+  if (!key) return false;
+  // 只做同名匹配：冰箱里有“番茄”不该把“番茄酱”也自动勾上。
+  return fridgeNames.some((item) => ingredientKey(item) === key);
+}
+
 export function CookingPrepare() {
   const { recipeId } = useParams();
   const { data, run } = useData();
   const navigate = useNavigate();
   const recipe = data?.recipes.find((r) => r.id === recipeId && r.status === 'published');
+  const fridgeNames = useMemo(
+    () =>
+      (data?.pantryItems ?? [])
+        .filter((item) => item.status === 'available')
+        .map((item) => item.name),
+    [data?.pantryItems],
+  );
+  const autoChecked = useMemo(() => {
+    const next: Record<string, boolean> = {};
+    for (const item of recipe?.ingredients ?? []) {
+      next[item.id] = fridgeHas(item.name, fridgeNames);
+    }
+    return next;
+  }, [recipe, fridgeNames]);
+  const [manualChecks, setManualChecks] = useState<Record<string, boolean>>({});
+  const isChecked = (id: string) => manualChecks[id] ?? autoChecked[id] ?? false;
+  const foodIngredients = recipe?.ingredients.filter((item) => !isSeasoning(item)) ?? [];
+  const [memories, setMemories] = useState<PreferenceMemory[]>([]);
+
+  useEffect(() => {
+    let active = true;
+    void repositories.preferenceMemory
+      .active()
+      .then((list) => {
+        if (active) setMemories(list);
+      })
+      .catch(() => undefined);
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const personalization = useMemo(
+    () => (recipe ? personalizeRecipe(recipe, memories, data?.preferences) : null),
+    [recipe, memories, data?.preferences],
+  );
 
   if (!recipe || !data)
     return (
@@ -159,6 +286,9 @@ export function CookingPrepare() {
   /** 进入分步烹饪：先把当前状态存成进度。 */
   async function startSteps() {
     const now = new Date().toISOString();
+    // 每次开始烹饪都重新读取记忆库，避免用打开页面时的旧偏好。
+    const activeMemories = await repositories.preferenceMemory.active();
+    const tuned = personalizeRecipe(target, activeMemories, data!.preferences);
     await run(
       () =>
         repositories.cookingProgress.save({
@@ -173,7 +303,9 @@ export function CookingPrepare() {
           completed: false,
           // 不再由用户单选厨具，换算直接使用已上传的全部厨具
           utensilChoices: {},
-          rating: '满意',
+          adaptedSteps: tuned.steps,
+          adaptationSummary: tuned.summary,
+          rating: '★★★★☆',
           notes: '',
           date: today(),
           mealType: 'dinner',
@@ -185,17 +317,62 @@ export function CookingPrepare() {
   return (
     <>
       <section className="card">
-        <h2>准备制作 {recipe.name}</h2>
-        <span className="tag">原始菜谱用量</span>
-        <p className="muted">开始烹饪后，才会根据你家中的厨具换算用量。</p>
-        {recipe.ingredients.map((i) => (
-          <div className="ingredient-row" key={i.id}>
-            <strong>{i.name}</strong>
-            <span>{`${i.amount ?? '适量'} ${i.unit ?? ''}`.trim()}</span>
+        <SectionTitle icon="flame">准备制作 {recipe.name}</SectionTitle>
+        <div className="memory-tune">
+          <div className="memory-tune-title">
+            <span className="section-kicker">AI TASTE MEMORY</span>
+            <strong>口味记忆</strong>
           </div>
-        ))}
-        <button onClick={() => void startSteps()}>准备完成，开始分步烹饪</button>
-        <p className="muted">开始后进度会自动保存，随时可以离开再回来。</p>
+          <div className="memory-tune-chips">
+            {(personalization?.notes ?? []).length ? (
+              personalization?.notes.map((note) => <span key={note}>{note}</span>)
+            ) : (
+              <span className="memory-tune-empty">暂未设置偏好</span>
+            )}
+          </div>
+          <Link className="memory-tune-link" to="/settings">
+            调整口味
+          </Link>
+        </div>
+        <div className="cook-ingredients">
+          {foodIngredients.map((i) => {
+            const checked = isChecked(i.id);
+            return (
+              <button
+                type="button"
+                className={`cook-ingredient${checked ? ' is-checked' : ''}`}
+                key={i.id}
+                aria-pressed={checked}
+                aria-label={`${checked ? '取消勾选' : '勾选'}${i.name}`}
+                onClick={() =>
+                  setManualChecks((current) => ({
+                    ...current,
+                    [i.id]: !(current[i.id] ?? autoChecked[i.id] ?? false),
+                  }))
+                }
+              >
+                <span className="ingredient-tick" aria-hidden="true">
+                  {checked ? <Icon name="check" size={16} /> : null}
+                </span>
+                <FoodIcon name={i.name} size={36} />
+                <strong>{i.name}</strong>
+                <span className="cook-amount">
+                  {`${i.amount ?? '适量'} ${i.unit ?? ''}`.trim()}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+        <div className="cook-ingredient-foot">
+          <span className="muted">
+            冰箱已备 {foodIngredients.filter((item) => isChecked(item.id)).length} /{' '}
+            {foodIngredients.length} 样食材
+          </span>
+          <Link to="/utensils">去我的厨房补货</Link>
+        </div>
+        <button className="right-action" onClick={() => void startSteps()}>
+          准备完成，开始分步烹饪
+        </button>
       </section>
     </>
   );
@@ -227,8 +404,8 @@ export function CookingSteps() {
     <CookingStepsView
       key={effectiveRecipe.id}
       recipe={effectiveRecipe}
+      originalRecipe={recipe}
       saved={progress.initial}
-      savedAt={progress.savedAt}
       onSave={progress.save}
       onDiscard={progress.discard}
     />
@@ -238,27 +415,25 @@ export function CookingSteps() {
 /** 分步烹饪主体：状态初值来自上次保存的进度，之后每次改动自动保存。 */
 function CookingStepsView({
   recipe,
+  originalRecipe,
   saved,
-  savedAt,
   onSave,
   onDiscard,
 }: {
   recipe: Recipe;
+  originalRecipe: Recipe;
   saved: CookingProgress | null;
-  savedAt?: string;
   onSave: (draft: CookingDraft) => void;
   onDiscard: () => Promise<void>;
 }) {
   const { data, run } = useData();
   const navigate = useNavigate();
-  const maxIndex = Math.max(recipe.steps.length - 1, 0);
+  const [workingSteps, setWorkingSteps] = useState<RecipeStep[]>(recipe.steps);
+  const maxIndex = Math.max(workingSteps.length - 1, 0);
   const [index, setIndex] = useState(() => Math.min(Math.max(saved?.stepIndex ?? 0, 0), maxIndex));
   const [complete, setComplete] = useState(() => Boolean(saved?.completed));
-  const [problem, setProblem] = useState<keyof typeof remedies | undefined>(
-    saved?.problem as keyof typeof remedies | undefined,
-  );
   const [image, setImage] = useState<StoredImage | undefined>(saved?.image);
-  const [rating, setRating] = useState(saved?.rating || '满意');
+  const [rating, setRating] = useState(saved?.rating || '★★★★☆');
   const [notes, setNotes] = useState(saved?.notes ?? '');
   const [date, setDate] = useState(saved?.date || today());
   const [meal, setMeal] = useState<MealType>(saved?.mealType || 'dinner');
@@ -266,9 +441,9 @@ function CookingStepsView({
   const [finished, setFinished] = useState(false);
   const utensilChoices = useMemo(() => saved?.utensilChoices ?? {}, [saved]);
   const cookingUtensilId = saved?.cookingUtensilId;
-  const adaptedSteps = saved?.adaptedSteps;
-  const adaptationSummary = saved?.adaptationSummary;
-  const step = recipe.steps[index];
+  const [adaptationSummary, setAdaptationSummary] = useState(saved?.adaptationSummary ?? '');
+  const adaptedSteps = workingSteps;
+  const step = workingSteps[index];
 
   // 每次改动都自动保存（Hook 内部防抖 600ms）；结束后停止写入
   useEffect(() => {
@@ -281,7 +456,6 @@ function CookingStepsView({
       cookingUtensilId,
       adaptedSteps,
       adaptationSummary,
-      problem,
       rating,
       notes,
       date,
@@ -297,7 +471,6 @@ function CookingStepsView({
     cookingUtensilId,
     adaptedSteps,
     adaptationSummary,
-    problem,
     rating,
     notes,
     date,
@@ -306,16 +479,19 @@ function CookingStepsView({
   ]);
 
   async function saveDiary() {
+    // 用户没上传成品照时，沿用原菜谱封面。
+    const diaryImage = image ?? recipe.coverImage;
+    const imageUrl = !image && !recipe.coverImage ? recipe.coverUrl : undefined;
     const entry = {
       ...stamp(),
       date,
       mealType: meal,
       dishName: recipe.name,
       recipeId: recipe.id,
-      image,
+      image: diaryImage,
+      imageUrl,
       tasteRating: rating,
       notes,
-      adjustmentNotes: problem ? `${problem}：${remedies[problem]}` : undefined,
     };
     const existing = data?.diaryEntries.find((e) => e.date === date && e.mealType === meal);
     if (existing && !confirm('同一天同一餐已有日记，是否替换？')) return;
@@ -329,10 +505,7 @@ function CookingStepsView({
   }
   return complete ? (
     <section className="card fields">
-      <h2>完成啦，记录这一餐</h2>
-      {savedAt ? (
-        <p className="save-hint">↺ 已恢复上次的进度（{formatSavedAgo(savedAt)}保存）</p>
-      ) : null}
+      <SectionTitle icon="camera">完成啦，记录这一餐</SectionTitle>
       <ImageUpload label="成品照片" value={image} onChange={setImage} />
       <div className="row">
         <label>
@@ -349,20 +522,13 @@ function CookingStepsView({
             ))}
           </select>
         </label>
-        <label>
-          味道评价
-          <select value={rating} onChange={(e) => setRating(e.target.value)}>
-            <option>满意</option>
-            <option>还不错</option>
-            <option>下次再调整</option>
-          </select>
-        </label>
+        <StarRating value={rating} onChange={setRating} />
       </div>
       <label>
         心得
         <textarea value={notes} onChange={(e) => setNotes(e.target.value)} />
       </label>
-      <div className="row">
+      <div className="row complete-actions">
         <button onClick={() => void saveDiary()}>保存到日记</button>
         <button
           className="secondary"
@@ -377,63 +543,241 @@ function CookingStepsView({
           仅完成
         </button>
       </div>
-      <p className="muted">填写内容也会自动保存，中途离开不会丢。</p>
     </section>
   ) : (
     <>
       <section className="card cooking-step">
         <span className="tag">
-          步骤 {index + 1} / {recipe.steps.length}
+          步骤 {index + 1} / {workingSteps.length}
         </span>
         <h2>{recipe.name}</h2>
         <p className="step-instruction">
-          {adaptInstructionForUtensils(step.instruction, recipe.ingredients, data?.utensils ?? [])}
+          <StepText
+            text={adaptInstructionForUtensils(
+              step.instruction,
+              recipe.ingredients,
+              data?.utensils ?? [],
+            )}
+            ingredients={recipe.ingredients}
+          />
         </p>
-        <p className="muted">
-          {[
-            step.action && `动作：${step.action}`,
-            step.utensil && `器具：${step.utensil}`,
-            step.heat && `火力：${step.heat}`,
-            step.durationSeconds && `时长：${Math.ceil(step.durationSeconds / 60)}分钟`,
-            step.check && `完成标准：${step.check}`,
-          ]
-            .filter(Boolean)
-            .join(' · ')}
-        </p>
-        {step.personalization && <p className="muted">{step.personalization}</p>}
         {step.image && (
           <Image image={step.image} alt={`步骤${index + 1}`} className="upload-preview" />
         )}
+        <CookingStepAssistant
+          recipe={originalRecipe}
+          steps={workingSteps}
+          stepIndex={index}
+          summary={adaptationSummary}
+          tastePreferences={data?.preferences.flavorPreferences ?? []}
+          onAdjusted={(nextSteps, result) => {
+            setWorkingSteps(nextSteps);
+            setAdaptationSummary(result.summary);
+          }}
+          onRestore={() => {
+            const completed = workingSteps.slice(0, index + 1);
+            const originalRemaining = originalRecipe.steps.slice(index + 1);
+            setWorkingSteps(
+              [...completed, ...originalRemaining].map((item, order) => ({ ...item, order })),
+            );
+            setAdaptationSummary('');
+          }}
+        />
         <div className="row between">
           <button className="secondary" disabled={index === 0} onClick={() => setIndex(index - 1)}>
             上一步
           </button>
-          {index < recipe.steps.length - 1 ? (
+          {index < workingSteps.length - 1 ? (
             <button onClick={() => setIndex(index + 1)}>下一步</button>
           ) : (
             <button onClick={() => setComplete(true)}>完成烹饪</button>
           )}
         </div>
-        <p className="muted save-hint">
-          {savedAt ? '↺ 已恢复上次进度 · ' : ''}进度会自动保存，可以先去浏览别的功能，回来接着做。
-        </p>
-      </section>
-      <section className="card">
-        <h2>味道或状态需要调整？</h2>
-        <span className="tag">模拟建议，不替代实际判断</span>
-        <div className="row">
-          {Object.keys(remedies).map((p) => (
-            <button
-              key={p}
-              className="secondary"
-              onClick={() => setProblem(p as keyof typeof remedies)}
-            >
-              {p}
-            </button>
-          ))}
-        </div>
-        {problem && <p>{remedies[problem]}</p>}
       </section>
     </>
+  );
+}
+
+type AssistantState = 'idle' | 'recording' | 'transcribing' | 'thinking';
+
+function CookingStepAssistant({
+  recipe,
+  steps,
+  stepIndex,
+  summary,
+  tastePreferences,
+  onAdjusted,
+  onRestore,
+}: {
+  recipe: Recipe;
+  steps: RecipeStep[];
+  stepIndex: number;
+  summary: string;
+  tastePreferences: string[];
+  onAdjusted: (steps: RecipeStep[], result: CookingAdjustment) => void;
+  onRestore: () => void;
+}) {
+  const [text, setText] = useState('');
+  const [state, setState] = useState<AssistantState>('idle');
+  const [reply, setReply] = useState('');
+  const [changes, setChanges] = useState<string[]>([]);
+  const [warnings, setWarnings] = useState<string[]>([]);
+  const [error, setError] = useState('');
+  const recorder = useRef<MediaRecorder | null>(null);
+  const chunks = useRef<Blob[]>([]);
+  const stream = useRef<MediaStream | null>(null);
+  const supported =
+    typeof navigator !== 'undefined' &&
+    Boolean(navigator.mediaDevices?.getUserMedia) &&
+    typeof MediaRecorder !== 'undefined';
+
+  useEffect(
+    () => () => {
+      recorder.current?.stop();
+      stream.current?.getTracks().forEach((track) => track.stop());
+    },
+    [],
+  );
+
+  async function submit(value = text) {
+    const feedback = value.trim();
+    if (!feedback || state !== 'idle') return;
+    setState('thinking');
+    setError('');
+    try {
+      const result = await adjustCookingSteps(recipe, steps, stepIndex, feedback, tastePreferences);
+      const prefix = steps.slice(0, stepIndex + 1);
+      const remaining = result.remainingSteps.map((item, offset) => ({
+        ...item,
+        durationSeconds: item.durationSeconds ?? undefined,
+        id: id(),
+        order: prefix.length + offset,
+      }));
+      const next = [...prefix, ...remaining].map((item, order) => ({ ...item, order }));
+      onAdjusted(next, result);
+      setReply(result.reply);
+      setChanges(result.changes.map((item) => item.description));
+      setWarnings(result.warnings);
+      setText('');
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : String(cause));
+    } finally {
+      setState('idle');
+    }
+  }
+
+  async function startRecording() {
+    if (!supported || state !== 'idle') return;
+    setError('');
+    try {
+      const media = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream.current = media;
+      chunks.current = [];
+      const instance = new MediaRecorder(media);
+      recorder.current = instance;
+      instance.ondataavailable = (event) => {
+        if (event.data.size) chunks.current.push(event.data);
+      };
+      instance.onstop = () => {
+        const blob = new Blob(chunks.current, { type: instance.mimeType || 'audio/webm' });
+        stream.current?.getTracks().forEach((track) => track.stop());
+        stream.current = null;
+        void (async () => {
+          setState('transcribing');
+          try {
+            const result = await transcribe(await prepareAudio(blob), buildVocabulary(recipe));
+            setText(result.text);
+            setState('idle');
+            await submit(result.text);
+          } catch (cause) {
+            setError(cause instanceof Error ? cause.message : String(cause));
+            setState('idle');
+          }
+        })();
+      };
+      instance.start();
+      setState('recording');
+    } catch (cause) {
+      setError(cause instanceof Error ? `无法使用麦克风：${cause.message}` : '无法使用麦克风');
+    }
+  }
+
+  function stopRecording() {
+    if (recorder.current?.state === 'recording') recorder.current.stop();
+  }
+
+  return (
+    <div className="step-ai" role="region" aria-label="AI 味道调整助手">
+      <div className="step-ai-head">
+        <span className="step-ai-mark" aria-hidden="true">
+          <Icon name="bowl" size={26} />
+        </span>
+        <span>
+          <strong>尝一口，告诉知味咪</strong>
+        </span>
+        {summary && (
+          <button className="step-ai-restore" type="button" onClick={onRestore}>
+            恢复原后续步骤
+          </button>
+        )}
+      </div>
+      <div className="step-ai-compose">
+        <textarea
+          rows={2}
+          value={text}
+          onChange={(event) => setText(event.target.value)}
+          placeholder="例如：现在尝起来有点咸，后面怎么补救？"
+          disabled={state !== 'idle'}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+              event.preventDefault();
+              void submit();
+            }
+          }}
+        />
+        <button
+          type="button"
+          className={`secondary step-ai-mic${state === 'recording' ? ' is-recording' : ''}`}
+          disabled={!supported || (state !== 'idle' && state !== 'recording')}
+          onClick={state === 'recording' ? stopRecording : () => void startRecording()}
+          title={supported ? '语音输入' : '当前浏览器不支持录音'}
+        >
+          {state === 'recording' ? '停止' : '语音'}
+        </button>
+        <button
+          type="button"
+          disabled={!text.trim() || state !== 'idle'}
+          onClick={() => void submit()}
+        >
+          {state === 'thinking'
+            ? '正在调整…'
+            : state === 'transcribing'
+              ? '识别中…'
+              : '调整后续步骤'}
+        </button>
+      </div>
+      {(reply || changes.length > 0) && (
+        <div className="step-ai-result" aria-live="polite">
+          {reply && <strong>{reply}</strong>}
+          {changes.length > 0 && (
+            <ul>
+              {changes.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          )}
+          {warnings.map((item) => (
+            <p className="step-ai-warning" key={item}>
+              注意：{item}
+            </p>
+          ))}
+        </div>
+      )}
+      {error && (
+        <p className="form-error" role="alert">
+          {error}
+        </p>
+      )}
+    </div>
   );
 }

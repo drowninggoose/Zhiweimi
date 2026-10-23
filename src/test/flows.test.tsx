@@ -41,7 +41,8 @@ test('阶段4界面：两件厨具创建、编辑与删除', async () => {
   window.history.replaceState({}, '', '/utensils');
   render(<App />);
   const user = userEvent.setup();
-  await screen.findByRole('heading', { name: '熟悉的厨具，直观的用量' });
+  await screen.findByRole('heading', { name: '我的厨房' });
+  await screen.findByRole('button', { name: '添加厨具' });
   for (const name of ['杯子', '饭碗']) {
     await user.click(screen.getByRole('button', { name: '添加厨具' }));
     await user.type(screen.getByLabelText('厨具名称'), name);
@@ -64,7 +65,7 @@ test('阶段4界面：两件厨具创建、编辑与删除', async () => {
   );
   expect(await db.utensils.count()).toBe(1);
 });
-test('阶段5界面：准备到分步、八种建议、完成保存日记', async () => {
+test('阶段5界面：准备到分步、完成保存日记', async () => {
   window.history.replaceState({}, '', '/cook/fixture-1');
   render(<App />);
   const user = userEvent.setup();
@@ -73,8 +74,6 @@ test('阶段5界面：准备到分步、八种建议、完成保存日记', asyn
   );
   expect(await screen.findByText('步骤 1 / 3')).toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: '下一步' }));
-  await user.click(screen.getByRole('button', { name: '太咸' }));
-  expect(screen.getByText(/少量加入未调味的同类食材/)).toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: '下一步' }));
   await user.click(screen.getByRole('button', { name: '完成烹饪' }));
   await user.type(screen.getByLabelText('心得'), '完成闭环');

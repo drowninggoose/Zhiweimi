@@ -56,7 +56,6 @@ export function RecommendationCardDeck({ dishes }: { dishes: RecommendedDish[] }
           url={current.recipe.coverUrl}
           alt={current.recipe.name}
         />
-        <strong className="rec-strip-title">{current.recipe.name}</strong>
       </Link>
       <div className="rec-strip-dots" aria-label={`第 ${safeIndex + 1} 张，共 ${dishes.length} 张`}>
         {dishes.map((dish, dotIndex) => (
@@ -66,6 +65,7 @@ export function RecommendationCardDeck({ dishes }: { dishes: RecommendedDish[] }
             className={dotIndex === safeIndex ? 'active' : ''}
             aria-label={`查看第 ${dotIndex + 1} 道推荐：${dish.recipe.name}`}
             aria-current={dotIndex === safeIndex ? 'true' : undefined}
+            onMouseEnter={() => setIndex(dotIndex)}
             onClick={() => setIndex(dotIndex)}
           />
         ))}

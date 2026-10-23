@@ -443,9 +443,7 @@ export function buildRecommendation(
     groups,
     dishes,
     note: relaxed ? `符合${mealLabels[meal]}的菜谱不够，先按你的偏好从全部菜谱里挑。` : undefined,
-    fallback: pool.length
-      ? undefined
-      : '没有符合当前偏好与忌口的菜谱，请到「数据与设置」放宽条件。',
+    fallback: pool.length ? undefined : '没有符合当前偏好与忌口的菜谱，请到「偏好记忆」放宽条件。',
   };
 }
 
@@ -525,7 +523,7 @@ export function buildRandomPicks(
       seed,
       candidateCount: 0,
       dishes: [],
-      fallback: '没有符合条件的菜谱，先去「数据与设置」里放宽忌口或难度试试。',
+      fallback: '没有符合条件的菜谱，先去「偏好记忆」里放宽忌口或难度试试。',
     };
   }
 
@@ -533,9 +531,7 @@ export function buildRandomPicks(
     const reasons: string[] = [];
     let weight = 1;
     const hits = conditionsSafe.flavors.filter((flavor) =>
-      [recipe.name, ...recipe.flavorTags, ...recipe.cuisines].some((text) =>
-        text.includes(flavor),
-      ),
+      [recipe.name, ...recipe.flavorTags, ...recipe.cuisines].some((text) => text.includes(flavor)),
     );
     if (hits.length) {
       weight += 2 * hits.length;

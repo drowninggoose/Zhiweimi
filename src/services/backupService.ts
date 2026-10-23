@@ -204,7 +204,7 @@ export function parseBackup(text: string): DataSnapshot {
   const slots = new Set<string>();
   for (const value of data.diaryEntries as unknown[]) {
     const r = base(value);
-    optionalStrings(r, ['tasteRating', 'notes', 'adjustmentNotes']);
+    optionalStrings(r, ['tasteRating', 'notes', 'adjustmentNotes', 'imageUrl']);
     date(r.date, '日记日期');
     oneOf(r.mealType, ['breakfast', 'lunch', 'dinner'], '餐次');
     string(r.dishName, '日记菜名');

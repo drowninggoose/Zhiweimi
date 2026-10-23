@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { repositories } from '../db/repositories';
 import { stamp, type AssistantMessage, type Recipe } from '../types/models';
 import { memoryLabels } from '../services/memoryPolicy';
+import { deriveMemoryEvidence, memoryNote } from '../services/preferenceMemoryService';
 import {
   askAssistant,
   buildVocabulary,
@@ -110,6 +111,7 @@ export function useVoiceAssistant({
         // 记忆写入：按 3 次阈值规则累积
         const memoryWrites: AssistantMessage['memoryWrites'] = [];
         const justRemembered: string[] = [];
+        const handledDimensions = new Set(chat.memory.map((item) => item.dimension));
         for (const item of chat.memory) {
           try {
             const applied = await repositories.preferenceMemory.applyEvidence({
@@ -126,6 +128,26 @@ export function useVoiceAssistant({
             if (applied.activated) {
               justRemembered.push(...memoryLabels([applied.next]));
             }
+          } catch {
+            // 单条记忆失败不阻断回答
+          }
+        }
+        // 做菜时的“太咸了 / 少放油”也写入记忆；明确指令即时生效，反馈按推断累计。
+        for (const item of deriveMemoryEvidence(question)) {
+          if (handledDimensions.has(item.dimension)) continue;
+          try {
+            const applied = await repositories.preferenceMemory.applyEvidence({
+              dimension: item.dimension,
+              polarity: item.polarity,
+              source: item.source,
+              evidence: item.evidence,
+            });
+            memoryWrites.push({
+              dimension: item.dimension,
+              polarity: item.polarity,
+              source: item.source,
+            });
+            if (applied.activated) justRemembered.push(memoryNote(applied.next));
           } catch {
             // 单条记忆失败不阻断回答
           }
@@ -187,6 +209,40 @@ export function useVoiceAssistant({
         });
       } catch (e) {
         if (!mounted.current) return;
+        // 没有模型服务时，至少让“太咸了 / 少放油”这类调整进入记忆库。
+        const localEvidence = deriveMemoryEvidence(question);
+        if (localEvidence.length) {
+          const notes: string[] = [];
+          for (const item of localEvidence) {
+            try {
+              const applied = await repositories.preferenceMemory.applyEvidence({
+                dimension: item.dimension,
+                polarity: item.polarity,
+                source: item.source,
+                evidence: item.evidence,
+              });
+              if (applied.activated) notes.push(memoryNote(applied.next));
+            } catch {
+              // 单条失败不阻断
+            }
+          }
+          setResult({
+            question,
+            answer: notes.length
+              ? `记住了：${notes.join('、')}。下次会按这个调整。`
+              : '这条反馈我先记下了，多做几次我会形成稳定记忆。',
+            actions: [],
+            recommended: [],
+            wantRecommend: false,
+            justRemembered: notes,
+          });
+          setError('');
+          setStatus('speaking');
+          speak(notes.length ? `记住了：${notes.join('、')}` : '这条反馈我先记下了', () => {
+            if (mounted.current) setStatus('idle');
+          });
+          return;
+        }
         setError(e instanceof Error ? e.message : String(e));
         setStatus('idle');
       }

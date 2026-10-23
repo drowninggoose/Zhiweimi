@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import type { Recipe, StoredImage } from '../types/models';
 import { storeImage } from '../services/imageService';
 import { repositories } from '../db/repositories';
 import { useData } from '../app/data';
+import { Icon } from './Icon';
 export function Image({
   image,
   url,
@@ -98,27 +99,25 @@ export function RecipeCard({ recipe }: { recipe: Recipe }) {
           <span className="tag">{recipe.cuisines.join(' / ')}</span>
           <span className="muted">{recipe.estimatedMinutes ?? '—'} 分钟</span>
         </div>
-        <p className="muted">
-          {recipe.flavorTags.join(' · ')} ·{' '}
-          {recipe.status === 'draft'
-            ? '草稿'
-            : recipe.sourceType === 'library'
-              ? '菜谱库'
-              : recipe.sourceType === 'demo'
-                ? '演示菜谱'
-                : '我的菜谱'}
-        </p>
-        <div className="row">
+        <div className="row recipe-card-actions">
           <button
-            className="secondary"
+            type="button"
+            className={`secondary icon-button${recipe.favorite ? ' is-favorite' : ''}`}
             aria-label={`${recipe.favorite ? '取消收藏' : '收藏'}${recipe.name}`}
+            title={recipe.favorite ? '取消收藏' : '收藏'}
             onClick={() => void run(() => repositories.recipes.favorite(recipe), '收藏已更新')}
           >
-            {recipe.favorite ? '♥ 已收藏' : '♡ 收藏'}
+            <Icon name={recipe.favorite ? 'heart-filled' : 'heart'} />
           </button>
           {recipe.status === 'published' && (
-            <Link className="button" to={`/cook/${recipe.id}`}>
-              开始烹饪
+            <Link
+              className="button icon-text-button"
+              to={`/cook/${recipe.id}`}
+              aria-label={`开始烹饪${recipe.name}`}
+              title="开始烹饪"
+            >
+              <Icon name="flame" />
+              <span>开火</span>
             </Link>
           )}
         </div>
@@ -126,10 +125,36 @@ export function RecipeCard({ recipe }: { recipe: Recipe }) {
     </article>
   );
 }
+const EMPTY_MASCOTS: Array<{ test: RegExp; file: string; size: number }> = [
+  { test: /^\/planner\/pantry/, file: '05-ingredient-basket', size: 148 },
+  { test: /^\/planner/, file: '11-meal-planner', size: 158 },
+  { test: /^\/utensils/, file: '06-frying-pan', size: 148 },
+  { test: /^\/cook/, file: '07-kitchen-timer', size: 138 },
+  { test: /^\/recipes/, file: '04-recipe-search', size: 136 },
+  { test: /^\/diary/, file: '10-food-diary-camera', size: 142 },
+  { test: /^\/settings/, file: '12-data-settings', size: 132 },
+];
+
+function emptyMascotFor(pathname: string) {
+  return EMPTY_MASCOTS.find((item) => item.test.test(pathname)) ?? {
+    file: '09-delicious-success',
+    size: 136,
+  };
+}
+
 export function Empty({ children }: { children: React.ReactNode }) {
+  const { pathname } = useLocation();
+  const mascot = emptyMascotFor(pathname);
   return (
-    <section className="card empty">
-      🍽️<p>{children}</p>
+    <section className="card empty empty-with-mascot">
+      <p>{children}</p>
+      <img
+        className="empty-mascot"
+        src={`/mascot/motion-v3/${mascot.file}.webp?v=3`}
+        alt=""
+        style={{ width: `${Math.round(mascot.size * 1.28)}px` }}
+        draggable={false}
+      />
     </section>
   );
 }

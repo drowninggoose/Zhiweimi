@@ -18,8 +18,15 @@ export default defineConfig(({ mode }) => {
     baseUrl: voiceEnv.VOICE_BASE_URL,
     dashscopeBase: voiceEnv.VOICE_DASHSCOPE_BASE,
     asrModel: voiceEnv.VOICE_ASR_MODEL,
+    workspaceId: voiceEnv.VOICE_WORKSPACE_ID,
   });
   return {
+    server: {
+      watch: {
+        // 编辑器原子写入会在源码旁生成临时目录；Windows 上 Vite 监听它会 EBUSY。
+        ignored: ['**/.tmp/**', '**/*.tmpdir/**', '**/.*.tmpdir/**'],
+      },
+    },
     plugins: [
       react(),
       {

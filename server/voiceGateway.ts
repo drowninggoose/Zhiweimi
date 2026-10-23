@@ -20,6 +20,8 @@ export type VoiceGatewayConfig = {
   dashscopeBase?: string;
   asrModel?: string;
   apiKey?: string;
+  /** 百炼「工作空间」专用 Key（sk-ws- 开头）需要同时带工作空间 ID。 */
+  workspaceId?: string;
 };
 
 const DEFAULT_BASE_URL = 'https://dashscope.aliyuncs.com/compatible-mode/v1';
@@ -355,22 +357,43 @@ export function normalizeChatResult(raw: Json, userText = ''): NormalizedReply {
   };
 }
 
+function authHeaders(config: VoiceGatewayConfig): Record<string, string> {
+  const apiKey = config.apiKey ?? process.env.VOICE_API_KEY;
+  if (!apiKey) throw new Error('服务端未配置 VOICE_API_KEY，请检查 .env');
+  const headers: Record<string, string> = { Authorization: `Bearer ${apiKey}` };
+  const workspaceId = config.workspaceId ?? process.env.VOICE_WORKSPACE_ID;
+  if (workspaceId) headers['X-DashScope-Workspace'] = workspaceId;
+  return headers;
+}
+
+/** 把上游鉴权错误翻译成用户能照着修的提示。 */
+function authError(status: number, body: Json): Error | null {
+  const rawError = body.error && typeof body.error === 'object' ? (body.error as Json) : null;
+  const code = asString(rawError?.code) || asString(body.code);
+  const message =
+    asString(rawError?.message) || asString(body.message) || `上游请求失败（${status}）`;
+  if (status === 401 || code === 'invalid_api_key' || /incorrect api key/i.test(message)) {
+    return new Error(
+      '百炼 API Key 无效：请到百炼控制台重新创建 API Key（地域建议选华北2·北京），更新 .env 后重启 npm run dev。若 Key 以 sk-ws- 开头，属于工作空间专用 Key，还需要在 .env 里填写 VOICE_WORKSPACE_ID。',
+    );
+  }
+  return null;
+}
+
 async function callChatModel(
   config: VoiceGatewayConfig,
   messages: unknown[],
   userText: string,
 ): Promise<NormalizedReply> {
-  const apiKey = config.apiKey ?? process.env.VOICE_API_KEY;
   const model = config.model ?? process.env.VOICE_MODEL ?? DEFAULT_MODEL;
   const baseUrl = (config.baseUrl ?? process.env.VOICE_BASE_URL ?? DEFAULT_BASE_URL).replace(
     /\/$/,
     '',
   );
-  if (!apiKey) throw new Error('服务端未配置 VOICE_API_KEY，请检查 .env');
 
   const response = await fetch(`${baseUrl}/chat/completions`, {
     method: 'POST',
-    headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+    headers: { ...authHeaders(config), 'Content-Type': 'application/json' },
     signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     body: JSON.stringify({
       model,
@@ -386,6 +409,8 @@ async function callChatModel(
   });
   const body = (await response.json()) as Json;
   if (!response.ok) {
+    const friendly = authError(response.status, body);
+    if (friendly) throw friendly;
     const error =
       body.error && typeof body.error === 'object' ? (body.error as Json).message : undefined;
     const message = error ?? body.message;
@@ -405,14 +430,12 @@ async function callAsr(
   vocabulary?: Record<string, number>,
   languageHints?: string[],
 ): Promise<{ text: string; duration?: number }> {
-  const apiKey = config.apiKey ?? process.env.VOICE_API_KEY;
   const model = config.asrModel ?? process.env.VOICE_ASR_MODEL ?? DEFAULT_ASR_MODEL;
   const base = (
     config.dashscopeBase ??
     process.env.VOICE_DASHSCOPE_BASE ??
     DEFAULT_DASHSCOPE_BASE
   ).replace(/\/$/, '');
-  if (!apiKey) throw new Error('服务端未配置 VOICE_API_KEY，请检查 .env');
 
   const parameters: Json = { format };
   if (sampleRate) parameters.sample_rate = String(sampleRate);
@@ -422,7 +445,7 @@ async function callAsr(
   const response = await fetch(`${base}/api/v1/services/aigc/multimodal-generation/generation`, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${apiKey}`,
+      ...authHeaders(config),
       'Content-Type': 'application/json',
       'X-DashScope-SSE': 'disable',
     },
@@ -442,10 +465,14 @@ async function callAsr(
   });
   const body = (await response.json()) as Json;
   if (!response.ok) {
+    const friendly = authError(response.status, body);
+    if (friendly) throw friendly;
     const message =
       body.message ??
       (body.error && typeof body.error === 'object' ? (body.error as Json).message : undefined);
-    throw new Error(typeof message === 'string' ? message : `语音识别请求失败（${response.status}）`);
+    throw new Error(
+      typeof message === 'string' ? message : `语音识别请求失败（${response.status}）`,
+    );
   }
   const output = (body.output ?? {}) as Json;
   const text = asString(output.text);
@@ -479,7 +506,8 @@ export function buildUserMessage(body: Json): string {
     const cuisines = asStringArray(context.cuisines, 4);
     if (cuisines.length) meta.push(`菜系 ${cuisines.join('/')}`);
     if (typeof context.servings === 'number') meta.push(`${context.servings} 人份`);
-    if (typeof context.estimatedMinutes === 'number') meta.push(`约 ${context.estimatedMinutes} 分钟`);
+    if (typeof context.estimatedMinutes === 'number')
+      meta.push(`约 ${context.estimatedMinutes} 分钟`);
     lines.push(`正在做的菜：${name}${meta.length ? `（${meta.join('，')}）` : ''}`);
   }
 

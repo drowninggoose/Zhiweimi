@@ -1,6 +1,7 @@
 import type { Database } from './database';
 import type { Recipe, RecipeIngredient, RecipeStep } from '../types/models';
 import { id } from '../types/models';
+import { cleanIngredients } from '../services/ingredientCleanup';
 
 type LibraryIngredient = {
   name: string;
@@ -70,17 +71,19 @@ export async function importLibrary(database: Database): Promise<number> {
   const toAdd: Recipe[] = [];
   for (const raw of list) {
     if (!raw.name || !raw.steps?.length) continue;
-    const ingredients: RecipeIngredient[] = (raw.ingredients ?? []).map((i) => ({
-      id: id(),
-      name: i.name,
-      amount: i.amount,
-      unit: i.unit,
-      note: i.note,
-      normalizedAmount: i.normalizedAmount,
-      normalizedUnit: i.normalizedUnit,
-      normalizationNote: i.normalizationNote,
-      group: i.group,
-    }));
+    const ingredients: RecipeIngredient[] = cleanIngredients(
+      (raw.ingredients ?? []).map((i) => ({
+        id: id(),
+        name: i.name,
+        amount: i.amount,
+        unit: i.unit,
+        note: i.note,
+        normalizedAmount: i.normalizedAmount,
+        normalizedUnit: i.normalizedUnit,
+        normalizationNote: i.normalizationNote,
+        group: i.group,
+      })),
+    );
     const steps: RecipeStep[] = (raw.steps ?? []).map((s) => ({
       id: id(),
       order: s.order,
@@ -96,7 +99,7 @@ export async function importLibrary(database: Database): Promise<number> {
       id: raw.id || id(),
       name: raw.name,
       cuisines: raw.cuisines ?? [],
-      ingredientTags: (raw.ingredients ?? []).map((i) => i.name),
+      ingredientTags: [...new Set(ingredients.map((i) => i.name))],
       mealTypes: (raw.mealTypes ?? []).filter((m) => VALID_MEALS.has(m)) as Recipe['mealTypes'],
       flavorTags: raw.flavorTags ?? [],
       difficulty: isDifficulty(raw.difficulty) ? raw.difficulty : undefined,

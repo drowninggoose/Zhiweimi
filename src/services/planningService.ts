@@ -13,13 +13,18 @@ export function eligibleRecipes(recipes: Recipe[], conditions: PlanConditions) {
     (r) =>
       r.status === 'published' &&
       r.sourceType !== 'demo' &&
-      !conditions.avoidIngredients.some((avoid) =>
+      !conditions.avoidIngredients.filter((avoid) => !/^(香菜|葱花|香葱|小葱|葱|蒜末|芝麻)$/.test(avoid)).some((avoid) =>
         r.ingredients.some((i) => i.name.includes(avoid)),
       ) &&
       (!conditions.maxMinutes || (r.estimatedMinutes ?? Infinity) <= conditions.maxMinutes) &&
-      (!conditions.difficulty || r.difficulty === conditions.difficulty) &&
-      (!conditions.flavors.length || conditions.flavors.some((f) => r.flavorTags.includes(f))),
+      (!conditions.difficulty || r.difficulty === conditions.difficulty),
   );
+}
+/** 口味只增加一点排序权重，不缩小候选池。 */
+export function flavorScore(recipe: Recipe, flavors: string[]) {
+  return flavors.some((flavor) =>
+    recipe.flavorTags.some((tag) => tag.includes(flavor) || flavor.includes(tag)),
+  ) ? 0.3 : 0;
 }
 export function pantryScore(recipe: Recipe, pantry: PantryItem[]) {
   return pantry.filter(
@@ -45,6 +50,7 @@ export function recommendations(
       score:
         (conditions.preferPantry ? pantryScore(recipe, pantry) * 10 : 0) +
         (previous.includes(recipe.id) ? -3 : 0) +
+        flavorScore(recipe, conditions.flavors) +
         random(),
     }))
     .sort((a, b) => b.score - a.score)
@@ -102,6 +108,7 @@ export function generatePlan(
             (conditions.preferPantry ? pantryScore(r, pantry) * 20 : 0) -
             (uses.get(r.id) ?? 0) * 2 +
             (r.id === previousId ? -1 : 0) +
+            flavorScore(r, conditions.flavors) +
             Math.random(),
         }))
         .sort((a, b) => b.score - a.score);

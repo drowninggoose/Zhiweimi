@@ -1,16 +1,21 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { useData } from '../app/data';
 import { repositories } from '../db/repositories';
-import {
-  generatePlan,
-  pickMealRecipe,
-} from '../services/planningService';
+import { generatePlan, pickMealRecipe } from '../services/planningService';
 import { Image } from '../components/common';
+import { Icon } from '../components/Icon';
+import { SectionTitle } from '../components/SectionTitle';
+import { planningFlavors } from '../services/preferenceMemoryService';
 
 const DRAFT_KEY = 'zhiweimi:plan-draft';
 const PICK_KEY = 'zhiweimi:plan-pick';
+
+function latestSavedPlan(plans: MealPlan[] | undefined): MealPlan | null {
+  if (!plans?.length) return null;
+  return [...plans].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))[0];
+}
 
 type PlanPick = { date: string; meal: (typeof meals)[number]; recipeId: string };
 
@@ -81,10 +86,41 @@ export function PlannerPage() {
         return draft;
       }
     }
-    return draft;
+    return draft ?? latestSavedPlan(data?.mealPlans);
   });
-  const [selected, setSelected] = useState(() => readDraft()?.startDate ?? today());
+  const [selected, setSelected] = useState(() => plan?.startDate ?? today());
   const [error, setError] = useState('');
+
+  // 打开页面时把最近保存的计划同步回表单，避免「重新生成」按默认 1 天覆盖。
+  useEffect(() => {
+    if (!plan) return;
+    const days =
+      plan.dayCount ??
+      (plan.period === 'week' ? 7 : plan.period === 'month' ? plan.days.length : 1);
+    setDayInput(String(days));
+    setStart(plan.startDate);
+  }, [plan]);
+
+  useEffect(() => {
+    let active = true;
+    void repositories.preferenceMemory
+      .active()
+      .then((list) => {
+        if (!active) return;
+        const fromMemory = planningFlavors(list);
+        const preferences = data?.preferences;
+        setConditions((current) => ({
+          ...current,
+          flavors: [...new Set([...(preferences?.flavorPreferences ?? []), ...fromMemory])],
+          avoidIngredients: preferences?.avoidIngredients ?? current.avoidIngredients,
+        }));
+      })
+      .catch(() => undefined);
+    return () => {
+      active = false;
+    };
+  }, [data?.preferences]);
+
   if (!data) return null;
   function generate() {
     try {
@@ -103,6 +139,7 @@ export function PlannerPage() {
         dayCount,
       );
       setPlan(next);
+      writeDraft(next);
       setSelected(next.startDate);
       setError('');
     } catch (e) {
@@ -111,14 +148,10 @@ export function PlannerPage() {
   }
   return (
     <>
-      <div className="row between">
-        <h2>把三餐安排得从容一点</h2>
-        <Link className="button secondary" to="/planner/pantry">
-          家庭食材
-        </Link>
+      <div className="row between page-intro-row">
+        <SectionTitle icon="calendar">把三餐安排得从容一点</SectionTitle>
       </div>
       <section className="card fields">
-        <span className="tag">演示计划</span>
         <div className="row">
           <label>
             计划天数（1-30）
@@ -135,30 +168,6 @@ export function PlannerPage() {
             <input type="date" value={start} onChange={(e) => setStart(e.target.value)} />
           </label>
           <label>
-            口味偏好（逗号分隔）
-            <input
-              value={conditions.flavors.join(',')}
-              onChange={(e) =>
-                setConditions({
-                  ...conditions,
-                  flavors: e.target.value.split(/[,，]/),
-                })
-              }
-            />
-          </label>
-          <label>
-            忌口（逗号分隔）
-            <input
-              value={conditions.avoidIngredients.join(',')}
-              onChange={(e) =>
-                setConditions({
-                  ...conditions,
-                  avoidIngredients: e.target.value.split(/[,，]/),
-                })
-              }
-            />
-          </label>
-          <label>
             最多分钟
             <input
               type="number"
@@ -172,30 +181,49 @@ export function PlannerPage() {
               }
             />
           </label>
-          <label>
-            难度
-            <select
-              value={conditions.difficulty ?? ''}
-              onChange={(e) =>
-                setConditions({ ...conditions, difficulty: e.target.value || undefined })
-              }
-            >
-              <option value="">不限</option>
-              <option value="easy">简单</option>
-              <option value="normal">普通</option>
-              <option value="advanced">进阶</option>
-            </select>
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={conditions.preferPantry}
-              onChange={(e) => setConditions({ ...conditions, preferPantry: e.target.checked })}
-            />
-            优先使用家庭食材
-          </label>
         </div>
-        <button onClick={generate}>生成演示计划</button>
+        <div className="plan-preference">
+          <div className="plan-preference-head">
+            <span className="plan-preference-mark" aria-hidden="true">
+              <Icon name="bowl" size={30} />
+            </span>
+            <span className="plan-preference-title">
+              <strong>你的口味偏好</strong>
+            </span>
+            <Link className="button secondary plan-preference-link" to="/settings">
+              调整偏好
+            </Link>
+          </div>
+          <div className="plan-preference-body">
+            <div>
+              <small>喜欢的味道</small>
+              <div className="plan-chips">
+                {conditions.flavors.filter(Boolean).length ? (
+                  conditions.flavors
+                    .filter(Boolean)
+                    .map((flavor) => <span key={flavor}>{flavor}</span>)
+                ) : (
+                  <em>暂无</em>
+                )}
+              </div>
+            </div>
+            <div>
+              <small>需要避开</small>
+              <div className="plan-chips">
+                {conditions.avoidIngredients.filter(Boolean).length ? (
+                  conditions.avoidIngredients
+                    .filter(Boolean)
+                    .map((item) => <span key={item}>{item}</span>)
+                ) : (
+                  <em>暂无</em>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+        <button className="right-action" onClick={generate}>
+          生成演示计划
+        </button>
         {error && (
           <p className="error" role="alert">
             {error}
@@ -297,47 +325,6 @@ export function PlannerPage() {
       ) : (
         <Empty>选择周期与条件，生成你的第一份饮食计划。</Empty>
       )}
-      <section className="card">
-        <h2>已保存计划</h2>
-        {data.mealPlans.length ? (
-          data.mealPlans.map((p) => (
-            <div className="row between saved-plan" key={p.id}>
-              <span>
-                {p.startDate} — {p.endDate} ·{' '}
-                {p.dayCount ? `${p.dayCount} 天` : { today: '今日', week: '一周', month: '一个月' }[p.period]}
-              </span>
-              <div className="row">
-                <button
-                  className="secondary"
-                  onClick={() => {
-                    setPlan(p);
-                    setSelected(p.startDate);
-                    setDayInput(String(p.dayCount ?? (p.period === 'week' ? 7 : 1)));
-                    setStart(p.startDate);
-                    setConditions(p.conditions);
-                  }}
-                >
-                  查看计划
-                </button>
-                <button
-                  className="danger"
-                  onClick={async () => {
-                    if (
-                      confirm('确认删除这份计划？') &&
-                      (await run(() => repositories.mealPlans.delete(p.id), '计划已删除'))
-                    )
-                      if (plan?.id === p.id) setPlan(null);
-                  }}
-                >
-                  删除计划
-                </button>
-              </div>
-            </div>
-          ))
-        ) : (
-          <p>暂无保存计划，生成后点击保存。</p>
-        )}
-      </section>
     </>
   );
 }

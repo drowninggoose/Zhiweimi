@@ -31,27 +31,24 @@ test('烹饪进度：翻到下一步后离开，进度已写入本地', async ()
 
   await user.click(screen.getByRole('button', { name: '下一步' }));
   expect(screen.getByText('步骤 2 / 3')).toBeInTheDocument();
-  await user.click(screen.getByRole('button', { name: '太咸' }));
 
   // 防抖 600ms 后落盘
   await waitFor(
     async () => {
       const saved = await repositories.cookingProgress.get('fixture-1');
       expect(saved?.stepIndex).toBe(1);
-      expect(saved?.problem).toBe('太咸');
       expect(saved?.stage).toBe('steps');
     },
     { timeout: 4000 },
   );
 });
 
-test('烹饪进度：离开后回到同一道菜，自动停在原来的步骤并保留补救选择', async () => {
+test('烹饪进度：离开后回到同一道菜，自动停在原来的步骤', async () => {
   window.history.replaceState({}, '', '/cook/fixture-1/steps');
   render(<App />);
   const user = userEvent.setup();
   expect(await screen.findByText('步骤 1 / 3')).toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: '下一步' }));
-  await user.click(screen.getByRole('button', { name: '太淡' }));
 
   // 等进度落盘后模拟「离开」（卸载整个页面）
   await waitFor(async () => expect(await repositories.cookingProgress.get('fixture-1')).toBeTruthy(), {
@@ -63,8 +60,6 @@ test('烹饪进度：离开后回到同一道菜，自动停在原来的步骤�
   window.history.replaceState({}, '', '/cook/fixture-1/steps');
   render(<App />);
   expect(await screen.findByText('步骤 2 / 3')).toBeInTheDocument();
-  expect(screen.getByText(/已恢复上次进度/)).toBeInTheDocument();
-  expect(screen.getByText(/少量添加适合的调味料/)).toBeInTheDocument();
   cleanup();
   await repositories.cookingProgress.clear();
 });

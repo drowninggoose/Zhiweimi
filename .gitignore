@@ -30,3 +30,6 @@ docs/design/screens/
 
 # 构建/测试用的本地临时目录
 .tmp/
+
+# 姣旇禌鏂囨。鐢熸垚鑴氭湰锛堟湰鍦板伐鍏凤級
+_build_docs/

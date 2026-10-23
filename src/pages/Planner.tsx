@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { useData } from '../app/data';
 import { repositories } from '../db/repositories';
-import { generatePlan, pickMealRecipe } from '../services/planningService';
+import { generatePlan, pickMealRecipe, buildShoppingList } from '../services/planningService';
 import { Image } from '../components/common';
 import { Icon } from '../components/Icon';
 import { SectionTitle } from '../components/SectionTitle';
@@ -90,6 +90,11 @@ export function PlannerPage() {
   });
   const [selected, setSelected] = useState(() => plan?.startDate ?? today());
   const [error, setError] = useState('');
+  /** 由计划反推的采购清单：已有库存会被剔除。 */
+  const shoppingList = useMemo(
+    () => (plan && data ? buildShoppingList(plan, data.recipes, data.pantryItems) : []),
+    [plan, data],
+  );
 
   // 打开页面时把最近保存的计划同步回表单，避免「重新生成」按默认 1 天覆盖。
   useEffect(() => {
@@ -321,6 +326,38 @@ export function PlannerPage() {
               </div>
             ),
           )}
+          <section className="plan-shopping" aria-labelledby="shopping-title">
+            <div className="row between">
+              <div>
+                <span className="tag">计划 → 采购</span>
+                <h3 id="shopping-title">缺货采购清单</h3>
+              </div>
+              <Link className="button secondary" to="/planner/pantry?new=1">
+                采购后录入库存
+              </Link>
+            </div>
+            {shoppingList.length ? (
+              <>
+                <p className="muted">
+                  共 {shoppingList.length} 项，已剔除家庭食材里现有的；同名食材已合并并标明用途。
+                </p>
+                <div className="shopping-grid">
+                  {shoppingList.slice(0, 24).map((item) => (
+                    <article key={item.name}>
+                      <strong>{item.name}</strong>
+                      <small>{item.amounts.join(' / ') || '按需'}</small>
+                      <small>用于：{item.from.slice(0, 2).join('、')}{item.from.length > 2 ? ' 等' : ''}</small>
+                    </article>
+                  ))}
+                </div>
+                {shoppingList.length > 24 && (
+                  <p className="muted">另有 {shoppingList.length - 24} 项，请按实际用量采购。</p>
+                )}
+              </>
+            ) : (
+              <p className="success">现有库存已覆盖这份计划的食材。</p>
+            )}
+          </section>
         </section>
       ) : (
         <Empty>选择周期与条件，生成你的第一份饮食计划。</Empty>

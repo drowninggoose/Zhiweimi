@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useData } from '../app/data';
 import { Icon } from '../components/Icon';
 import { SectionTitle } from '../components/SectionTitle';
@@ -404,6 +405,72 @@ export function SettingsPage() {
             发送
           </button>
         </form>
+      </section>
+
+      <section className="card competition-panel">
+        <div className="row between">
+          <div>
+            <span className="tag">COMPETITION DEMO</span>
+            <SectionTitle icon="compass">比赛演示准备</SectionTitle>
+            <p className="muted">
+              一条路线验证：库存 → 推荐 → 计划 → 采购 → 烹饪 → 日记，评审现场照着点就能走完闭环。
+            </p>
+          </div>
+        </div>
+        <div className="readiness-grid">
+          {[
+            {
+              ok: (data?.recipes.length ?? 0) > 0,
+              label: '菜谱库',
+              note: `${data?.recipes.length ?? 0} 道可核验数据`,
+            },
+            {
+              ok: (data?.pantryItems.filter((item) => item.status === 'available').length ?? 0) > 0,
+              label: '家庭库存',
+              note: `${data?.pantryItems.filter((item) => item.status === 'available').length ?? 0} 项现有食材`,
+            },
+            {
+              ok: (data?.utensils.length ?? 0) > 0,
+              label: '厨具与 AI',
+              note: data?.utensils.length ? `${data.utensils.length} 件厨具` : '建议先添加 1 件',
+            },
+            {
+              ok: (data?.preferences.avoidIngredients.length ?? 0) > 0,
+              label: '安全规则',
+              note: data?.preferences.avoidIngredients.length ? '严格过滤已配置' : '建议设置演示忌口',
+            },
+          ].map((item) => (
+            <article key={item.label} className={item.ok ? 'ready' : 'warning'}>
+              <strong>{item.ok ? '✓' : '!'}</strong>
+              <span>{item.label}</span>
+              <small>{item.note}</small>
+            </article>
+          ))}
+        </div>
+        <div className="row">
+          <button
+            onClick={() => {
+              if (
+                confirm('加入番茄、鸡蛋、大米和葱作为演示库存？不会删除或覆盖现有数据。')
+              )
+                void run(() => repositories.prepareCompetitionDemo(), '比赛演示数据已准备好');
+            }}
+          >
+            一键准备演示数据
+          </button>
+          <Link className="button secondary" to="/">
+            从智能推荐开始
+          </Link>
+          <Link className="button secondary" to="/planner">
+            验证计划与采购
+          </Link>
+          <Link className="button secondary" to="/utensils?new=1">
+            验证 AI 降级
+          </Link>
+        </div>
+        <p className="muted">
+          演示建议：先设置一条严格忌口，再生成计划看采购清单，完成一道菜并确认扣减库存。
+        </p>
       </section>
 
       <section className="card factory-reset">

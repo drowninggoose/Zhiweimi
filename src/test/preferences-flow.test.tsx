@@ -20,7 +20,8 @@ test('阶段9：用聊天告诉 AI 偏好，写入忌口与口味记忆库', asy
   const user = userEvent.setup();
   await user.type(await screen.findByLabelText('告诉知味咪你的偏好'), '我口味清淡，不吃虾和鱼');
   await user.click(screen.getByRole('button', { name: '发送' }));
-  await screen.findByText('已保存');
+  // 页面自身的提示与全局 notice 都会出现「已保存」，这里只要求至少有一个
+  expect((await screen.findAllByText('已保存')).length).toBeGreaterThan(0);
   await waitFor(async () => {
     const current = await db.preferences.get('current');
     expect(current?.avoidIngredients).toEqual(expect.arrayContaining(['虾', '鱼']));

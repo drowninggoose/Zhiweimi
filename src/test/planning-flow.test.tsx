@@ -30,7 +30,8 @@ test('阶段7界面：按天数生成保存、跳转挑菜替换、重生成与�
     await user.type(screen.getByLabelText('计划天数（1-30）'), String(days));
     await user.click(screen.getByRole('button', { name: '生成演示计划' }));
     await user.click(screen.getByRole('button', { name: '保存计划' }));
-    await screen.findByText('已保存');
+    // 保存成功的提示以 toast 形式出现，文案是具体动作
+  expect((await screen.findAllByText('计划已保存')).length).toBeGreaterThan(0);
     await waitFor(async () => {
       expect((await db.mealPlans.toArray()).some((p) => p.dayCount === days)).toBe(true);
     });

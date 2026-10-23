@@ -56,6 +56,11 @@ export function RecommendationCardDeck({ dishes }: { dishes: RecommendedDish[] }
           url={current.recipe.coverUrl}
           alt={current.recipe.name}
         />
+        <strong className="rec-strip-title">{current.recipe.name}</strong>
+        <span className="rec-explain">
+          <span className="rec-confidence">匹配度 {current.confidence ?? 60}%</span>
+          <span>{current.reasons.join(' · ')}</span>
+        </span>
       </Link>
       <div className="rec-strip-dots" aria-label={`第 ${safeIndex + 1} 张，共 ${dishes.length} 张`}>
         {dishes.map((dish, dotIndex) => (

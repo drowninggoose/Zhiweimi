@@ -1,6 +1,8 @@
 import { expect, test } from 'vitest';
 import { fixtureRecipes } from './fixtures';
 import {
+  buildShoppingList,
+  consumeRecipeFromPantry,
   generatePlan,
   recommendations,
   eligibleRecipes,
@@ -77,4 +79,39 @@ test('阶段7：推荐换批在候选充分时改变组合', () => {
     () => 0.5,
   );
   expect(first.map((r) => r.id)).not.toEqual(second.map((r) => r.id));
+});
+
+
+test('库存联动：计划反推采购清单，已有库存不重复采购', () => {
+  const recipes = fixtureRecipes();
+  const plan = generatePlan(recipes, [], conditions, 'today', '2026-10-01');
+  const first = recipes.find((item) =>
+    plan.days.some((day) => meals.some((meal) => day[`${meal}RecipeId`] === item.id)),
+  )!;
+  const stock = {
+    ...stamp(),
+    name: first.ingredients[0].name,
+    category: '演示',
+    quantity: 999,
+    unit: first.ingredients[0].unit,
+    status: 'available' as const,
+  };
+  const list = buildShoppingList(plan, recipes, [stock]);
+  expect(list.some((item) => item.name === first.ingredients[0].name)).toBe(false);
+  expect(list.length).toBeGreaterThan(0);
+  expect(list[0].from.length).toBeGreaterThan(0);
+});
+
+test('库存联动：完成烹饪只扣减名称、数字、单位都对得上的库存', () => {
+  const recipe = fixtureRecipes()[0];
+  const pantry = [
+    { ...stamp(), name: '番茄', category: '蔬菜', quantity: 150, unit: 'g', status: 'available' as const },
+    { ...stamp(), name: '鸡蛋', category: '蛋奶', quantity: 1, unit: '个', status: 'available' as const },
+    { ...stamp(), name: '水', category: '其他', status: 'available' as const },
+  ];
+  const result = consumeRecipeFromPantry(recipe, pantry);
+  expect(result.updates.every((item) => item.quantity === 0 || item.quantity! > 0)).toBe(true);
+  expect(result.updates.every((item) => item.status !== undefined)).toBe(true);
+  // 没有单位的食材不参与扣减，只会被如实回报
+  expect(result.skipped.length).toBeGreaterThan(0);
 });

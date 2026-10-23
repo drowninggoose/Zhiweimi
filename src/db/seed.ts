@@ -16,7 +16,7 @@ export const defaultPreferences: Preferences = {
  * 清理历史遗留的「演示菜谱」。
  *
  * 早期版本内置过 16 道 AI 生成的演示菜（番茄炒蛋、虾仁炒饭等，`sourceType: 'demo'`）。
- * 现在已经改为只提供 517 道真实菜谱库，所以老用户浏览器里残留的这批数据要清掉，
+ * 现在只提供清洗后的真实菜谱库（当前 45 道），所以老用户浏览器里残留的这批数据要清掉，
  * 同时移除日记和饮食计划里对它们的引用（日记文字与图片保留）。
  *
  * 返回删除的演示菜谱条数。
@@ -59,7 +59,7 @@ export async function purgeLegacyDemoRecipes(database: Database): Promise<number
 /**
  * 首次启动初始化。
  *
- * 应用只内置 517 道真实菜谱库（`public/recipes-library.json`），
+ * 应用只内置菜谱库文件 `public/recipes-library.json`（当前 45 道），
  * 不再生成任何「演示菜谱」，所以这里只负责清理历史数据、建立演示状态与偏好，
  * 以及导入菜谱库（`importLibrary` 内部幂等，已导入则跳过）。
  */

@@ -13,9 +13,9 @@ export function eligibleRecipes(recipes: Recipe[], conditions: PlanConditions) {
     (r) =>
       r.status === 'published' &&
       r.sourceType !== 'demo' &&
-      !conditions.avoidIngredients.filter((avoid) => !/^(香菜|葱花|香葱|小葱|葱|蒜末|芝麻)$/.test(avoid)).some((avoid) =>
-        r.ingredients.some((i) => i.name.includes(avoid)),
-      ) &&
+      !conditions.avoidIngredients
+        .filter((avoid) => avoid.trim())
+        .some((avoid) => r.ingredients.some((i) => i.name.includes(avoid.trim()))) &&
       (!conditions.maxMinutes || (r.estimatedMinutes ?? Infinity) <= conditions.maxMinutes) &&
       (!conditions.difficulty || r.difficulty === conditions.difficulty),
   );
@@ -174,4 +174,95 @@ export function pickMealRecipe(
     updatedAt: new Date().toISOString(),
     days: plan.days.map((d) => (d.date === date ? { ...d, [`${meal}RecipeId`]: recipeId } : d)),
   };
+}
+
+
+/* ------------------------------------------------------------------ *
+ * 库存 → 采购 → 烹饪 的联动
+ * ------------------------------------------------------------------ */
+
+export type ShoppingItem = {
+  name: string;
+  /** 各道菜要求的用量，可能不止一个单位 */
+  amounts: string[];
+  /** 哪些菜需要它 */
+  from: string[];
+};
+
+/** 从饮食计划反推采购清单：已有库存会被剔除，同名食材合并并标明用途。 */
+export function buildShoppingList(
+  plan: MealPlan,
+  recipes: Recipe[],
+  pantry: PantryItem[],
+): ShoppingItem[] {
+  const available = pantry
+    .filter((item) => item.status === 'available')
+    .map((item) => item.name.trim())
+    .filter(Boolean);
+  const covered = (name: string) =>
+    available.some((stock) => name.includes(stock) || stock.includes(name));
+
+  const map = new Map<string, ShoppingItem>();
+  for (const day of plan.days) {
+    for (const meal of meals) {
+      const id = day[`${meal}RecipeId`];
+      const recipe = id ? recipes.find((item) => item.id === id) : undefined;
+      if (!recipe) continue;
+      for (const ingredient of recipe.ingredients) {
+        const name = ingredient.name.trim();
+        if (!name || covered(name)) continue;
+        const item = map.get(name) ?? { name, amounts: [], from: [] };
+        const amountText = `${ingredient.amount ?? ''}${ingredient.unit ?? ''}`.trim();
+        if (amountText && !item.amounts.includes(amountText)) item.amounts.push(amountText);
+        if (!item.from.includes(recipe.name)) item.from.push(recipe.name);
+        map.set(name, item);
+      }
+    }
+  }
+  return [...map.values()].sort((a, b) => b.from.length - a.from.length || a.name.localeCompare(b.name));
+}
+
+/**
+ * 完成烹饪后核算库存。
+ * 只有「名称对得上 + 数字用量 + 相同单位」三条同时满足才自动扣减，其余一律跳过并回报，不做猜测。
+ */
+export function consumeRecipeFromPantry(recipe: Recipe, pantry: PantryItem[]) {
+  const updates = new Map<string, PantryItem>();
+  const skipped: string[] = [];
+
+  for (const ingredient of recipe.ingredients) {
+    const name = ingredient.name.trim();
+    if (!name) continue;
+    const item = pantry.find(
+      (candidate) =>
+        candidate.status === 'available' &&
+        (candidate.name.trim().includes(name) || name.includes(candidate.name.trim())),
+    );
+    if (!item) continue;
+    const unit = (ingredient.unit ?? '').trim();
+    const amount =
+      typeof ingredient.amount === 'number'
+        ? ingredient.amount
+        : Number(String(ingredient.amount ?? '').replace(/[^\d.]/g, ''));
+    if (
+      !Number.isFinite(amount) ||
+      amount <= 0 ||
+      !unit ||
+      !item.unit ||
+      unit !== item.unit ||
+      typeof item.quantity !== 'number'
+    ) {
+      skipped.push(name);
+      continue;
+    }
+    const next = Math.max(0, item.quantity - amount);
+    updates.set(item.id, {
+      ...item,
+      quantity: next,
+      status: next === 0 ? 'used-up' : 'available',
+      updatedAt: new Date().toISOString(),
+    });
+  }
+
+  return { updates: [...updates.values()], skipped: [...new Set(skipped)] };
 }

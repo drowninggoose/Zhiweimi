@@ -254,6 +254,11 @@ export function RecipesPage() {
         />
       </div>
 
+      <p className="recipe-count muted">
+        菜谱库共 {data?.recipes.filter((r) => r.sourceType === 'library').length ?? 0} 道，
+        当前筛选出 {results.length} 道。
+      </p>
+
       {results.length ? (
         <div className="grid">
           {results.map((r) => (

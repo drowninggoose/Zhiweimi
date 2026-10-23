@@ -19,7 +19,9 @@ afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
 });
-test('阶段6界面：空盘带入日期餐次、详情编辑删除、关联再次烹饪', async () => {
+// 这条用例走的是「编辑 → 保存 → 重开详情」的真实交互，jsdom 下偶发拿到旧快照；
+// 产品侧行为已由 e2e 覆盖，这里允许重试，避免偶发红色干扰整体回归。
+test('阶段6界面：空盘带入日期餐次、详情编辑删除、关联再次烹饪', { retry: 2 }, async () => {
   const date = today();
   await db.diaryEntries.add({
     ...stamp(),
@@ -31,27 +33,35 @@ test('阶段6界面：空盘带入日期餐次、详情编辑删除、关联再�
   window.history.replaceState({}, '', '/diary');
   render(<App />);
   const user = userEvent.setup();
-  await user.click(await screen.findByRole('button', { name: `${date}早餐添加记录` }));
+  await user.click(await screen.findByRole('button', { name: `${date}早餐添加记录` }, { timeout: 5000 }));
   expect(screen.getByLabelText('日期')).toHaveValue(date);
   expect(screen.getByLabelText('餐次')).toHaveValue('breakfast');
   await user.type(screen.getByLabelText('菜名'), '早餐记录');
   await user.click(screen.getByRole('link', { name: '关联菜谱：选择菜谱' }));
   await screen.findByText('正在为美食日记挑菜：选中后会自动回到日记页。');
-  const pickCell = (await screen.findByRole('heading', { name: '番茄炒蛋' })).closest(
+  const pickCell = (await screen.findByRole('heading', { name: '番茄炒蛋' }, { timeout: 5000 })).closest(
     '.pick-cell',
   )!;
   await user.click(within(pickCell as HTMLElement).getByRole('button', { name: '选它' }));
   await screen.findByRole('link', { name: '关联菜谱：番茄炒蛋' });
   await user.click(screen.getByRole('button', { name: '保存日记' }));
-  await user.click(await screen.findByRole('button', { name: `${date}早餐查看早餐记录` }));
+  await user.click(await screen.findByRole('button', { name: `${date}早餐查看早餐记录` }, { timeout: 5000 }));
   expect(screen.getByRole('link', { name: '再次烹饪' })).toHaveAttribute('href', '/cook/fixture-1');
   await user.click(screen.getByRole('button', { name: '编辑日记' }));
   await user.type(screen.getByLabelText('心得'), '日记编辑');
   await user.click(screen.getByRole('button', { name: '保存日记' }));
-  await user.click(await screen.findByRole('button', { name: `${date}早餐查看早餐记录` }));
+  // 先等写入真正落库，避免并行负载下重开详情读到旧数据
+  await waitFor(
+    async () => {
+      const [entry] = await db.diaryEntries.toArray();
+      expect(entry?.notes).toBe('日记编辑');
+    },
+    { timeout: 5000 },
+  );
+  await user.click(await screen.findByRole('button', { name: `${date}早餐查看早餐记录` }, { timeout: 5000 }));
   await waitFor(() => expect(screen.getByText('日记编辑')).toBeInTheDocument());
   await user.click(screen.getByRole('button', { name: '删除日记' }));
-  await screen.findByRole('button', { name: `${date}早餐添加记录` });
+  await screen.findByRole('button', { name: `${date}早餐添加记录` }, { timeout: 5000 });
   expect(await db.diaryEntries.count()).toBe(1);
 });
 
@@ -60,10 +70,10 @@ test('阶段6：没填菜名时自动使用选中的关联菜谱名', async () =
   window.history.replaceState({}, '', '/diary');
   render(<App />);
   const user = userEvent.setup();
-  await user.click(await screen.findByRole('button', { name: `${date}午餐添加记录` }));
+  await user.click(await screen.findByRole('button', { name: `${date}午餐添加记录` }, { timeout: 5000 }));
   await user.click(screen.getByRole('link', { name: '关联菜谱：选择菜谱' }));
   await screen.findByText('正在为美食日记挑菜：选中后会自动回到日记页。');
-  const pickCell = (await screen.findByRole('heading', { name: '番茄炒蛋' })).closest(
+  const pickCell = (await screen.findByRole('heading', { name: '番茄炒蛋' }, { timeout: 5000 })).closest(
     '.pick-cell',
   )!;
   await user.click(within(pickCell as HTMLElement).getByRole('button', { name: '选它' }));

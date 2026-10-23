@@ -11,6 +11,7 @@ import { StepText } from '../components/StepText';
 import { filterRecipes } from '../services/recipeService';
 import { adaptInstructionForUtensils } from '../services/cookingService';
 import { isSeasoning } from '../services/ingredientGroups';
+import { consumeRecipeFromPantry } from '../services/planningService';
 import { personalizeRecipe } from '../services/preferenceMemoryService';
 import { adjustCookingSteps, type CookingAdjustment } from '../services/aiService';
 import { buildVocabulary, prepareAudio, transcribe } from '../services/voiceService';
@@ -442,6 +443,8 @@ function CookingStepsView({
   const utensilChoices = useMemo(() => saved?.utensilChoices ?? {}, [saved]);
   const cookingUtensilId = saved?.cookingUtensilId;
   const [adaptationSummary, setAdaptationSummary] = useState(saved?.adaptationSummary ?? '');
+  /** AI 改写前的步骤快照，用于「恢复原后续步骤」精确回退 */
+  const [stepsBeforeAdjust, setStepsBeforeAdjust] = useState<RecipeStep[] | null>(null);
   const adaptedSteps = workingSteps;
   const step = workingSteps[index];
 
@@ -498,6 +501,18 @@ function CookingStepsView({
     if (
       await run(() => repositories.diaryEntries.save(entry, !!existing), '烹饪成果已保存到日记')
     ) {
+      // 完成烹饪 → 按可确认的用量扣减家庭库存（名称 + 数字 + 同单位三者都对上才扣）
+      const consumption = consumeRecipeFromPantry(recipe, data?.pantryItems ?? []);
+      if (consumption.updates.length) {
+        const deduct = confirm(
+          `检测到 ${consumption.updates.length} 项食材可按同单位扣减库存，是否同步更新家庭食材？\n` +
+            consumption.updates.map((item) => `· ${item.name} → ${item.quantity}${item.unit ?? ''}`).join('\n') +
+            (consumption.skipped.length
+              ? `\n\n无法换算、保持不变的：${consumption.skipped.join('、')}`
+              : ''),
+        );
+        if (deduct) await run(() => repositories.consumePantry(consumption.updates), '家庭库存已同步扣减');
+      }
       setFinished(true);
       await onDiscard();
       navigate('/diary');
@@ -571,15 +586,15 @@ function CookingStepsView({
           summary={adaptationSummary}
           tastePreferences={data?.preferences.flavorPreferences ?? []}
           onAdjusted={(nextSteps, result) => {
+            setStepsBeforeAdjust(workingSteps);
             setWorkingSteps(nextSteps);
             setAdaptationSummary(result.summary);
           }}
           onRestore={() => {
-            const completed = workingSteps.slice(0, index + 1);
-            const originalRemaining = originalRecipe.steps.slice(index + 1);
-            setWorkingSteps(
-              [...completed, ...originalRemaining].map((item, order) => ({ ...item, order })),
-            );
+            // 精确回到改写前那一步的状态，而不是按「当前第几步」截断
+            const restored = stepsBeforeAdjust ?? originalRecipe.steps;
+            setWorkingSteps(restored.map((item, order) => ({ ...item, order })));
+            setStepsBeforeAdjust(null);
             setAdaptationSummary('');
           }}
         />
@@ -619,8 +634,18 @@ function CookingStepAssistant({
 }) {
   const [text, setText] = useState('');
   const [state, setState] = useState<AssistantState>('idle');
-  const [reply, setReply] = useState('');
   const [changes, setChanges] = useState<string[]>([]);
+  const [appliedCount, setAppliedCount] = useState(0);
+  // 父组件点「恢复原后续步骤」后 summary 会被清空，这里同步收起提示
+  useEffect(() => {
+    if (!summary) setAppliedCount(0);
+  }, [summary]);
+  // 每次翻页都重新开始：改写提示只属于「刚才那一步」，不跟着后续步骤到处跑
+  useEffect(() => {
+    setAppliedCount(0);
+    setChanges([]);
+    setWarnings([]);
+  }, [stepIndex]);
   const [warnings, setWarnings] = useState<string[]>([]);
   const [error, setError] = useState('');
   const recorder = useRef<MediaRecorder | null>(null);
@@ -655,7 +680,7 @@ function CookingStepAssistant({
       }));
       const next = [...prefix, ...remaining].map((item, order) => ({ ...item, order }));
       onAdjusted(next, result);
-      setReply(result.reply);
+      setAppliedCount(remaining.length);
       setChanges(result.changes.map((item) => item.description));
       setWarnings(result.warnings);
       setText('');
@@ -756,21 +781,26 @@ function CookingStepAssistant({
               : '调整后续步骤'}
         </button>
       </div>
-      {(reply || changes.length > 0) && (
-        <div className="step-ai-result" aria-live="polite">
-          {reply && <strong>{reply}</strong>}
-          {changes.length > 0 && (
+      {(appliedCount > 0 || warnings.length > 0) && (
+        <div className="step-ai-applied" aria-live="polite">
+          <span className="step-ai-badge">
+            <Icon name="check" size={14} /> 已按你的反馈改写后续 {appliedCount} 步
+          </span>
+          <span className="step-ai-brief">后续步骤已就地更新，点「下一步」继续。</span>
+          <details className="step-ai-detail">
+            <summary>查看改了哪些</summary>
+            {summary && <p className="step-ai-summary">{summary}</p>}
             <ul>
               {changes.map((item) => (
                 <li key={item}>{item}</li>
               ))}
             </ul>
-          )}
-          {warnings.map((item) => (
-            <p className="step-ai-warning" key={item}>
-              注意：{item}
-            </p>
-          ))}
+            {warnings.map((item) => (
+              <p className="step-ai-warning" key={item}>
+                注意：{item}
+              </p>
+            ))}
+          </details>
         </div>
       )}
       {error && (

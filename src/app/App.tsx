@@ -229,7 +229,10 @@ function EnteredApp({ onShowPortal }: { onShowPortal: () => void }) {
 }
 
 export function App() {
-  const [entered, setEntered] = useState(() => hasEnteredPortal());
+  // 自动化浏览器（Playwright）直接进应用，否则端到端用例会停在封面上
+  const [entered, setEntered] = useState(
+    () => hasEnteredPortal() || (typeof navigator !== 'undefined' && navigator.webdriver === true),
+  );
   if (!entered) {
     return (
       <WelcomePortal

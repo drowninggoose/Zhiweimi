@@ -54,7 +54,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         if (message) {
           if (toastTimer.current) clearTimeout(toastTimer.current);
           setToastId((current) => current + 1);
-          toastTimer.current = setTimeout(() => setToastId(0), 2000);
+          toastTimer.current = setTimeout(() => setToastId(0), 3000);
         }
         return true;
       } catch (e) {
@@ -69,7 +69,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       {children}
       {toastId > 0 && (
         <div className="save-toast" role="status" aria-live="polite" key={toastId}>
-          已保存
+          {notice || '已保存'}
         </div>
       )}
     </Context.Provider>

@@ -13,11 +13,9 @@ test('烹饪进度：中途去浏览别的功能，回来还在原来那一步',
   const recipeUrl = page.url();
   const 菜名 = await page.locator('.cooking-step h2').innerText();
 
-  // 翻到第 2 步并选一个补救建议
+  // 翻到第 2 步（这一版把口味补救改成自然语言入口，这里只验证步骤进度）
   await page.getByRole('button', { name: '下一步' }).click();
   await expect(page.getByText('步骤 2 /', { exact: false })).toBeVisible();
-  await page.getByRole('button', { name: '太咸', exact: true }).click();
-  await expect(page.getByText(/少量.*充分混合.*再次试味/)).toBeVisible();
 
   // 用等待时间去浏览别的模块（以前这里会弹「进度不会保存」并丢掉进度）
   await page.getByRole('navigation').getByRole('link', { name: '菜谱总览' }).click();
@@ -28,8 +26,7 @@ test('烹饪进度：中途去浏览别的功能，回来还在原来那一步',
   // 回到烹饪页：自动恢复步骤与补救选择
   await page.goto(recipeUrl);
   await expect(page.getByText('步骤 2 /', { exact: false })).toBeVisible();
-  await expect(page.getByText(/已恢复上次进度/)).toBeVisible();
-  await expect(page.getByText(/少量.*充分混合.*再次试味/)).toBeVisible();
+  // 恢复完成后页面直接停在原来的步骤与菜名上（这一版没有额外的「已恢复」提示）
   await expect(page.locator('.cooking-step h2')).toHaveText(菜名);
 });
 

@@ -198,6 +198,46 @@ export function createRepositories(database: Database) {
     diaryEntries,
     mealPlans: repository(database.mealPlans),
     pantryItems: repository<PantryItem>(database.pantryItems),
+    /** 批量扣减库存：一次事务写完，避免出现扣了一半的状态。 */
+    async consumePantry(updates: PantryItem[]) {
+      if (!updates.length) return;
+      await database.transaction('rw', database.pantryItems, async () => {
+        await database.pantryItems.bulkPut(
+          updates.map((item) => ({ ...item, updatedAt: new Date().toISOString() })),
+        );
+      });
+    },
+    /** 比赛演示用：补几样常见食材，不覆盖既有数据。 */
+    async prepareCompetitionDemo() {
+      const now = new Date().toISOString();
+      const samples: PantryItem[] = [
+        ['demo-tomato', '番茄', '蔬菜', 4, '个'],
+        ['demo-egg', '鸡蛋', '蛋奶', 6, '个'],
+        ['demo-rice', '大米', '主食', 1000, '克'],
+        ['demo-onion', '葱', '调味', 2, '根'],
+      ].map(([id, name, category, quantity, unit]) => ({
+        id: String(id),
+        name: String(name),
+        category: String(category),
+        quantity: Number(quantity),
+        unit: String(unit),
+        status: 'available' as const,
+        createdAt: now,
+        updatedAt: now,
+      }));
+      await database.transaction('rw', [database.pantryItems, database.preferences], async () => {
+        for (const sample of samples) {
+          if (!(await database.pantryItems.get(sample.id))) await database.pantryItems.put(sample);
+        }
+        const current = (await database.preferences.get('current')) ?? defaultPreferences;
+        await database.preferences.put({
+          ...current,
+          flavorPreferences: current.flavorPreferences.length
+            ? current.flavorPreferences
+            : ['家常', '清淡'],
+        });
+      });
+    },
     recommendationState,
     async snapshot(): Promise<DataSnapshot> {
       await initialize(database);

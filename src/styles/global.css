@@ -8318,3 +8318,86 @@ p.step-instruction,
   box-shadow: none;
   transform: none;
 }
+
+
+/* 推荐卡上的可解释性：匹配度 + 推荐理由 */
+.rec-explain {
+  position: absolute;
+  left: 76px;
+  bottom: 70px;
+  max-width: calc(100% - 152px);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  pointer-events: none;
+}
+.rec-confidence {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(58, 36, 26, 0.9);
+  color: #fffdf8;
+  font-size: 0.78rem;
+  letter-spacing: 0.5px;
+}
+.rec-explain > span:last-child {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255, 253, 248, 0.92);
+  color: #3a241a;
+  font-size: 0.78rem;
+}
+@media (max-width: 720px) {
+  .rec-explain { left: 58px; bottom: 64px; max-width: calc(100% - 116px); }
+}
+
+
+/* 计划 → 采购清单 */
+.plan-shopping { margin-top: 18px; padding-top: 14px; border-top: 1px dashed var(--line, rgba(157, 80, 51, 0.25)); }
+.plan-shopping h3 { margin: 4px 0 8px; font-family: var(--font-title); font-size: 1.05rem; }
+.shopping-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-top: 10px; }
+.shopping-grid article {
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 10px 12px; border-radius: 12px;
+  border: 1px solid rgba(157, 80, 51, 0.22);
+  background: rgba(255, 253, 248, 0.75);
+}
+.shopping-grid strong { font-size: 0.92rem; }
+.shopping-grid small { color: var(--muted, #6b6b63); font-size: 0.72rem; }
+
+
+/* 比赛演示准备 */
+.competition-panel .readiness-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin: 12px 0; }
+.readiness-grid article {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+  padding: 10px 12px; border-radius: 12px; border: 1px dashed rgba(157, 80, 51, 0.3);
+  background: rgba(255, 253, 248, 0.7);
+}
+.readiness-grid article.ready { border-style: solid; border-color: rgba(90, 130, 90, 0.45); }
+.readiness-grid article.warning { border-color: rgba(176, 74, 44, 0.5); }
+.readiness-grid strong { font-size: 1rem; }
+.readiness-grid small { color: var(--muted, #6b6b63); font-size: 0.72rem; }
+
+
+/* AI 改写后的「已应用」提示：改的是菜谱，不是聊天气泡 */
+.step-ai-applied {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px;
+  margin-top: 10px; padding: 10px 12px;
+  border-radius: 12px 14px 11px 15px;
+  border: 1px solid rgba(90, 130, 90, 0.35);
+  background: rgba(233, 242, 231, 0.55);
+}
+.step-ai-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-weight: 700; font-size: 0.9rem; color: #33502f;
+}
+.step-ai-brief { color: var(--muted, #6b6b63); font-size: 0.82rem; }
+.step-ai-detail { flex-basis: 100%; font-size: 0.85rem; }
+.step-ai-detail summary { cursor: pointer; color: #33502f; font-weight: 600; }
+.step-ai-detail ul { margin: 6px 0 0 18px; padding: 0; }
+.step-ai-detail li { margin: 2px 0; }
+.step-ai-summary { margin: 6px 0 0; color: var(--muted, #6b6b63); }
+
+
+/* 菜谱库数量提示 */
+.recipe-count { margin: 4px 0 10px; font-size: 0.82rem; }

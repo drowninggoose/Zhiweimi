@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { useData } from '../app/data';
 import { Image } from '../components/common';
 import { RecommendationCenter } from '../components/recommendation';
-import { AnimatedMascot } from '../components/Mascot';
 import { ContinueCooking } from './Cooking';
 import { today, meals, mealLabels } from '../types/models';
 
@@ -29,7 +28,12 @@ export function HomePage() {
           <span className="tag">你好，今天也好好吃饭</span>
           <h2>今天想吃点什么？</h2>
         </div>
-        <AnimatedMascot className="hero-mascot" />
+        <img
+          className="hero-mascot"
+          src="/mascot/motion-v3/02-aroma-bowl.webp?v=3"
+          alt="闻到料理香气的知味咪小猫"
+          draggable={false}
+        />
       </section>
       <section className="card rec-home" id="today-recommendation">
         <h2>今日推荐</h2>

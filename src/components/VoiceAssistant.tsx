@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { useData } from '../app/data';
 import { repositories } from '../db/repositories';
@@ -51,6 +51,13 @@ export function VoiceAssistant() {
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<'now' | 'history'>('now');
   const [draft, setDraft] = useState('');
+  const [orbPosition, setOrbPosition] = useState(() => ({
+    x: Math.max(18, window.innerWidth - 94),
+    y: Math.max(18, window.innerHeight - 94),
+  }));
+  const [dragging, setDragging] = useState(false);
+  const dragRef = useRef({ pointerId: 0, startX: 0, startY: 0, orbX: 0, orbY: 0, moved: false });
+  const suppressClickRef = useRef(false);
   /** 当前在做的菜，录音前就要知道（用于生成 ASR 热词）。 */
   const recipeRef = useRef<Recipe | undefined>(undefined);
 
@@ -103,15 +110,64 @@ export function VoiceAssistant() {
   const assistant = useVoiceAssistant({ getContext, getRecipe, recommend });
   const { status, error, result, history } = assistant;
 
+  const startDragging = (event: PointerEvent<HTMLButtonElement>) => {
+    dragRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      orbX: orbPosition.x,
+      orbY: orbPosition.y,
+      moved: false,
+    };
+    event.currentTarget.setPointerCapture(event.pointerId);
+    setDragging(true);
+  };
+
+  const moveOrb = (event: PointerEvent<HTMLButtonElement>) => {
+    if (!dragging || event.pointerId !== dragRef.current.pointerId) return;
+    const dx = event.clientX - dragRef.current.startX;
+    const dy = event.clientY - dragRef.current.startY;
+    if (Math.hypot(dx, dy) > 5) dragRef.current.moved = true;
+    setOrbPosition({
+      x: Math.min(Math.max(12, dragRef.current.orbX + dx), window.innerWidth - 78),
+      y: Math.min(Math.max(12, dragRef.current.orbY + dy), window.innerHeight - 78),
+    });
+  };
+
+  const stopDragging = (event: PointerEvent<HTMLButtonElement>) => {
+    if (event.pointerId !== dragRef.current.pointerId) return;
+    suppressClickRef.current = dragRef.current.moved;
+    setDragging(false);
+    event.currentTarget.releasePointerCapture(event.pointerId);
+  };
+
+  const panelStyle: CSSProperties | undefined = window.innerWidth > 600
+    ? {
+        left: Math.min(Math.max(16, orbPosition.x - 380), window.innerWidth - 438),
+        top: Math.min(Math.max(18, orbPosition.y - 520), window.innerHeight - 560),
+        right: 'auto',
+        bottom: 'auto',
+      }
+    : undefined;
+
   if (!data) return null;
 
   return (
     <>
       <button
         type="button"
-        className={`voice-fab${assistant.recording ? ' recording' : ''}`}
+        className={`voice-fab voice-orb${assistant.recording ? ' recording' : ''}${dragging ? ' dragging' : ''}`}
+        style={{ left: orbPosition.x, top: orbPosition.y, right: 'auto', bottom: 'auto' }}
         aria-label={open ? '收起语音助手' : '打开语音助手'}
+        onPointerDown={startDragging}
+        onPointerMove={moveOrb}
+        onPointerUp={stopDragging}
+        onPointerCancel={stopDragging}
         onClick={() => {
+          if (suppressClickRef.current) {
+            suppressClickRef.current = false;
+            return;
+          }
           if (open) {
             assistant.cancel();
             setOpen(false);
@@ -121,11 +177,14 @@ export function VoiceAssistant() {
           }
         }}
       >
-        {assistant.recording ? '⏺' : '🎙️'}
+        <span className="voice-orb-core" aria-hidden="true">
+          {assistant.recording ? '⏺' : 'AI'}
+        </span>
+        <span className="voice-orb-ring" aria-hidden="true" />
       </button>
 
       {open && (
-        <section className="voice-panel" aria-label="语音助手面板">
+        <section className="voice-panel" style={panelStyle} aria-label="语音助手面板">
           <div className="row between voice-head">
             <strong>知味咪小助手</strong>
             <div className="row voice-head-actions">

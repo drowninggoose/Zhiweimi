@@ -20,7 +20,8 @@ import { PlannerPage } from '../pages/Planner';
 import { HomePage } from '../pages/Home';
 import { SettingsPage } from '../pages/Settings';
 import { VoiceAssistant } from '../components/VoiceAssistant';
-import { AnimatedMascot } from '../components/Mascot';
+import { PageMascots } from '../components/PageMascots';
+import { WelcomePortal } from '../components/WelcomePortal';
 function Shell() {
   const { data, error, notice } = useData();
   const location = useLocation();
@@ -61,14 +62,21 @@ function Shell() {
     <div className="app-shell">
       <aside>
         <div className="brand">
-          <img className="brand-cat" src="/mascot-cat.png" alt="戴厨师帽、拿量勺的知味咪小猫" />
+          <img
+            className="brand-cat"
+            src="/mascot/motion-v3/01-greeting-spoon.webp?v=3"
+            alt="挥勺问候的知味咪小猫"
+          />
           <strong>知味咪</strong>
           <small>把每餐做成小幸福</small>
         </div>
         <nav>
-          {navigation.map(([path, label]) => (
-            <NavLink key={path} to={path} end={path === '/'}>
-              {label}
+          {navigation.map(([path, label], index) => (
+            <NavLink key={path} to={path} end={path === '/'} aria-label={label}>
+              <span className="nav-index" aria-hidden="true">
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              <span>{label}</span>
             </NavLink>
           ))}
         </nav>
@@ -77,8 +85,10 @@ function Shell() {
       <section className="workspace">
         <header>
           <div className="page-title-with-mascot">
-            <AnimatedMascot className="page-mascot" label={`${title}板块的知味咪`} />
-            <h1>{title}</h1>
+            <div className="page-heading">
+              <small>ZHĪ WÈI MĪ · DAILY KITCHEN</small>
+              <h1>{title}</h1>
+            </div>
           </div>
           <form
             onSubmit={(e) => {
@@ -95,36 +105,41 @@ function Shell() {
             <button>搜索</button>
           </form>
         </header>
-        <main>
-          {error && (
-            <p role="alert" className="error">
-              {error}
-            </p>
-          )}
-          {notice && (
-            <p role="status" className="success">
-              {notice}
-            </p>
-          )}
-          {!data ? (
-            <p>正在打开本地数据库…</p>
-          ) : (
-            <Routes>
-              <Route path="/recipes" element={<RecipesPage key={location.search} />} />
-              <Route path="/recipes/new" element={<RecipeEditor />} />
-              <Route path="/recipes/:id" element={<RecipeDetail />} />
-              <Route path="/recipes/:id/edit" element={<RecipeEditor />} />
-              {navigation
-                .filter(([path]) => path !== '/recipes')
-                .map(([path, label]) => (
-                  <Route
-                    key={path}
-                    path={path === '/' ? '/' : `${path}/*`}
-                    element={page(path, label)}
-                  />
-                ))}
-            </Routes>
-          )}
+        <main data-section={title}>
+          <div className="page-stage">
+            <div className="page-content">
+              {error && (
+                <p role="alert" className="error">
+                  {error}
+                </p>
+              )}
+              {notice && (
+                <p role="status" className="success">
+                  {notice}
+                </p>
+              )}
+              {!data ? (
+                <p>正在打开本地数据库…</p>
+              ) : (
+                <Routes>
+                  <Route path="/recipes" element={<RecipesPage key={location.search} />} />
+                  <Route path="/recipes/new" element={<RecipeEditor />} />
+                  <Route path="/recipes/:id" element={<RecipeDetail />} />
+                  <Route path="/recipes/:id/edit" element={<RecipeEditor />} />
+                  {navigation
+                    .filter(([path]) => path !== '/recipes')
+                    .map(([path, label]) => (
+                      <Route
+                        key={path}
+                        path={path === '/' ? '/' : `${path}/*`}
+                        element={page(path, label)}
+                      />
+                    ))}
+                </Routes>
+              )}
+            </div>
+            <PageMascots pathname={location.pathname} />
+          </div>
         </main>
       </section>
       <VoiceAssistant />
@@ -133,6 +148,10 @@ function Shell() {
 }
 export function App() {
   const [router] = useState(() => createBrowserRouter([{ path: '*', element: <Shell /> }]));
+  // The welcome portal is a visual entry experience; tests start inside the app
+  // so existing feature and navigation assertions remain deterministic.
+  const [entered, setEntered] = useState(() => import.meta.env.MODE === 'test');
+  if (!entered) return <WelcomePortal onEnter={() => setEntered(true)} />;
   return (
     <DataProvider>
       <RouterProvider router={router} />
